@@ -150,13 +150,18 @@ $(function () {
         "hideMethod": "fadeOut"
     }
 
-
-    $('ul.dropdown-menu [data-toggle=dropdown]').on('click', function (event) {
-        event.preventDefault();
-        event.stopPropagation();
-        $(this).parent().siblings().removeClass('open');
-        $(this).parent().toggleClass('open');
+    $('.dropdown-menu a.dropdown-toggle').on('click', function(e) {
+      if (!$(this).next().hasClass('show')) {
+        $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
+    }
+    var $subMenu = $(this).next(".dropdown-menu");
+    $subMenu.toggleClass('show');
+    $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(e) {
+        $('.dropdown-submenu .show').removeClass("show");
     });
+    return false;
+});
+
     if (!navigator.userAgent.match(/Android/i)
         && !navigator.userAgent.match(/webOS/i)
         && !navigator.userAgent.match(/iPhone/i)
@@ -165,12 +170,17 @@ $(function () {
         && !navigator.userAgent.match(/BlackBerry/i)
         & !navigator.userAgent.match(/Windows Phone/i)
         ) {
-        $('ul.dropdown-menu [data-toggle=dropdown]').on('mouseenter', function (event) {
-            event.preventDefault();
-            event.stopPropagation();
-            $(this).parent().siblings().removeClass('open');
-            $(this).parent().toggleClass('open');
+       $('.dropdown-menu a.dropdown-toggle').on('mouseenter', function(e) {
+          if (!$(this).next().hasClass('show')) {
+            $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
+        }
+        var $subMenu = $(this).next(".dropdown-menu");
+        $subMenu.toggleClass('show');
+        $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(e) {
+            $('.dropdown-submenu .show').removeClass("show");
         });
+        return false;
+    });
 }
 /*********************Gestion de l'heure********************************/
 setInterval(function () {

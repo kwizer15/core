@@ -16,54 +16,54 @@ user::isBan();
 ?>
 <br/>
 <div id="config">
-	<a class="btn btn-success pull-right" id="bt_saveGeneraleConfig"><i class="far fa-check-circle"></i> {{Sauvegarder}}</a>
+	<button type="button" class="btn btn-success pull-right" id="bt_saveGeneraleConfig"><i class="far fa-check-circle"></i> {{Sauvegarder}}</button>
 	<ul class="nav nav-tabs" role="tablist">
-		<li role="presentation" class="active"><a href="#generaltab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-wrench"></i> {{Général}}</a></li>
-		<li role="presentation"><a href="#apitab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="fas fa-key"></i> {{API}}</a></li>
-		<li role="presentation"><a href="#ostab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="fas fa-terminal"></i> {{OS/DB}}</a></li>
-		<li role="presentation"><a href="#securitytab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="fas fa-shield-alt"></i> {{Securité}}</a></li>
-		<li role="presentation"><a href="#networktab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="fas fa-rss"></i> {{Réseaux}}</a></li>
-		<li role="presentation"><a href="#colortab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="fas fa-tint"></i> {{Couleurs}}</a></li>
-		<li role="presentation"><a href="#commandtab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="icon divers-table29"></i> {{Commandes}}</a></li>
-		<li role="presentation"><a href="#cachetab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="fas fa-hdd-o"></i> {{Cache}}</a></li>
-		<li role="presentation"><a href="#interacttab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="fas fa-microphone"></i> {{Interactions}}</a></li>
-		<li role="presentation"><a href="#repporttab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="fas fa-newspaper-o"></i> {{Rapports}}</a></li>
-		<li role="presentation"><a href="#graphlinktab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="fas fa-sitemap"></i> {{Liens}}</a></li>
-		<li role="presentation"><a href="#summarytab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="fas fa-table"></i> {{Résumés}}</a></li>
-		<li role="presentation"><a href="#logtab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="far fa-file"></i> {{Logs}}</a></li>
-		<li role="presentation"><a href="#eqlogictab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="icon divers-svg"></i> {{Equipements}}</a></li>
-		<li role="presentation"><a href="#updatetab" aria-controls="profile" role="tab" data-toggle="tab" style="padding:10px 5px !important"><i class="fas fa-credit-card"></i> {{Mises à jour}}</a></li>
+		<li class="nav-item active"><a href="#generaltab" class="nav-link"><i class="fas fa-wrench"></i> {{Général}}</a></li>
+		<li class="nav-item"><a href="#apitab" class="nav-link" style="padding:10px 5px !important"><i class="fas fa-key"></i> {{API}}</a></li>
+		<li class="nav-item"><a href="#ostab" class="nav-link" style="padding:10px 5px !important"><i class="fas fa-terminal"></i> {{OS/DB}}</a></li>
+		<li class="nav-item"><a href="#securitytab" class="nav-link" style="padding:10px 5px !important"><i class="fas fa-shield-alt"></i> {{Securité}}</a></li>
+		<li class="nav-item"><a href="#networktab" class="nav-link" style="padding:10px 5px !important"><i class="fas fa-rss"></i> {{Réseaux}}</a></li>
+		<li class="nav-item"><a href="#colortab" class="nav-link" style="padding:10px 5px !important"><i class="fas fa-tint"></i> {{Couleurs}}</a></li>
+		<li class="nav-item"><a href="#commandtab" class="nav-link" style="padding:10px 5px !important"><i class="icon divers-table29"></i> {{Commandes}}</a></li>
+		<li class="nav-item"><a href="#cachetab" class="nav-link" style="padding:10px 5px !important"><i class="fas fa-hdd-o"></i> {{Cache}}</a></li>
+		<li class="nav-item"><a href="#interacttab" class="nav-link" style="padding:10px 5px !important"><i class="fas fa-microphone"></i> {{Interactions}}</a></li>
+		<li class="nav-item"><a href="#repporttab" class="nav-link" style="padding:10px 5px !important"><i class="fas fa-newspaper-o"></i> {{Rapports}}</a></li>
+		<li class="nav-item"><a href="#graphlinktab" class="nav-link" style="padding:10px 5px !important"><i class="fas fa-sitemap"></i> {{Liens}}</a></li>
+		<li class="nav-item"><a href="#summarytab" class="nav-link" style="padding:10px 5px !important"><i class="fas fa-table"></i> {{Résumés}}</a></li>
+		<li class="nav-item"><a href="#logtab" class="nav-link" style="padding:10px 5px !important"><i class="far fa-file"></i> {{Logs}}</a></li>
+		<li class="nav-item"><a href="#eqlogictab" class="nav-link" style="padding:10px 5px !important"><i class="icon divers-svg"></i> {{Equipements}}</a></li>
+		<li class="nav-item"><a href="#updatetab" class="nav-link" style="padding:10px 5px !important"><i class="fas fa-credit-card"></i> {{Mises à jour}}</a></li>
 	</ul>
 	<div class="tab-content" style="height:calc(100% - 50px);overflow:auto;overflow-x: hidden;">
 		<div role="tabpanel" class="tab-pane active" id="generaltab">
 			<br/>
-			<form class="form-horizontal">
+			<form>
 				<fieldset>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Nom de votre <?php echo config::byKey('product_name'); ?> (utilisé notamment par le market)}}">{{Nom de votre}} <?php echo config::byKey('product_name'); ?></label>
 						<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
 							<input type="text" class="configKey form-control" data-l1key="name" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Indique votre type de matériel}}">{{Système}}</label>
 						<div class="col-lg-5 col-md-5 col-sm-6 col-xs-6">
 							<span class="label label-info" style="font-size : 1em;"><?php echo jeedom::getHardwareName() ?></span>
 						</div>
 						<div class="col-lg-2 col-md-3 col-sm-3">
-							<a class="btn btn-default form-control" id="bt_resetHardwareType"><i class="fas fa-refresh"></i> {{Rafraîchir}}</a>
+							<button type="button" class="btn btn-primary form-control" id="bt_resetHardwareType"><i class="fas fa-refresh"></i> {{Rafraîchir}}</button>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Clef d'installation qui permet d'identifier votre}} <?php echo config::byKey('product_name'); ?> {{quand il communique avec le market}}">{{Clef d'installation}}</label>
 						<div class="col-lg-5 col-md-5 col-sm-6 col-xs-6">
 							<span class="label label-info" style="font-size : 1em;"><?php echo jeedom::getHardwareKey() ?></span>
 						</div>
 						<div class="col-lg-2 col-md-3 col-sm-3">
-							<a class="btn btn-default form-control" id="bt_resetHwKey"><i class="fas fa-refresh"></i> {{Remise à zéro}}</a>
+							<button type="button" class="btn btn-primary form-control" id="bt_resetHwKey"><i class="fas fa-refresh"></i> {{Remise à zéro}}</button>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Langue de votre}} <?php echo config::byKey('product_name'); ?>">{{Langue}}</label>
 						<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
 							<select class="configKey form-control" data-l1key="language">
@@ -86,13 +86,13 @@ user::isBan();
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Durée de vie de votre connexion à}} <?php echo config::byKey('product_name'); ?> {{si vous n'avez pas coché la case enregistrer cet ordinateur}}">{{Durée de vie des sessions (heure)}}</label>
 						<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
 							<input type="text"  class="configKey form-control" data-l1key="session_lifetime" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" >{{Dernière date connue}}</label>
 						<div class="col-lg-5 col-md-5 col-sm-6 col-xs-6">
 							<?php
@@ -103,10 +103,10 @@ $lastKnowDate = $cache->getValue();
 							<span class="label label-info" style="font-size : 1em;"><?php echo $lastKnowDate ?></span>
 						</div>
 						<div class="col-lg-2 col-md-3 col-sm-3">
-							<a class="btn btn-default form-control" id="bt_resetHour"><i class="fas fa-refresh"></i> {{Remise à zéro}}</a>
+							<button type="button" class="btn btn-primary form-control" id="bt_resetHour"><i class="fas fa-refresh"></i> {{Remise à zéro}}</button>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Fuseau horaire de votre}} <?php echo config::byKey('product_name'); ?>">{{Date et heure}}</label>
 						<div class="col-lg-5 col-md-5 col-sm-6 col-xs-6">
 							<select class="configKey form-control" data-l1key="timezone">
@@ -206,16 +206,16 @@ $lastKnowDate = $cache->getValue();
 							</select>
 						</div>
 						<div class="col-lg-4 col-md-5 col-sm-6 col-xs-6">
-							<a class="btn btn-primary" id="bt_forceSyncHour"><i class="fas fa-clock-o"></i> {{Forcer la synchronisation de l'heure}}</a>
+							<button type="button" class="btn btn-primary" id="bt_forceSyncHour"><i class="fas fa-clock-o"></i> {{Forcer la synchronisation de l'heure}}</button>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Permet d'ajouter un serveur de temps à}} <?php echo config::byKey('product_name'); ?> {{utilisé lorsque}} <?php echo config::byKey('product_name'); ?> {{force la synchronisation de l'heure}}">{{Serveur de temps optionnel}}</label>
 						<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
 							<input type="text"  class="configKey form-control" data-l1key="ntp::optionalServer" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Indique à}} <?php echo config::byKey('product_name'); ?> {{de ne pas prendre en compte l'heure du système}}">{{Ignorer la vérification de l'heure}}</label>
 						<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6">
 							<input type="checkbox" class="configKey" data-l1key="ignoreHourCheck" />
@@ -230,7 +230,7 @@ $lastKnowDate = $cache->getValue();
 			<br/>
 			<form class="form-horizontal">
 				<fieldset>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Accès API HTTP}}</label>
 						<div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
 							<select class="form-control configKey" data-l1key="api::core::http::mode">
@@ -260,25 +260,25 @@ $lastKnowDate = $cache->getValue();
 						</div>
 					</div>
 
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Clef API globale de}} <?php echo config::byKey('product_name'); ?>">{{Clef API}}</label>
 						<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
 							<div class="input-group">
 								<span class="span_apikey"><?php echo $configs['api']; ?></span>
 								<span class="input-group-btn">
-									<a class="btn btn-default form-control bt_regenerate_api" data-plugin="core"><i class="fas fa-refresh"></i></a>
+									<button type="button" class="btn btn-primary form-control bt_regenerate_api" data-plugin="core"><i class="fas fa-refresh"></i></button>
 								</span>
 							</div>
 						</div>
 					</div>
 
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Clef API Pro de}} <?php echo config::byKey('product_name'); ?>">{{Clef API Pro}}</label>
 						<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
 							<div class="input-group">
 								<span class="span_apikey"><?php echo $configs['apipro']; ?></span>
 								<span class="input-group-btn">
-									<a class="btn btn-default form-control bt_regenerate_api" data-plugin="pro"><i class="fas fa-refresh"></i></a>
+									<button type="button" class="btn btn-primary form-control bt_regenerate_api" data-plugin="pro"><i class="fas fa-refresh"></i></button>
 								</span>
 							</div>
 						</div>
@@ -290,13 +290,13 @@ $lastKnowDate = $cache->getValue();
 							</select>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Clef Market de}} <?php echo config::byKey('product_name'); ?>">{{Clef Market}}</label>
 						<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">
 							<div class="input-group">
 								<span class="span_apikey"><?php echo $configs['apimarket']; ?></span>
 								<span class="input-group-btn">
-									<a class="btn btn-default form-control bt_regenerate_api" data-plugin="apimarket"><i class="fas fa-refresh"></i></a>
+									<button type="button" class="btn btn-primary form-control bt_regenerate_api" data-plugin="apimarket"><i class="fas fa-refresh"></i></button>
 								</span>
 							</div>
 						</div>
@@ -315,13 +315,13 @@ if (init('rescue', 0) == 0) {
 		if (config::byKey('api', $plugin->getId()) == '') {
 			continue;
 		}
-		echo '<div class="form-group">';
+		echo '<div class="form-group row">';
 		echo '<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label help" data-help="{{Clef API pour le plugin}} ' . $plugin->getName() . '">{{Clef API}} ' . $plugin->getName() . '</label>';
 		echo '<div class="col-lg-3 col-md-3 col-sm-4 col-xs-6">';
 		echo '<div class="input-group">';
 		echo '<span class="span_apikey">' . config::byKey('api', $plugin->getId()) . '</span>';
 		echo '<span class="input-group-btn">';
-		echo '<a class="btn btn-default form-control bt_regenerate_api" data-plugin="' . $plugin->getId() . '"><i class="fas fa-refresh"></i></a>';
+		echo '<button type="button" class="btn btn-primary form-control bt_regenerate_api" data-plugin="' . $plugin->getId() . '"><i class="fas fa-refresh"></i></button>';
 		echo '</span>';
 		echo '</div>';
 		echo '</div>';
@@ -348,27 +348,27 @@ if (init('rescue', 0) == 0) {
 			<form class="form-horizontal">
 				<fieldset>
 					<legend><i class="fas fa-terminal"></i> {{Système}}</legend>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Administration}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-							<a class="btn btn-danger" href="index.php?v=d&p=system"><i class="fas fa-exclamation-triangle"></i> {{Lancer}}</a>
+							<button type="button" class="btn btn-danger" href="index.php?v=d&p=system"><i class="fas fa-exclamation-triangle"></i> {{Lancer}}</button>
 						</div>
 					</div>
 					<legend><i class="fas fa-indent"></i> {{Editeur de fichiers}}</legend>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Editeur}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-							<a class="btn btn-danger" href="index.php?v=d&p=editor"><i class="fas fa-exclamation-triangle"></i> {{Lancer}}</a>
+							<button type="button" class="btn btn-danger" href="index.php?v=d&p=editor"><i class="fas fa-exclamation-triangle"></i> {{Lancer}}</button>
 						</div>
 					</div>
 					<legend><i class="fas fa-database"></i> {{Base de données}}</legend>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Administration}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-							<a class="btn btn-danger" href="index.php?v=d&p=database"><i class="fas fa-exclamation-triangle"></i> {{Lancer}}</a>
+							<button type="button" class="btn btn-danger" href="index.php?v=d&p=database"><i class="fas fa-exclamation-triangle"></i> {{Lancer}}</button>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Utilisateur}}</label>
 						<div class="col-sm-1">
 							<?php
@@ -377,7 +377,7 @@ echo $CONFIG['db']['username'];
 ?>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Mot de passe}}</label>
 						<div class="col-sm-1">
 							<?php
@@ -395,56 +395,56 @@ echo $CONFIG['db']['password'];
 				<fieldset>
 					<legend>{{LDAP}}</legend>
 					<?php if (function_exists('ldap_connect')) {?>
-						<div class="form-group">
+						<div class="form-group row">
 							<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Activer l'authentification LDAP}}</label>
 							<div class="col-sm-1">
 								<input type="checkbox" class="configKey" data-l1key="ldap:enable"/>
 							</div>
 						</div>
 						<div id="div_config_ldap">
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Hôte}}</label>
 								<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 									<input type="text"  class="configKey form-control" data-l1key="ldap:host" />
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Port}}</label>
 								<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 									<input type="text"  class="configKey form-control" data-l1key="ldap:port" />
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Domaine}}</label>
 								<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 									<input type="text"  class="configKey form-control" data-l1key="ldap:domain" />
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Base DN}}</label>
 								<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 									<input type="text"  class="configKey form-control" data-l1key="ldap:basedn" />
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Nom d'utilisateur}}</label>
 								<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 									<input type="text"  class="configKey form-control" data-l1key="ldap:username" />
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Mot de passe}}</label>
 								<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 									<input type="password"  class="configKey form-control" data-l1key="ldap:password" />
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Champs recherche utilisateur}}</label>
 								<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 									<input type="text" class="configKey form-control" data-l1key="ldap::usersearch" />
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Filtre (optionnel)}}</label>
 								<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 									<input type="text" class="configKey form-control" data-l1key="ldap:filter" />
@@ -456,10 +456,10 @@ echo $CONFIG['db']['password'];
 									<input type="checkbox"  class="configKey" data-l1key="sso:allowRemoteUser" />
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group row">
 								<div class="col-lg-2 col-md-3 col-sm-4 col-xs-6"></div>
 								<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-									<a class="btn btn-default" id="bt_testLdapConnection"><i class="fas fa-cube"></i> Tester</a>
+									<button type="button" class="btn btn-primary" id="bt_testLdapConnection"><i class="fas fa-cube"></i> Tester</button>
 								</div>
 							</div>
 						</div>
@@ -467,25 +467,25 @@ echo $CONFIG['db']['password'];
 	echo '<div class="alert alert-info">{{Librairie LDAP non trouvée. Merci de l\'installer avant de pouvoir utiliser la connexion LDAP}}</div>';
 }?>
 					<legend>{{Connexion}}</legend>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Nombre d'échecs tolérés}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text" class="configKey form-control" data-l1key="security::maxFailedLogin" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Temps maximum entre les échecs (s)}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text" class="configKey form-control" data-l1key="security::timeLoginFailed" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Durée du bannissement (s), -1 pour infini}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text" class="configKey form-control" data-l1key="security::bantime" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{IP "blanche"}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text" class="configKey form-control" data-l1key="security::whiteips" />
@@ -496,7 +496,7 @@ echo $CONFIG['db']['password'];
 			</form>
 			<form class="form-horizontal">
 				<fieldset>
-					<legend>{{IPs bannies}} <a class="btn btn-warning btn-xs pull-right" id="bt_removeBanIp"><i class="fas fa-trash"></i> {{Supprimer}}</a></legend>
+					<legend>{{IPs bannies}} <button type="button" class="btn btn-warning btn-xs pull-right" id="bt_removeBanIp"><i class="fas fa-trash"></i> {{Supprimer}}</button></legend>
 					<table class="table table-condensed table-bordered">
 						<thead>
 							<tr>
@@ -536,7 +536,7 @@ if (count($values) != 0) {
 			<form class="form-horizontal">
 				<fieldset>
 					<legend>{{Accès interne}}</legend>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Protocole}}</label>
 						<div class="col-lg-8 col-md-9 col-sm-8 col-xs-6">
 							<div class="input-group">
@@ -559,7 +559,7 @@ if (count($values) != 0) {
 			<form class="form-horizontal">
 				<fieldset>
 					<legend>{{Accès externe}}</legend>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Protocole}}</label>
 						<div class="col-lg-8 col-md-9 col-sm-8 col-xs-6">
 							<div class="input-group">
@@ -613,7 +613,7 @@ foreach (network::getInterfaces() as $interface) {
 									<input type="checkbox" class="configKey" data-l1key="network::disableMangement" />
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-xs-6 control-label">{{Masque IP local (utile que pour les installations type docker, sous la forme 192.168.1.*)}}</label>
 								<div class="col-xs-6">
 									<input type="text"  class="configKey form-control" data-l1key="network::localip" />
@@ -634,27 +634,27 @@ foreach ($repos as $key => $value) {
 		echo '<div class="alert alert-warning">{{Attention : cette fonctionnalité n\'est pas disponible dans le service pack community (voir votre service pack sur votre page profil sur le market)}}</div>';
 		continue;
 	}
-	echo '<div class="form-group">';
+	echo '<div class="form-group row">';
 	echo '<label class="col-xs-4 control-label">{{Utiliser les DNS}} ' . config::byKey('product_name') . '</label>';
 	echo '<div class="col-xs-8">';
 	echo '<input type="checkbox" class="configKey" data-l1key="' . $key . '::allowDNS" />';
 	echo '</div>';
 	echo '</div>';
-	echo '<div class="form-group">';
+	echo '<div class="form-group row">';
 	echo '<label class="col-xs-4 control-label">{{Statut DNS}}</label>';
 	echo '<div class="col-xs-8">';
 	if ($configs['market::allowDNS'] == 1 && network::dns_run()) {
-		echo '<span class="label label-success" style="font-size : 1em;">{{Démarré : }} <a href="' . network::getNetworkAccess('external') . '" target="_blank" style="color:white;text-decoration: underline;">' . network::getNetworkAccess('external') . '</a></span>';
+		echo '<span class="label label-success" style="font-size : 1em;">{{Démarré : }} <button type="button" href="' . network::getNetworkAccess('external') . '" target="_blank" style="color:white;text-decoration: underline;">' . network::getNetworkAccess('external') . '</button></span>';
 	} else {
 		echo '<span class="label label-warning" title="{{Normal si vous n\'avez pas coché la case : Utiliser les DNS}} ' . config::byKey('product_name') . '">{{Arrêté}}</span>';
 	}
 	echo '</div>';
 	echo '</div>';
-	echo '<div class="form-group">';
+	echo '<div class="form-group row">';
 	echo '<label class="col-xs-4 control-label">{{Gestion}}</label>';
 	echo '<div class="col-xs-8">';
-	echo '<a class="btn btn-success" id="bt_restartDns"><i class=\'fa fa-play\'></i> {{(Re)démarrer}}</a> ';
-	echo '<a class="btn btn-danger" id="bt_haltDns"><i class=\'fa fa-stop\'></i> {{Arrêter}}</a>';
+	echo '<button type="button" class="btn btn-success" id="bt_restartDns"><i class=\'fa fa-play\'></i> {{(Re)démarrer}}</button> ';
+	echo '<button type="button" class="btn btn-danger" id="bt_haltDns"><i class=\'fa fa-stop\'></i> {{Arrêter}}</button>';
 	echo '</div>';
 	echo '</div>';
 }
@@ -671,7 +671,7 @@ foreach ($repos as $key => $value) {
 			<br/>
 			<form class="form-horizontal">
 				<fieldset>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Opacité par défaut des widgets}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="numeric" class="configKey form-control" data-l1key="widget::background-opacity" />
@@ -681,36 +681,36 @@ foreach ($repos as $key => $value) {
 						<?php
 foreach (jeedom::getConfiguration('eqLogic:category') as $key => $category) {
 	echo '<legend>' . $category['name'] . '</legend>';
-	echo '<div class="form-group">';
+	echo '<div class="form-group row">';
 	echo '<label class="col-sm-3 control-label">{{Dashboard couleur de fond}}</label>';
 	echo '<div class="col-sm-2">';
 	echo '<input type="color" class="configKey form-control cursor noSet input-sm" data-l1key="eqLogic:category:' . $key . ':color" value="' . $category['color'] . '" />';
 	echo '</div>';
 	echo '<div class="col-sm-1">';
-	echo '<a class="btn btn-default btn-sm bt_resetColor" data-l1key="eqLogic:category:' . $key . ':color" title="{{Remettre par défaut}}"><i class="fas fa-times"></i></a>';
+	echo '<button type="button" class="btn btn-primary btn-sm bt_resetColor" data-l1key="eqLogic:category:' . $key . ':color" title="{{Remettre par défaut}}"><i class="fas fa-times"></i></button>';
 	echo '</div>';
 	echo '<label class="col-sm-3 control-label">{{Dashboard couleur commande}}</label>';
 	echo '<div class="col-sm-2">';
 	echo '<input type="color" class="configKey form-control cursor noSet input-sm" data-l1key="eqLogic:category:' . $key . ':cmdColor" value="' . $category['cmdColor'] . '" />';
 	echo '</div>';
 	echo '<div class="col-sm-1">';
-	echo '<a class="btn btn-default btn-sm bt_resetColor" data-l1key="eqLogic:category:' . $key . ':cmdColor" title="{{Remettre par défaut}}"><i class="fas fa-times"></i></a>';
+	echo '<button type="button" class="btn btn-primary btn-sm bt_resetColor" data-l1key="eqLogic:category:' . $key . ':cmdColor" title="{{Remettre par défaut}}"><i class="fas fa-times"></i></button>';
 	echo '</div>';
 	echo '</div>';
-	echo '<div class="form-group">';
+	echo '<div class="form-group row">';
 	echo '<label class="col-sm-3 control-label">{{Mobile couleur de fond}}</label>';
 	echo '<div class="col-sm-2">';
 	echo '<input type="color" class="configKey form-control cursor noSet input-sm" data-l1key="eqLogic:category:' . $key . ':mcolor" value="' . $category['mcolor'] . '"/>';
 	echo '</div>';
 	echo '<div class="col-sm-1">';
-	echo '<a class="btn btn-default btn-sm bt_resetColor" data-l1key="eqLogic:category:' . $key . ':mcolor" title="{{Remettre par défaut}}"><i class="fas fa-times"></i></a>';
+	echo '<button type="button" class="btn btn-primary btn-sm bt_resetColor" data-l1key="eqLogic:category:' . $key . ':mcolor" title="{{Remettre par défaut}}"><i class="fas fa-times"></i></button>';
 	echo '</div>';
 	echo '<label class="col-sm-3 control-label">{{Mobile couleur commande}}</label>';
 	echo '<div class="col-sm-2">';
 	echo '<input type="color" class="configKey form-control cursor noSet input-sm" data-l1key="eqLogic:category:' . $key . ':mcmdColor" value="' . $category['mcmdColor'] . '" />';
 	echo '</div>';
 	echo '<div class="col-sm-1">';
-	echo '<a class="btn btn-default btn-sm bt_resetColor" data-l1key="eqLogic:category:' . $key . ':mcmdColor" title="{{Remettre par défaut}}"><i class="fas fa-times"></i></a>';
+	echo '<button type="button" class="btn btn-primary btn-sm bt_resetColor" data-l1key="eqLogic:category:' . $key . ':mcmdColor" title="{{Remettre par défaut}}"><i class="fas fa-times"></i></button>';
 	echo '</div>';
 	echo '</div>';
 }
@@ -725,49 +725,49 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $category) {
 			<legend>{{Historique}}</legend>
 			<form class="form-horizontal">
 				<fieldset>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Afficher les statistiques sur les widgets}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="checkbox"  class="configKey" data-l1key="displayStatsWidget" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Période de calcul pour min, max, moyenne (en heures)}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text"  class="configKey form-control" data-l1key="historyCalculPeriod" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Période de calcul pour la tendance (en heures)}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text"  class="configKey form-control" data-l1key="historyCalculTendance" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Délai avant archivage (en heures)}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text"  class="configKey form-control" data-l1key="historyArchiveTime" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Archiver par paquet de (en heures)}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text"  class="configKey form-control" data-l1key="historyArchivePackage" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Seuil de calcul de tendance bas}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text"  class="configKey form-control" data-l1key="historyCalculTendanceThresholddMin" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Seuil de calcul de tendance haut}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text"  class="configKey form-control" data-l1key="historyCalculTendanceThresholddMax" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Période d'affichage des graphiques par défaut}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<select  class="configKey form-control" data-l1key="history::defautShowPeriod" >
@@ -784,7 +784,7 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $category) {
 			<legend>{{Push}}</legend>
 			<form class="form-horizontal">
 				<fieldset>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{URL de push globale}}</label>
 						<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 							<input type="text"  class="configKey form-control" data-l1key="cmdPushUrl" title="{{Mettez ici l'URL à appeler lors d'une mise à jour de la valeur des commandes. Vous pouvez utiliser les tags suivants : #value# (valeur de la commande), #cmd_id# (id de la commande) et #cmd_name# (nom de la commande)}}"/>
@@ -805,7 +805,7 @@ foreach (jeedom::getConfiguration('eqLogic:category') as $key => $category) {
 					<?php
 $stats = cache::stats();
 ?>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Statistiques}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<?php
@@ -813,7 +813,7 @@ echo '<span class="label label-primary" style="font-size:1em;"><span id="span_ca
 ?>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Moteur de cache}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<select type="text"  class="configKey form-control" data-l1key="cache::engine" >
@@ -830,13 +830,13 @@ echo '<span class="label label-primary" style="font-size:1em;"><span id="span_ca
 						</div>
 					</div>
 					<div class="cacheEngine MemcachedCache">
-						<div class="form-group">
+						<div class="form-group row">
 							<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Adresse Memcache}}</label>
 							<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 								<input type="text"  class="configKey form-control" data-l1key="cache::memcacheaddr" />
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group row">
 							<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Port Memcache}}</label>
 							<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 								<input type="text"  class="configKey form-control" data-l1key="cache::memcacheport" />
@@ -844,32 +844,32 @@ echo '<span class="label label-primary" style="font-size:1em;"><span id="span_ca
 						</div>
 					</div>
 					<div class="cacheEngine RedisCache">
-						<div class="form-group">
+						<div class="form-group row">
 							<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Adresse Redis}}</label>
 							<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 								<input type="text"  class="configKey form-control" data-l1key="cache::redisaddr" />
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group row">
 							<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Port redis}}</label>
 							<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 								<input type="text"  class="configKey form-control" data-l1key="cache::redisport" />
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Nettoyer le cache}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-							<a class="btn btn-warning" id="bt_cleanCache"><i class="fas fa-magic"></i> {{Nettoyer}}</a>
+							<button type="button" class="btn btn-warning" id="bt_cleanCache"><i class="fas fa-magic"></i> {{Nettoyer}}</button>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Vider toutes les données en cache}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-							<a class="btn btn-danger" id="bt_flushCache"><i class="fas fa-trash"></i> {{Vider}}</a>
+							<button type="button" class="btn btn-danger" id="bt_flushCache"><i class="fas fa-trash"></i> {{Vider}}</button>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Temps de pause pour le long polling}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input class="configKey form-control" data-l1key="event::waitPollingTime"/>
@@ -887,7 +887,7 @@ echo '<span class="label label-primary" style="font-size:1em;"><span id="span_ca
 					<div class="alert alert-info">
 						{{Plus la sensibilité est basse (proche de 1), plus la correspondance doit être exacte.}}
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Sensibilité}}</label>
 						<div class="col-lg-6 col-md-8 col-sm-8 col-xs-6">
 							<div class="input-group">
@@ -902,7 +902,7 @@ echo '<span class="label label-primary" style="font-size:1em;"><span id="span_ca
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Réduire le poids de}}</label>
 						<div class="col-lg-6 col-md-8 col-sm-8 col-xs-6">
 							<div class="input-group">
@@ -917,99 +917,99 @@ echo '<span class="label label-primary" style="font-size:1em;"><span id="span_ca
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Ne pas répondre si l'interaction n'est pas comprise}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="checkbox" class="configKey" data-l1key="interact::noResponseIfEmpty"/>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Regex générale d'exclusion pour les interactions}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<textarea type="text" class="configKey form-control" data-l1key="interact::regexpExcludGlobal"></textarea>
 						</div>
 					</div>
 					<legend>{{Interaction automatique, contextuelle & avertissement}}</legend>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Activer les interactions automatiques}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input type="checkbox" class="configKey" data-l1key="interact::autoreply::enable" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Activer les réponses contextuelles}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input type="checkbox" class="configKey" data-l1key="interact::contextual::enable" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Réponse contextuelle prioritaire si la phrase commence par}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input class="configKey form-control" data-l1key="interact::contextual::startpriority" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Découper une interaction en 2 si elle contient}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input class="configKey form-control" data-l1key="interact::contextual::splitword" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Activer les interactions "préviens moi"}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input type="checkbox" class="configKey" data-l1key="interact::warnme::enable" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Réponse de type "préviens moi" si la phrase commence par}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input class="configKey form-control" data-l1key="interact::warnme::start" />
 						</div>
 					</div>
 
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Commande de retour par défaut}}</label>
 						<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
 							<div class="input-group">
 								<input type="text"  class="configKey form-control" data-l1key="interact::warnme::defaultreturncmd" />
 								<span class="input-group-btn">
-									<a class="btn btn-default cursor bt_selectWarnMeCmd" title="Rechercher une commande"><i class="fas fa-list-alt"></i></a>
+									<button type="button" class="btn btn-primary cursor bt_selectWarnMeCmd" title="Rechercher une commande"><i class="fas fa-list-alt"></i></button>
 								</span>
 							</div>
 						</div>
 					</div>
 
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Synonymes pour les objets}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input class="configKey form-control" data-l1key="interact::autoreply::jeeObject::synonym" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Synonymes pour les équipements}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input class="configKey form-control" data-l1key="interact::autoreply::eqLogic::synonym" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Synonymes pour les commandes}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input class="configKey form-control" data-l1key="interact::autoreply::cmd::synonym" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Synonymes pour les résumés}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input class="configKey form-control" data-l1key="interact::autoreply::summary::synonym" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Synonyme commande slider maximum}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input class="configKey form-control" data-l1key="interact::autoreply::cmd::slider::max" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Synonyme commande slider minimum}}</label>
 						<div class="col-lg-10 col-md-9 col-sm-8 col-xs-6">
 							<input class="configKey form-control" data-l1key="interact::autoreply::cmd::slider::min" />
@@ -1039,13 +1039,13 @@ echo '<span class="label label-primary" style="font-size:1em;"><span id="span_ca
 			<br/>
 			<form class="form-horizontal">
 				<fieldset>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Delai d'attente après génération de la page (en ms)}}</label>
 						<div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
 							<input class="configKey form-control" data-l1key="report::delay" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Nettoyer les rapports plus anciens de (jours)}}</label>
 						<div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
 							<input class="configKey form-control" data-l1key="report::maxdays" />
@@ -1060,43 +1060,43 @@ echo '<span class="label label-primary" style="font-size:1em;"><span id="span_ca
 			<br/>
 			<form class="form-horizontal">
 				<fieldset>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Profondeur pour les scénarios}}</label>
 						<div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
 							<input class="configKey form-control" data-l1key="graphlink::scenario::drill" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Profondeur pour les objets}}</label>
 						<div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
 							<input class="configKey form-control" data-l1key="graphlink::jeeObject::drill" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Profondeur pour les équipements}}</label>
 						<div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
 							<input class="configKey form-control" data-l1key="graphlink::eqLogic::drill" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Profondeur pour les commandes}}</label>
 						<div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
 							<input class="configKey form-control" data-l1key="graphlink::cmd::drill" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Profondeur pour les variables}}</label>
 						<div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
 							<input class="configKey form-control" data-l1key="graphlink::dataStore::drill" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Paramètre de prerender}}</label>
 						<div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
 							<input class="configKey form-control" data-l1key="graphlink::prerender" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Paramètre de render}}</label>
 						<div class="col-lg-2 col-md-2 col-sm-4 col-xs-6">
 							<input class="configKey form-control" data-l1key="graphlink::render" />
@@ -1136,29 +1136,29 @@ echo '<span class="label label-primary" style="font-size:1em;"><span id="span_ca
 			<form class="form-horizontal">
 				<fieldset>
 					<legend>{{Timeline}}</legend>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Nombre maximum d'évènements}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text" class="configKey form-control" data-l1key="timeline::maxevent"/>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Supprimer tous les évènements}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
-							<a type="text" class="btn btn-danger" id="bt_removeTimelineEvent" ><i class="fas fa-trash"></i> {{Supprimer}}</a>
+							<button type="button" type="text" class="btn btn-danger" id="bt_removeTimelineEvent" ><i class="fas fa-trash"></i> {{Supprimer}}</button>
 						</div>
 					</div>
 					<legend>{{Messages}}</legend>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Ajouter un message à chaque erreur dans les logs}}</label>
 						<div class="col-sm-1">
 							<input type="checkbox" class="configKey" data-l1key="addMessageForErrorLog" checked/>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Action sur message}}</label>
 						<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">
-							<a class="btn btn-success" id="bt_addActionOnMessage"><i class="fas fa-plus-circle"></i> {{Ajouter}}</a>
+							<button type="button" class="btn btn-success" id="bt_addActionOnMessage"><i class="fas fa-plus-circle"></i> {{Ajouter}}</button>
 						</div>
 					</div>
 					<div id="div_actionOnMessage"></div>
@@ -1169,19 +1169,19 @@ echo '<span class="label label-primary" style="font-size:1em;"><span id="span_ca
 					<legend>{{Alertes}}</legend>
 					<?php
 foreach ($JEEDOM_INTERNAL_CONFIG['alerts'] as $level => $value) {
-	echo '<div class="form-group">';
+	echo '<div class="form-group row">';
 	echo '<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Ajouter un message à chaque}} ' . $value['name'] . '</label>';
 	echo '<div class="col-sm-1">';
 	echo '<input type="checkbox" class="configKey" data-l1key="alert::addMessageOn' . ucfirst($level) . '"/>';
 	echo '</div>';
 	echo '</div>';
-	echo '<div class="form-group">';
+	echo '<div class="form-group row">';
 	echo '<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Commande sur}} ' . $value['name'] . '</label>';
 	echo '<div class="col-lg-4 col-md-4 col-sm-4 col-xs-4">';
 	echo '<div class="input-group">';
 	echo '<input type="text"  class="configKey form-control" data-l1key="alert::' . $level . 'Cmd" />';
 	echo '<span class="input-group-btn">';
-	echo '<a class="btn btn-default cursor bt_selectAlertCmd" title="Rechercher une commande" data-type="' . $level . '"><i class="fas fa-list-alt"></i></a>';
+	echo '<button type="button" class="btn btn-primary cursor bt_selectAlertCmd" title="Rechercher une commande" data-type="' . $level . '"><i class="fas fa-list-alt"></i></button>';
 	echo '</span>';
 	echo '</div>';
 	echo '</div>';
@@ -1193,7 +1193,7 @@ foreach ($JEEDOM_INTERNAL_CONFIG['alerts'] as $level => $value) {
 			<form class="form-horizontal">
 				<fieldset>
 					<legend>{{Log}}</legend>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Moteur de log}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<select class="configKey form-control" data-l1key="log::engine">
@@ -1204,32 +1204,32 @@ foreach ($JEEDOM_INTERNAL_CONFIG['alerts'] as $level => $value) {
 						</div>
 					</div>
 					<div class="logEngine SyslogUdp">
-						<div class="form-group">
+						<div class="form-group row">
 							<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Adresse syslog UDP}}</label>
 							<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 								<input type="text"  class="configKey form-control" data-l1key="log::syslogudphost" />
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group row">
 							<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Port syslog UDP}}</label>
 							<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 								<input type="text"  class="configKey form-control" data-l1key="log::syslogudpport" />
 							</div>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Format des logs}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text" class="configKey form-control" data-l1key="log::formatter" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Nombre de lignes maximum dans un fichier de log}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text" class="configKey form-control" data-l1key="maxLineLog"/>
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Niveau de log par défaut}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<select class="configKey form-control" data-l1key="log::level">
@@ -1245,7 +1245,7 @@ foreach ($JEEDOM_INTERNAL_CONFIG['alerts'] as $level => $value) {
 $other_log = array('scenario', 'plugin', 'market', 'api', 'connection', 'interact', 'tts', 'report', 'event');
 foreach ($other_log as $name) {
 	echo '<form class="form-horizontal">';
-	echo '<div class="form-group">';
+	echo '<div class="form-group row">';
 	echo '<label class="col-sm-2 control-label">' . ucfirst($name) . '</label>';
 	echo '<div class="col-sm-6">';
 	echo '<label class="radio-inline"><input type="radio" name="rd_logupdate' . $name . '" class="configKey" data-l1key="log::level::' . $name . '" data-l2key="1000" /> {{Aucun}}</label>';
@@ -1260,7 +1260,7 @@ foreach ($other_log as $name) {
 if (init('rescue', 0) == 0) {
 	foreach (plugin::listPlugin(true) as $plugin) {
 		echo '<form class="form-horizontal">';
-		echo '<div class="form-group">';
+		echo '<div class="form-group row">';
 		echo '<label class="col-sm-2 control-label">' . $plugin->getName() . '</label>';
 		echo '<div class="col-sm-6">';
 		echo '<label class="radio-inline"><input type="radio" name="rd_logupdate' . $plugin->getId() . '" class="configKey" data-l1key="log::level::' . $plugin->getId() . '" data-l2key="1000" /> {{Aucun}}</label>';
@@ -1281,13 +1281,13 @@ if (init('rescue', 0) == 0) {
 			<br/>
 			<form class="form-horizontal">
 				<fieldset>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Nombre d'échecs avant désactivation de l'équipement}}</label>
 						<div class="col-lg-3 col-md-4 col-sm-5 col-xs-6">
 							<input type="text"  class="configKey form-control" data-l1key="numberOfTryBeforeEqLogicDisable" />
 						</div>
 					</div>
-					<div class="form-group">
+					<div class="form-group row">
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Seuil des piles}}</label>
 						<label class="col-lg-1 col-md-1 col-sm-1 col-xs-1 eqLogicAttr label label-danger" style="font-size : 1.4em">{{Danger}}</label>
 						<div class="col-xs-1">
@@ -1310,7 +1310,7 @@ if (init('rescue', 0) == 0) {
 					<form class="form-horizontal">
 						<fieldset>
 							<legend>{{Mise à jour de}} <?php echo config::byKey('product_name'); ?></legend>
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-lg-4 col-md-6 col-sm-6 col-xs-6 control-label">{{Source de mise à jour}}</label>
 								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 									<select class="configKey form-control" data-l1key="core::repo::provider">
@@ -1330,7 +1330,7 @@ foreach ($repos as $key => $value) {
 								</div>
 							</div>
 
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-lg-4 col-md-6 col-sm-6 col-xs-6 control-label">{{Version du core}}</label>
 								<div class="col-lg-6 col-md-6 col-sm-6 col-xs-6">
 									<select class="configKey form-control" data-l1key="core::branch">
@@ -1339,7 +1339,7 @@ foreach ($repos as $key => $value) {
 									</select>
 								</div>
 							</div>
-							<div class="form-group">
+							<div class="form-group row">
 								<label class="col-lg-4 col-md-6 col-sm-6 col-xs-6 control-label">{{Vérifier automatiquement si il y a des mises à jour}}</label>
 								<div class="col-sm-1">
 									<input type="checkbox" class="configKey" data-l1key="update::autocheck"/>
@@ -1356,7 +1356,7 @@ foreach ($repos as $key => $value) {
 								<?php
 foreach ($repos as $key => $value) {
 	$active = ($key == 'market') ? 'active' : '';
-	echo '<li role="presentation" class="' . $active . '"><a href="#tab' . $key . '" aria-controls="tab' . $key . '" role="tab" data-toggle="tab">' . $value['name'] . '</a></li>';
+	echo '<li class="nav-item" class="' . $active . '"><a class="nav-link" href="#tab' . $key . '" aria-controls="tab' . $key . '" role="tab" data-toggle="tab">' . $value['name'] . '</a></li>';
 }
 ?>
 							</ul>
@@ -1366,7 +1366,7 @@ foreach ($repos as $key => $value) {
 	$active = ($key == 'market') ? 'active' : '';
 	echo '<div role="tabpanel" class="tab-pane ' . $active . '" id="tab' . $key . '">';
 	echo '<br/>';
-	echo '<div class="form-group">';
+	echo '<div class="form-group row">';
 	echo '<label class="col-lg-4 col-md-6 col-sm-6 col-xs-6 control-label">{{Activer}} ' . $value['name'] . '</label>';
 	echo '<div class="col-sm-1">';
 	echo '<input type="checkbox" class="configKey enableRepository" data-repo="' . $key . '" data-l1key="' . $key . '::enable"/>';
@@ -1378,7 +1378,7 @@ foreach ($repos as $key => $value) {
 	}
 	echo '<div class="repositoryConfiguration' . $key . '" style="display:none;">';
 	foreach ($value['configuration']['configuration'] as $pKey => $parameter) {
-		echo '<div class="form-group">';
+		echo '<div class="form-group row">';
 		echo '<label class="col-lg-4 col-md-6 col-sm-6 col-xs-6 control-label">';
 		echo $parameter['name'];
 		echo '</label>';
@@ -1409,10 +1409,10 @@ foreach ($repos as $key => $value) {
 		echo '</div>';
 	}
 	if (isset($value['scope']['test']) && $value['scope']['test']) {
-		echo '<div class="form-group">';
+		echo '<div class="form-group row">';
 		echo '<label class="col-lg-4 col-md-6 col-sm-6 col-xs-6 control-label">{{Tester}}</label>';
 		echo '<div class="col-sm-4">';
-		echo '<a class="btn btn-default testRepoConnection" data-repo="' . $key . '"><i class="fas fa-check"></i> {{Tester}}</a>';
+		echo '<button type="button" class="btn btn-primary testRepoConnection" data-repo="' . $key . '"><i class="fas fa-check"></i> {{Tester}}</button>';
 		echo '</div>';
 		echo '</div>';
 	}
