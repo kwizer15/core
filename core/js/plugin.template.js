@@ -91,6 +91,9 @@ $(".li_eqLogic,.eqLogicDisplayCard").on('click', function () {
         $('.li_eqLogic').removeClass('active');
     }
     $(this).addClass('active');
+    if($('.li_eqLogic[data-eqLogic_id='+$(this).attr('data-eqLogic_id')+']').html() != undefined){
+        $('.li_eqLogic[data-eqLogic_id='+$(this).attr('data-eqLogic_id')+']').addClass('active');
+    }
     if (!url.match('#')) {
        $('.nav-tabs a[href="#eqlogictab"]').click();
    }
