@@ -286,7 +286,7 @@ class network {
 		$openvpn->setConfiguration('compression', 'comp-lzo');
 		$openvpn->setConfiguration('remote_port', config::byKey('vpn::port', 'core', 1194));
 		$openvpn->setConfiguration('auth_mode', 'password');
-		$openvpn->save();
+		$openvpn->save(true);
 		if (!file_exists(dirname(__FILE__) . '/../../plugins/openvpn/data')) {
 			shell_exec('mkdir -p ' . dirname(__FILE__) . '/../../plugins/openvpn/data');
 		}
