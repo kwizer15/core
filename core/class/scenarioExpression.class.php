@@ -1448,7 +1448,14 @@ class scenarioExpression {
 					
 					#Recherche de la commandeId avec le bon user
 					$cmd = cmd::byId(str_replace('#', '', $this->getOptions('cmd')));
-					
+
+					//Recuperation des tags
+					$tags = $scenario->getTags();
+					if (isset($tags['#profile#']) === true) {
+						//Remplacement du pattern #profile# par le profile utilisateur
+					   $this->setOptions('cmd', str_replace('#profile#', $tags['#profile#'], $this->getOptions('cmd')));
+					}
+
 					if (!is_object($cmd)) {
 						throw new Exception(__('Commande introuvable - Vérifiez l\'id : ', __FILE__) . $this->getOptions('cmd'));
 					}
