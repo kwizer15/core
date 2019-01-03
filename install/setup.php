@@ -27,6 +27,9 @@ if (!file_exists('/tmp/jeedom_tmp_key')) {
 	for ($i = 0; $i < 50; $i++) {
 		$tmp_key .= $chaine[rand() % strlen($chaine)];
 	}
+	if (!is_writable('/tmp')) {
+	    echo 'Dossier /tmp inaccessible en écriture.'; exit;
+    }
 	file_put_contents('/tmp/jeedom_tmp_key', $tmp_key);
 } else {
 	$tmp_key = file_get_contents('/tmp/jeedom_tmp_key');

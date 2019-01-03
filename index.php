@@ -17,36 +17,42 @@
  */
 
 use Dotenv\Exception\InvalidPathException;
+use GuzzleHttp\Psr7\Response;
+use GuzzleHttp\Psr7\ServerRequest;
 
-require_once __DIR__.'/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 try {
     (new \Dotenv\Dotenv(__DIR__))->load();
 } catch (InvalidPathException $e) {
-    header('location: install/setup.php');
+    \Http\Response\send(new Response(302, ['Location' => 'install/setup.php']));
+    exit;
 }
 
 try {
-	if (!isset($_GET['v'])) {
-		$useragent = (isset($_SERVER["HTTP_USER_AGENT"])) ? $_SERVER["HTTP_USER_AGENT"] : 'none';
-		$getParams = (stristr($useragent, "Android") || strpos($useragent, "iPod") || strpos($useragent, "iPhone") || strpos($useragent, "Mobile") || strpos($useragent, "WebOS") || strpos($useragent, "mobile") || strpos($useragent, "hp-tablet"))
-		? 'm' : 'd';
-		foreach ($_GET AS $var => $value) {
-			$getParams .= '&' . $var . '=' . $value;
-		}
-		$url = 'index.php?v=' . trim($getParams, '&');
-		if (headers_sent()) {
-			echo '<script type="text/javascript">';
-			echo "window.location.href='$url';";
-			echo '</script>';
-		} else {
-			exit(header('Location: ' . $url));
-		}
-		die();
+    $request = ServerRequest::fromGlobals();
+    $queryParams = $request->getQueryParams();
+
+	if (!isset($queryParams['v'])) {
+	    $userAgent = $request->hasHeader('HTTP_USER_AGENT')
+            ? $request->getHeader('HTTP_USER_AGENT')
+            : 'none'
+        ;
+        $queryParams['v'] = userAgentIsMobile($userAgent) ? 'm' : 'd';
+        $url = $request->withQueryParams($queryParams)->getUri()->getQuery();
+
+        \Http\Response\send(new Response(302, ['Location' => $url]));
+		exit();
 	}
-	require_once __DIR__ . "/core/php/core.inc.php";
-	if (isset($_GET['v']) && $_GET['v'] == 'd') {
-		if (isset($_GET['modal'])) {
+
+	require_once __DIR__ . '/core/php/core.inc.php';
+
+    if (!\in_array($queryParams['v'], ['m', 'd'], true)) {
+        throw new \Exception("Erreur : veuillez contacter l'administrateur");
+    }
+
+	if ($queryParams['v'] === 'd') {
+		if (isset($queryParams['modal'])) {
 			try {
 				include_file('core', 'authentification', 'php');
 				include_file('desktop', init('modal'), 'modal', init('plugin'));
@@ -55,16 +61,11 @@ try {
 				echo '<div class="alert alert-danger div_alert">';
 				echo translate::exec(displayException($e), 'desktop/' . init('p') . '.php');
 				echo '</div>';
-			} catch (Error $e) {
-				ob_end_clean();
-				echo '<div class="alert alert-danger div_alert">';
-				echo translate::exec(displayException($e), 'desktop/' . init('p') . '.php');
-				echo '</div>';
 			}
-		} elseif (isset($_GET['configure'])) {
+		} elseif (isset($queryParams['configure'])) {
 			include_file('core', 'authentification', 'php');
 			include_file('plugin_info', 'configuration', 'configuration', init('plugin'));
-		} elseif (isset($_GET['ajax']) && $_GET['ajax'] == 1) {
+		} elseif (isset($queryParams['ajax']) && $queryParams['ajax'] == 1) {
 			try {
 				$title = 'Jeedom';
 				if (init('m') != '') {
@@ -91,31 +92,36 @@ try {
 				echo '<div class="alert alert-danger div_alert">';
 				echo translate::exec(displayException($e), 'desktop/' . init('p') . '.php');
 				echo '</div>';
-			} catch (Error $e) {
-				ob_end_clean();
-				echo '<div class="alert alert-danger div_alert">';
-				echo translate::exec(displayException($e), 'desktop/' . init('p') . '.php');
-				echo '</div>';
 			}
 		} else {
 			include_file('desktop', 'index', 'php');
 		}
-	} elseif (isset($_GET['v']) && $_GET['v'] == 'm') {
+	} else {
 		$_fn = 'index';
 		$_type = 'html';
 		$_plugin = '';
-		if (isset($_GET['modal'])) {
+		if (isset($queryParams['modal'])) {
 			$_fn = init('modal');
 			$_type = 'modalhtml';
 			$_plugin = init('plugin');
-		} elseif (isset($_GET['p']) && isset($_GET['ajax'])) {
-			$_fn = $_GET['p'];
-			$_plugin = isset($_GET['m']) ? $_GET['m'] : $_plugin;
+		} elseif (isset($queryParams['p'], $queryParams['ajax'])) {
+			$_fn = $queryParams['p'];
+			$_plugin = isset($queryParams['m']) ? $queryParams['m'] : $_plugin;
 		}
 		include_file('mobile', $_fn, $_type, $_plugin);
-	} else {
-		echo "Erreur : veuillez contacter l'administrateur";
 	}
 } catch (Exception $e) {
 	echo $e->getMessage();
+}
+
+function userAgentIsMobile($userAgent)
+{
+    return (false !== stripos($userAgent, 'Android')
+        || strpos($userAgent, 'iPod')
+        || strpos($userAgent, 'iPhone')
+        || strpos($userAgent, 'Mobile')
+        || strpos($userAgent, 'WebOS')
+        || strpos($userAgent, 'mobile')
+        || strpos($userAgent, 'hp-tablet')
+    );
 }
