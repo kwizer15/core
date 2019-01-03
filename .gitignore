@@ -27,3 +27,4 @@ tmp/*
 !tmp/.htaccess
 
 !.htaccess
+/vendor/
