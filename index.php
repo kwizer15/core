@@ -15,11 +15,18 @@
  * You should have received a copy of the GNU General Public License
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
-try {
-	if (!file_exists(__DIR__ . '/core/config/common.config.php')) {
-		header("location: install/setup.php");
-	}
 
+use Dotenv\Exception\InvalidPathException;
+
+require_once __DIR__.'/vendor/autoload.php';
+
+try {
+    (new \Dotenv\Dotenv(__DIR__))->load();
+} catch (InvalidPathException $e) {
+    header('location: install/setup.php');
+}
+
+try {
 	if (!isset($_GET['v'])) {
 		$useragent = (isset($_SERVER["HTTP_USER_AGENT"])) ? $_SERVER["HTTP_USER_AGENT"] : 'none';
 		$getParams = (stristr($useragent, "Android") || strpos($useragent, "iPod") || strpos($useragent, "iPhone") || strpos($useragent, "Mobile") || strpos($useragent, "WebOS") || strpos($useragent, "mobile") || strpos($useragent, "hp-tablet"))

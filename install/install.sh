@@ -233,12 +233,12 @@ step_8_jeedom_configuration() {
 	mysql_sql "DROP DATABASE IF EXISTS jeedom;"
 	mysql_sql "CREATE DATABASE jeedom;"
 	mysql_sql "GRANT ALL PRIVILEGES ON jeedom.* TO 'jeedom'@'localhost';"
-	cp ${WEBSERVER_HOME}/core/config/common.config.sample.php ${WEBSERVER_HOME}/core/config/common.config.php
-	sed -i "s/#PASSWORD#/${MYSQL_JEEDOM_PASSWD}/g" ${WEBSERVER_HOME}/core/config/common.config.php
-	sed -i "s/#DBNAME#/jeedom/g" ${WEBSERVER_HOME}/core/config/common.config.php
-	sed -i "s/#USERNAME#/jeedom/g" ${WEBSERVER_HOME}/core/config/common.config.php
-	sed -i "s/#PORT#/3306/g" ${WEBSERVER_HOME}/core/config/common.config.php
-	sed -i "s/#HOST#/localhost/g" ${WEBSERVER_HOME}/core/config/common.config.php
+	cp ${WEBSERVER_HOME}/.env.sample ${WEBSERVER_HOME}/.env
+	sed -i "s/#PASSWORD#/${MYSQL_JEEDOM_PASSWD}/g" ${WEBSERVER_HOME}/.env
+	sed -i "s/#DBNAME#/jeedom/g" ${WEBSERVER_HOME}/.env
+	sed -i "s/#USER#/jeedom/g" ${WEBSERVER_HOME}/.env
+	sed -i "s/#PORT#/3306/g" ${WEBSERVER_HOME}/.env
+	sed -i "s/#HOST#/localhost/g" ${WEBSERVER_HOME}/.env
 	chmod 775 -R ${WEBSERVER_HOME}
 	chown -R www-data:www-data ${WEBSERVER_HOME}
 	echo "${VERT}étape 8 configuration de jeedom réussie${NORMAL}"

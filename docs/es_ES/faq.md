@@ -147,8 +147,8 @@ echo "DROP USER 'jeedom'@'localhost'" | mysql -uroot -p
 echo "CREATE USER 'jeedom'@'localhost' IDENTIFIED BY '${bdd_password}';" | mysql -uroot -p
 echo "GRANT ALL PRIVILEGES ON jeedom.* TO 'jeedom'@'localhost';" | mysql -uroot -p
 cd /usr/share/nginx/www/jeedom
-sudo cp core/config/common.config.sample.php core/config/common.config.php
-sudo sed -i -e "s/#PASSWORD#/${bdd_password}/g" core/config/common.config.php
+sudo cp .env.sample .env
+sudo sed -i -e "s/#PASSWORD#/${bdd_password}/g" .env
 sudo chown www-data:www-data core/config/common.config.php
 ```
 

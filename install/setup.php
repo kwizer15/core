@@ -16,6 +16,10 @@ function init($_name, $_default = '') {
 	return $_default;
 }
 
+$basePath = dirname(__DIR__);
+$envFile = $basePath . '/.env';
+$envSampleFile = $envFile . '.sample';
+
 if (!file_exists('/tmp/jeedom_tmp_key')) {
 	$tmp_key = '';
 	$chaine = "abcdefghijklmnpqrstuvwxy1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ";
@@ -42,7 +46,7 @@ if (init('log') == 1) {
 	echo file_get_contents(__DIR__ . '/../log/jeedom_installation');
 	die();
 }
-if (file_exists(__DIR__ . '/../core/config/common.config.php')) {
+if (file_exists($envFile)) {
 	if (!headers_sent()) {
 		header("Statut: 404 Page non trouvée");
 		header('HTTP/1.0 404 Not Found');
@@ -225,25 +229,25 @@ if ($config) {
 			</div>
 		</form>
 		<?php } else {
-	shell_exec('sudo chmod 775 -R ' . __DIR__ . '/../*');
-	shell_exec('sudo chown ' . system::get('www-uid') . ':' . system::get('www-gid') . ' -R ' . __DIR__ . '/../*');
-	if (!is_writable(__DIR__ . '/../core/config')) {
+	shell_exec('sudo chmod 775 -R ' . $basePath . '/*');
+	shell_exec('sudo chown ' . system::get('www-uid') . ':' . system::get('www-gid') . ' -R ' . $basePath .'/*');
+	if (!is_writable($basePath)) {
 		echo '<div class="alert alert-danger" style="margin:15px;">';
-		echo '<center style="font-size:1.2em;">Le dossier ' . __DIR__ . '/../core/config' . ' doit être en écriture</center>';
+		echo '<center style="font-size:1.2em;">Le dossier ' . $basePath . ' doit être en écriture</center>';
 		echo '</div>';
 		echo '</body>';
 		echo '</html>';
 		die();
 	}
 	$replace = array(
-		'#PASSWORD#' => init('password'),
-		'#DBNAME#' => init('database'),
-		'#USERNAME#' => init('username'),
-		'#PORT#' => init('port'),
-		'#HOST#' => init('hostname'),
-	);
-	$config = str_replace(array_keys($replace), $replace, file_get_contents(__DIR__ . '/../core/config/common.config.sample.php'));
-	file_put_contents(__DIR__ . '/../core/config/common.config.php', $config);
+        '#HOST#' => init('hostname'),
+        '#PORT#' => init('port'),
+        '#USER#' => init('username'),
+        '#PASSWORD#' => init('password'),
+        '#DBNAME#' => init('database'),
+    );
+	$config = str_replace(array_keys($replace), $replace, file_get_contents($envSampleFile));
+	file_put_contents($envFile, $config);
 	shell_exec('php ' . __DIR__ . '/install.php mode=force > ' . __DIR__ . '/../log/jeedom_installation 2>&1 &');
 	echo '<div id="div_alertMessage" class="alert alert-warning" style="margin:15px;">';
 	echo '<center style="font-size:1.2em;"><i class="fa fa-spinner fa-spin"></i> The installation jeedom is ongoing.</center>';
