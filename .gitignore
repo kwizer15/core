@@ -7,7 +7,6 @@ Thumbs.db
 ui
 
 test.php
-core/config/common.config.php
 .remote-sync.json
 
 /plugins
