@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -68,169 +69,85 @@ class eqLogic {
 		return $return;
 	}
 
+    /**
+     * @deprecated Use DBEquipmentLogicRepository::get instead
+     */
 	public static function byId($_id) {
-		if ($_id == '') {
-			return;
-		}
-		$values = array(
-			'id' => $_id,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM eqLogic
-        WHERE id=:id';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
+		trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::get instead', E_USER_DEPRECATED);
+		$equipmentLogicRepository = new DBEquipmentLogicRepository();
+		return $equipmentLogicRepository->get($_id);
 	}
 
-	private static function cast($_inputs) {
-		if (is_object($_inputs) && class_exists($_inputs->getEqType_name())) {
-			return cast($_inputs, $_inputs->getEqType_name());
-		}
-		if (is_array($_inputs)) {
-			$return = array();
-			foreach ($_inputs as $input) {
-				$return[] = self::cast($input);
-			}
-			return $return;
-		}
-		return $_inputs;
-	}
-
+    /**
+     * @deprecated Use DBEquipmentLogicRepository::all instead
+     */
 	public static function all($_onlyEnable = false) {
-		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'el') . '
-        FROM eqLogic el
-        LEFT JOIN object ob ON el.object_id=ob.id';
-		if ($_onlyEnable) {
-			$sql .= ' AND isEnable=1';
-		}
-		$sql .= ' ORDER BY ob.name,el.name';
-		return self::cast(DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::all instead', E_USER_DEPRECATED);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        return $equipmentLogicRepository->all($_onlyEnable);
 	}
 
+    /**
+     * @deprecated Use DBEquipmentLogicRepository::findByEqRealId instead
+     */
 	public static function byEqRealId($_eqReal_id) {
-		$values = array(
-			'eqReal_id' => $_eqReal_id,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM eqLogic
-        WHERE eqReal_id=:eqReal_id';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByEqRealId instead', E_USER_DEPRECATED);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        return $equipmentLogicRepository->findByEqRealId($_eqReal_id);
 	}
 
+    /**
+     * @deprecated Use DBEquipmentLogicRepository::findByObjectId instead
+     */
 	public static function byObjectId($_object_id, $_onlyEnable = true, $_onlyVisible = false, $_eqType_name = null, $_logicalId = null, $_orderByName = false) {
-		$values = array();
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM eqLogic';
-		if ($_object_id === null) {
-			$sql .= ' WHERE object_id IS NULL';
-		} else {
-			$values['object_id'] = $_object_id;
-			$sql .= ' WHERE object_id=:object_id';
-		}
-		if ($_onlyEnable) {
-			$sql .= ' AND isEnable = 1';
-		}
-		if ($_onlyVisible) {
-			$sql .= ' AND isVisible = 1';
-		}
-		if ($_eqType_name !== null) {
-			$values['eqType_name'] = $_eqType_name;
-			$sql .= ' AND eqType_name=:eqType_name';
-		}
-		if ($_logicalId !== null) {
-			$values['logicalId'] = $_logicalId;
-			$sql .= ' AND logicalId=:logicalId';
-		}
-		if ($_orderByName) {
-			$sql .= ' ORDER BY `name`';
-		} else {
-			$sql .= ' ORDER BY `order`,category';
-		}
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByObjectId instead', E_USER_DEPRECATED);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        return $equipmentLogicRepository->findByObjectId($_object_id, $_onlyEnable, $_onlyVisible, $_eqType_name, $_logicalId, $_orderByName);
 	}
 
+    /**
+     * @deprecated Use DBEquipmentLogicRepository::findByLogicalId instead
+     */
 	public static function byLogicalId($_logicalId, $_eqType_name, $_multiple = false) {
-		$values = array(
-			'logicalId' => $_logicalId,
-			'eqType_name' => $_eqType_name,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM eqLogic
-        WHERE logicalId=:logicalId
-        AND eqType_name=:eqType_name';
-		if ($_multiple) {
-			return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-		}
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByLogicalId instead', E_USER_DEPRECATED);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        return $equipmentLogicRepository->findByLogicalId($_logicalId, $_eqType_name, $_multiple);
 	}
 
+    /**
+     * @deprecated Use DBEquipmentLogicRepository::findByType instead
+     */
 	public static function byType($_eqType_name, $_onlyEnable = false) {
-		$values = array(
-			'eqType_name' => $_eqType_name,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'el') . '
-        FROM eqLogic el
-        LEFT JOIN object ob ON el.object_id=ob.id
-        WHERE eqType_name=:eqType_name ';
-		if ($_onlyEnable) {
-			$sql .= ' AND isEnable=1';
-		}
-		$sql .= ' ORDER BY ob.name,el.name';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByType instead', E_USER_DEPRECATED);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        return $equipmentLogicRepository->findByType($_eqType_name, $_onlyEnable);
 	}
 
+    /**
+     * @deprecated Use DBEquipmentLogicRepository::findByCategory instead
+     */
 	public static function byCategorie($_category) {
-		$values = array(
-			'category' => '%"' . $_category . '":1%',
-			'category2' => '%"' . $_category . '":"1"%',
-		);
-
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM eqLogic
-        WHERE category LIKE :category
-        OR category LIKE :category2
-        ORDER BY name';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByCategory instead', E_USER_DEPRECATED);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        return $equipmentLogicRepository->findByCategory($_category);
 	}
 
+    /**
+     * @deprecated Use DBEquipmentLogicRepository::findByTypeAndSearchConfiguration instead
+     */
 	public static function byTypeAndSearhConfiguration($_eqType_name, $_configuration) {
-		$values = array(
-			'eqType_name' => $_eqType_name,
-			'configuration' => '%' . $_configuration . '%',
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM eqLogic
-        WHERE eqType_name=:eqType_name
-        AND configuration LIKE :configuration
-        ORDER BY name';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByTypeAndSearchConfiguration instead', E_USER_DEPRECATED);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        return $equipmentLogicRepository->findByTypeAndSearchConfiguration($_eqType_name, $_configuration);
 	}
 
+    /**
+     * @deprecated Use DBEquipmentLogicRepository::searchConfiguration instead
+     */
 	public static function searchConfiguration($_configuration, $_type = null) {
-		if (!is_array($_configuration)) {
-			$values = array(
-				'configuration' => '%' . $_configuration . '%',
-			);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-			        FROM eqLogic
-			        WHERE configuration LIKE :configuration';
-		} else {
-			$values = array(
-				'configuration' => '%' . $_configuration[0] . '%',
-			);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-			        FROM eqLogic
-			        WHERE configuration LIKE :configuration';
-			for ($i = 1; $i < count($_configuration); $i++) {
-				$values['configuration' . $i] = '%' . $_configuration[$i] . '%';
-				$sql .= ' OR configuration LIKE :configuration' . $i;
-			}
-		}
-		if ($_type !== null) {
-			$values['eqType_name'] = $_type;
-			$sql .= ' AND eqType_name=:eqType_name ';
-		}
-		$sql .= ' ORDER BY name';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::searchConfiguration instead', E_USER_DEPRECATED);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        return $equipmentLogicRepository->searchConfiguration($_configuration, $_type);
 	}
 
 	public static function listByTypeAndCmdType($_eqType_name, $_typeCmd, $subTypeCmd = '') {
@@ -294,7 +211,8 @@ class eqLogic {
 	}
 
 	public static function checkAlive() {
-		foreach (eqLogic::byTimeout(1, true) as $eqLogic) {
+	    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+		foreach ($equipmentLogicRepository->findByTimeout(1, true) as $eqLogic) {
 			$sendReport = false;
 			$cmds = $eqLogic->getCmd();
 			foreach ($cmds as $cmd) {
@@ -337,40 +255,22 @@ class eqLogic {
 		}
 	}
 
+    /**
+     * @deprecated Use DBEquipmentLogicRepository::findByTimeout instead
+     */
 	public static function byTimeout($_timeout = 0, $_onlyEnable = false) {
-		$values = array(
-			'timeout' => $_timeout,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM eqLogic
-        WHERE timeout>=:timeout';
-		if ($_onlyEnable) {
-			$sql .= ' AND isEnable=1';
-		}
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByTimeout instead', E_USER_DEPRECATED);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        return $equipmentLogicRepository->findByTimeout($_timeout, $_onlyEnable);
 	}
 
+    /**
+     * @deprecated Use DBEquipmentLogicRepository::findByObjectNameEqLogicName instead
+     */
 	public static function byObjectNameEqLogicName($_object_name, $_eqLogic_name) {
-		if ($_object_name == __('Aucun', __FILE__)) {
-			$values = array(
-				'eqLogic_name' => $_eqLogic_name,
-			);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-            FROM eqLogic
-            WHERE name=:eqLogic_name
-            AND object_id IS NULL';
-		} else {
-			$values = array(
-				'eqLogic_name' => $_eqLogic_name,
-				'object_name' => $_object_name,
-			);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'el') . '
-            FROM eqLogic el
-            INNER JOIN object ob ON el.object_id=ob.id
-            WHERE el.name=:eqLogic_name
-            AND ob.name=:object_name';
-		}
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByObjectNameEqLogicName instead', E_USER_DEPRECATED);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        return $equipmentLogicRepository->findByObjectNameEqLogicName($_object_name, $_eqLogic_name);
 	}
 
 	public static function toHumanReadable($_input) {
@@ -400,7 +300,8 @@ class eqLogic {
 		preg_match_all("/#eqLogic([0-9]*)#/", $text, $matches);
 		foreach ($matches[1] as $eqLogic_id) {
 			if (is_numeric($eqLogic_id)) {
-				$eqLogic = self::byId($eqLogic_id);
+			    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+				$eqLogic = $equipmentLogicRepository->get($eqLogic_id);
 				if (is_object($eqLogic)) {
 					$text = str_replace('#eqLogic' . $eqLogic_id . '#', '#' . $eqLogic->getHumanName() . '#', $text);
 				}
@@ -446,7 +347,8 @@ class eqLogic {
 			$countMatches = count($matches[0]);
 			for ($i = 0; $i < $countMatches; $i++) {
 				if (isset($matches[1][$i]) && isset($matches[2][$i])) {
-					$eqLogic = self::byObjectNameEqLogicName($matches[1][$i], $matches[2][$i]);
+                    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+					$eqLogic = $equipmentLogicRepository->findByObjectNameEqLogicName($matches[1][$i], $matches[2][$i]);
 					if (isset($eqLogic[0]) && is_object($eqLogic[0])) {
 						$text = str_replace($matches[0][$i], '#eqLogic' . $eqLogic[0]->getId() . '#', $text);
 					}
@@ -457,7 +359,8 @@ class eqLogic {
 	}
 
 	public static function clearCacheWidget() {
-		foreach (self::all() as $eqLogic) {
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+		foreach ($equipmentLogicRepository->all() as $eqLogic) {
 			$eqLogic->emptyCacheWidget();
 		}
 	}
@@ -1435,9 +1338,10 @@ class eqLogic {
 
 	public function getUsedBy($_array = false) {
         $commandRepository = new DBCommandRepository();
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
 		$return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array(), 'plan' => array(), 'view' => array());
 		$return['cmd'] = $commandRepository->searchConfiguration('#eqLogic' . $this->getId() . '#');
-		$return['eqLogic'] = eqLogic::searchConfiguration(array('#eqLogic' . $this->getId() . '#', '"eqLogic":"' . $this->getId()));
+		$return['eqLogic'] = $equipmentLogicRepository->searchConfiguration(array('#eqLogic' . $this->getId() . '#', '"eqLogic":"' . $this->getId()));
 		$return['interactDef'] = interactDef::searchByUse(array('#eqLogic' . $this->getId() . '#', '"eqLogic":"' . $this->getId()));
 		$return['scenario'] = scenario::searchByUse(array(
 			array('action' => 'equipment', 'option' => $this->getId(), 'and' => true),

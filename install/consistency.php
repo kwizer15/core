@@ -16,6 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 if (php_sapi_name() != 'cli' || isset($_SERVER['REQUEST_METHOD']) || !isset($_SERVER['argc'])) {
 	header("Statut: 404 Page non trouvée");
 	header('HTTP/1.0 404 Not Found');
@@ -337,7 +340,9 @@ try {
 		shell_exec(system::getCmdSudo() . 'rm -rf ' . __DIR__ . '/../script/ngrok');
 	}
 
-	foreach (eqLogic::all() as $eqLogic) {
+    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+	$eqLogics = $equipmentLogicRepository->all();
+	foreach ($eqLogics as $eqLogic) {
 		try {
 			$eqLogic->emptyCacheWidget();
 		} catch (Exception $e) {
@@ -353,7 +358,9 @@ try {
 
 	}
 
-	foreach (cmd::all() as $cmd) {
+	$commandRepository = new DBCommandRepository();
+	$commands = $commandRepository->all();
+	foreach ($commands as $cmd) {
 		$change = false;
 		if ($cmd->getConfiguration('jeedomCheckCmdCmdActionId') != '') {
 			$cmd->setConfiguration('jeedomCheckCmdCmdActionId', '');

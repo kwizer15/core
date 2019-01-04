@@ -1,4 +1,7 @@
 <?php
+
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
@@ -31,7 +34,9 @@ if ($user->getProfils() != 'restrict') {
 			</thead>
 			<tbody>
 				<?php
-foreach (eqLogic::all() as $eqLogic) {
+                $equipmentLogicRepository = new DBEquipmentLogicRepository();
+                $eqLogics = $equipmentLogicRepository->all();
+foreach ($eqLogics as $eqLogic) {
 	echo '<tr>';
 	echo '<td>' . $eqLogic->getHumanName(true) . '</td>';
 	echo '<td>';

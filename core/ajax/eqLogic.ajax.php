@@ -48,7 +48,8 @@ try {
 	}
 
 	if (init('action') == 'byId') {
-		$eqLogic = eqLogic::byId(init('id'));
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+		$eqLogic = $equipmentLogicRepository->get(init('id'));
 		if (!is_object($eqLogic)) {
 			throw new Exception(__('EqLogic inconnu. Vérifiez l\'ID', __FILE__));
 		}

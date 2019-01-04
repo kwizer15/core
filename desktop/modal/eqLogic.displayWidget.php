@@ -1,8 +1,12 @@
 <?php
+
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
-$eqLogic = eqLogic::byId(init('eqLogic_id'));
+$equipmentLogicRepository = new DBEquipmentLogicRepository();
+$eqLogic = $equipmentLogicRepository->get(init('eqLogic_id'));
 if (!is_object($eqLogic)) {
 	throw new Exception('EqLogic non trouvé : ' . init('eqLogic_id'));
 }

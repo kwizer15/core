@@ -13,17 +13,17 @@ class DBCommandRepository implements CommandRepository
      */
     public function get($id)
     {
-        $class = \cmd::class;
+        // FIXME: Retourner un cmd ou renvoyer une exception
         if ($id == '') {
             return;
         }
         $values = array(
             'id' => $id,
         );
-        $sql = 'SELECT ' . \DB::buildField($class) . '
+        $sql = 'SELECT ' . \DB::buildField(\cmd::class) . '
 		FROM cmd
 		WHERE id=:id';
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, $class));
+        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \cmd::class));
     }
 
 

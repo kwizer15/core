@@ -1,10 +1,14 @@
 <?php
 global $JEEDOM_INTERNAL_CONFIG;
+
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 if (!isConnect()) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 $list = array();
-foreach (eqLogic::all() as $eqLogic) {
+$equipmentLogicRepository = new DBEquipmentLogicRepository();
+foreach ($equipmentLogicRepository->all() as $eqLogic) {
 	$battery_type = str_replace(array('(', ')'), array('', ''), $eqLogic->getConfiguration('battery_type', ''));
 	if ($eqLogic->getStatus('battery', -2) != -2) {
 		array_push($list, $eqLogic);
@@ -39,7 +43,8 @@ foreach ($list as $eqLogic) {
 		<div class="alertListContainer">
 			<?php
 $hasAlert = false;
-foreach (eqLogic::all() as $eqLogic) {
+$equipmentLogicRepository = new DBEquipmentLogicRepository();
+foreach ($equipmentLogicRepository->all() as $eqLogic) {
 	if ($eqLogic->getAlert() == '') {
 		continue;
 	}
@@ -67,7 +72,8 @@ if (!$hasAlert) {
 				</thead>
 				<tbody>
 					<?php
-foreach (eqLogic::all() as $eqLogic) {
+                    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+foreach ($equipmentLogicRepository->all() as $eqLogic) {
 	foreach ($eqLogic->getCmd('info') as $cmd) {
 		if (count($cmd->getConfiguration('actionCheckCmd', array())) > 0) {
 			echo '<tr><td><a href="' . $eqLogic->getLinkToConfiguration() . '" style="text-decoration: none;">' . $eqLogic->getHumanName(true) . '</a></td><td>' . $cmd->getName() . ' (' . $cmd->getId() . ')</td><td>{{Action sur état}}</td>';
@@ -155,7 +161,8 @@ foreach (eqLogic::all() as $eqLogic) {
 				</thead>
 				<tbody>
 					<?php
-foreach (eqLogic::all() as $eqLogic) {
+                    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+foreach ($equipmentLogicRepository->all() as $eqLogic) {
 	$hasSomeAlerts = 0;
 	$listCmds = array();
 	foreach ($eqLogic->getCmd('info') as $cmd) {
