@@ -25,7 +25,8 @@ $type = init('type');
 
 switch ($type) {
 	case 'cmdHistory':
-		$cmd = cmd::byId(init('id'));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(init('id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande introuvable : ', __FILE__) . init('id'));
 		}

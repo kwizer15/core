@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class scenarioElement {
@@ -31,21 +34,27 @@ class scenarioElement {
 
 	/*     * ***********************Méthodes statiques*************************** */
 
+    /**
+     * @param $_id
+     *
+     * @return scenarioElement
+     * @throws Exception
+     *
+     * @deprecated Use ScenarioElementRepository::get instead
+     */
 	public static function byId($_id) {
-		$values = array(
-			'id' => $_id,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM ' . __CLASS__ . '
-        WHERE id=:id';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+	    trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioElementRepository::class.'::get instead', E_USER_DEPRECATED);
+        $repository = new DBScenarioElementRepository();
+
+        return $repository->get($_id);
 	}
 
 	public static function saveAjaxElement($element_ajax) {
 		if (isset($element_ajax['id']) && $element_ajax['id'] != '') {
-			$element_db = scenarioElement::byId($element_ajax['id']);
+		    $scenarioElementRepository = new DBScenarioElementRepository();
+			$element_db = $scenarioElementRepository->get($element_ajax['id']);
 		} else {
-			$element_db = new scenarioElement();
+			$element_db = new self();
 		}
 		if (!isset($element_db) || !is_object($element_db)) {
 			throw new Exception(__('Elément inconnu. Vérifiez l\'ID : ', __FILE__) . $element_ajax['id']);

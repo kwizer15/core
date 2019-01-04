@@ -16,6 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
 	include_file('core', 'authentification', 'php');
@@ -105,7 +107,8 @@ try {
 	}
 
 	if (init('action') == 'addWarnme') {
-		$cmd = cmd::byId(init('cmd_id'));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(init('cmd_id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande non trouvée : ', __FILE__) . init('cmd_id'));
 		}

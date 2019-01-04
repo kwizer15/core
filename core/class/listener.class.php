@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class listener {
@@ -145,7 +148,8 @@ class listener {
 	}
 
 	public static function backgroundCalculDependencyCmd($_event) {
-		if (count(cmd::byValue($_event, 'info')) == 0) {
+	    $commandRepository = new DBCommandRepository();
+		if (\count($commandRepository->findByValue($_event, 'info')) === 0) {
 			return;
 		}
 		$cmd = __DIR__ . '/../php/jeeListener.php';

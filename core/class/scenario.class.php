@@ -17,6 +17,10 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class scenario {
@@ -319,7 +323,8 @@ class scenario {
 			$scenario->persistLog();
 			return;
 		}
-		$scenarioElement = scenarioElement::byId($_options['scenarioElement_id']);
+		$repository = new DBScenarioElementRepository();
+		$scenarioElement = $repository->get($_options['scenarioElement_id']);
 		$scenario->setLog(__('************Lancement sous tâche**************', __FILE__));
 		if (isset($_options['tags']) && is_array($_options['tags']) && count($_options['tags']) > 0) {
 			$scenario->setTags($_options['tags']);
@@ -752,7 +757,8 @@ class scenario {
 			return;
 		}
 
-		$cmd = cmd::byId(str_replace('#', '', $_trigger));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(str_replace('#', '', $_trigger));
 		if (is_object($cmd)) {
 			log::add('event', 'info', __('Exécution du scénario ', __FILE__) . $this->getHumanName() . __(' déclenché par : ', __FILE__) . $cmd->getHumanName());
 			if ($this->getConfiguration('timeline::enable')) {
@@ -1191,19 +1197,22 @@ class scenario {
 		$this->setState('stop');
 		return true;
 	}
-	/**
-	 *
-	 * @return type
-	 */
+
+    /**
+     *
+     * @return array
+     * @throws Exception
+     */
 	public function getElement() {
 		if (count($this->_elements) > 0) {
 			return $this->_elements;
 		}
 		$return = array();
 		$elements = $this->getScenarioElement();
+        $repository = new DBScenarioElementRepository();
 		if (is_array($elements)) {
 			foreach ($this->getScenarioElement() as $element_id) {
-				$element = scenarioElement::byId($element_id);
+				$element = $repository->get($element_id);
 				if (is_object($element)) {
 					$return[] = $element;
 				}
@@ -1212,7 +1221,7 @@ class scenario {
 			return $return;
 		}
 		if ($elements != '') {
-			$element = scenarioElement::byId($element_id);
+			$element = $repository->get($element_id); // FIXME: variable sans valeur
 			if (is_object($element)) {
 				$return[] = $element;
 				$this->_elements = $return;
@@ -1495,7 +1504,8 @@ class scenario {
 	 */
 	public function getUsedBy($_array = false) {
 		$return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array(), 'plan' => array(), 'view' => array());
-		$return['cmd'] = cmd::searchConfiguration('#scenario' . $this->getId() . '#');
+        $commandRepository = new DBCommandRepository();
+		$return['cmd'] = $commandRepository->searchConfiguration('#scenario' . $this->getId() . '#');
 		$return['eqLogic'] = eqLogic::searchConfiguration(array('#scenario' . $this->getId() . '#', '"scenario_id":"' . $this->getId()));
 		$return['interactDef'] = interactDef::searchByUse(array('#scenario' . $this->getId() . '#', '"scenario_id":"' . $this->getId()));
 		$return['scenario'] = scenario::searchByUse(array(

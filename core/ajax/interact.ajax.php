@@ -16,6 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
 	include_file('core', 'authentification', 'php');
@@ -34,7 +36,8 @@ try {
 			if ($result['link_type'] == 'cmd' && $result['link_id'] != '') {
 				$link_id = '';
 				foreach (explode('&&', $result['link_id']) as $cmd_id) {
-					$cmd = cmd::byId($cmd_id);
+                    $commandRepository = new DBCommandRepository();
+					$cmd = $commandRepository->get($cmd_id);
 					if (is_object($cmd)) {
 						$link_id .= cmd::cmdToHumanReadable('#' . $cmd->getId() . '# && ');
 					}

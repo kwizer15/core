@@ -1,0 +1,37 @@
+<?php
+
+namespace Jeedom\Core\Infrastructure\Repository;
+
+use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
+
+class DBScenarioElementRepository implements ScenarioElementRepository
+{
+    /**
+     * @param int $id
+     *
+     * @return \scenarioElement
+     * @throws \Exception
+     */
+    public function get($id)
+    {
+        $values = array(
+            'id' => $id,
+        );
+        $sql = 'SELECT ' . \DB::buildField(\scenarioElement::class)
+            . ' FROM ' . \scenarioElement::class
+            . ' WHERE id=:id'
+        ;
+
+        return \DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \scenarioElement::class);
+    }
+
+    /**
+     * @param \scenarioElement $scenarioElement
+     *
+     * @return void
+     */
+    public function save(\scenarioElement $scenarioElement)
+    {
+        // TODO: Implement save() method.
+    }
+}

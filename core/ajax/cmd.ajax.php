@@ -16,6 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
 	include_file('core', 'authentification', 'php');
@@ -25,12 +27,13 @@ try {
 	}
 
 	ajax::init();
+    $commandRepository = new DBCommandRepository();
 
-	if (init('action') == 'toHtml') {
-		if (init('ids') != '') {
-			$return = array();
-			foreach (json_decode(init('ids'), true) as $id => $value) {
-				$cmd = cmd::byId($id);
+    if (init('action') == 'toHtml') {
+        if (init('ids') != '') {
+            $return = array();
+            foreach (json_decode(init('ids'), true) as $id => $value) {
+				$cmd = $commandRepository->get($id);
 				if (!is_object($cmd)) {
 					continue;
 				}
@@ -41,7 +44,7 @@ try {
 			}
 			ajax::success($return);
 		} else {
-			$cmd = cmd::byId(init('id'));
+			$cmd = $commandRepository->get(init('id'));
 			if (!is_object($cmd)) {
 				throw new Exception(__('Commande inconnue - Vérifiez l\'id', __FILE__));
 			}
@@ -53,7 +56,7 @@ try {
 	}
 
 	if (init('action') == 'execCmd') {
-		$cmd = cmd::byId(init('id'));
+		$cmd = $commandRepository->get(init('id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande ID inconnu : ', __FILE__) . init('id'));
 		}
@@ -75,7 +78,7 @@ try {
 	}
 
 	if (init('action') == 'getByObjectNameEqNameCmdName') {
-		$cmd = cmd::byObjectNameEqLogicNameCmdName(init('object_name'), init('eqLogic_name'), init('cmd_name'));
+		$cmd = $commandRepository->findByObjectNameEqLogicNameCmdName(init('object_name'), init('eqLogic_name'), init('cmd_name'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Cmd inconnu : ', __FILE__) . init('object_name') . '/' . init('eqLogic_name') . '/' . init('cmd_name'));
 		}
@@ -83,7 +86,7 @@ try {
 	}
 
 	if (init('action') == 'getByObjectNameCmdName') {
-		$cmd = cmd::byObjectNameCmdName(init('object_name'), init('cmd_name'));
+		$cmd = $commandRepository->findByObjectNameCmdName(init('object_name'), init('cmd_name'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Cmd inconnu : ', __FILE__) . init('object_name') . '/' . init('cmd_name'), 9999);
 		}
@@ -91,7 +94,7 @@ try {
 	}
 
 	if (init('action') == 'byId') {
-		$cmd = cmd::byId(init('id'));
+		$cmd = $commandRepository->get(init('id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande inconnue : ', __FILE__) . init('id'), 9999);
 		}
@@ -116,7 +119,7 @@ try {
 
 	if (init('action') == 'byHumanName') {
 		$cmd_id = cmd::humanReadableToCmd(init('humanName'));
-		$cmd = cmd::byId(str_replace('#', '', $cmd_id));
+		$cmd = $commandRepository->get(str_replace('#', '', $cmd_id));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande inconnue : ', __FILE__) . init('humanName'), 9999);
 		}
@@ -127,7 +130,7 @@ try {
 		if (!isConnect('admin')) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
-		$cmd = cmd::byId(init('id'));
+		$cmd = $commandRepository->get(init('id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande inconnue : ', __FILE__) . init('id'), 9999);
 		}
@@ -159,11 +162,11 @@ try {
 	}
 
 	if (init('action') == 'byEqLogic') {
-		ajax::success(utils::o2a(cmd::byEqLogicId(init('eqLogic_id'))));
+		ajax::success(utils::o2a($commandRepository->findByEqLogicId(init('eqLogic_id'))));
 	}
 
 	if (init('action') == 'getCmd') {
-		$cmd = cmd::byId(init('id'));
+		$cmd = $commandRepository->get(init('id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande inconnue : ', __FILE__) . init('id'));
 		}
@@ -183,7 +186,7 @@ try {
 		}
 		unautorizedInDemo();
 		$cmd_ajax = jeedom::fromHumanReadable(json_decode(init('cmd'), true));
-		$cmd = cmd::byId($cmd_ajax['id']);
+		$cmd = $commandRepository->get($cmd_ajax['id']);
 		if (!is_object($cmd)) {
 			$cmd = new cmd();
 		}
@@ -199,7 +202,7 @@ try {
 		unautorizedInDemo();
 		$cmds = json_decode(init('cmd'), true);
 		foreach ($cmds as $cmd_ajax) {
-			$cmd = cmd::byId($cmd_ajax['id']);
+			$cmd = $commandRepository->get($cmd_ajax['id']);
 			if (!is_object($cmd)) {
 				continue;
 			}
@@ -281,7 +284,7 @@ try {
 		}
 
 		if (is_numeric(init('id'))) {
-			$cmd = cmd::byId(init('id'));
+			$cmd = $commandRepository->get(init('id'));
 			if (!is_object($cmd)) {
 				throw new Exception(__('Commande ID inconnu : ', __FILE__) . init('id'));
 			}
@@ -357,7 +360,7 @@ try {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
 		}
 		unautorizedInDemo();
-		$cmd = cmd::byId(init('id'));
+		$cmd = $commandRepository->get(init('id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande ID inconnu : ', __FILE__) . init('id'));
 		}
@@ -372,7 +375,7 @@ try {
 			if (!isset($cmd_json['id']) || trim($cmd_json['id']) == '') {
 				continue;
 			}
-			$cmd = cmd::byId($cmd_json['id']);
+			$cmd = $commandRepository->get($cmd_json['id']);
 			if (!is_object($cmd)) {
 				continue;
 			}

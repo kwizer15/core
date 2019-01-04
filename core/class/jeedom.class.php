@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 global $JEEDOM_INTERNAL_CONFIG;
 class jeedom {
@@ -67,15 +70,16 @@ class jeedom {
 	public static function deadCmd() {
 		global $JEEDOM_INTERNAL_CONFIG;
 		$return = array();
-		$cmd = config::byKey('interact::warnme::defaultreturncmd', 'core', '');
-		if ($cmd != '') {
-			if (!cmd::byId(str_replace('#', '', $cmd))) {
+        $cmd = config::byKey('interact::warnme::defaultreturncmd', 'core', '');
+        $commandRepository = new DBCommandRepository();
+        if ($cmd != '') {
+			if (!$commandRepository->get(str_replace('#', '', $cmd))) {
 				$return[] = array('detail' => 'Administration', 'help' => __('Commande retour interactions', __FILE__), 'who' => $cmd);
 			}
 		}
 		$cmd = config::byKey('emailAdmin', 'core', '');
 		if ($cmd != '') {
-			if (!cmd::byId(str_replace('#', '', $cmd))) {
+			if (!$commandRepository->get(str_replace('#', '', $cmd))) {
 				$return[] = array('detail' => 'Administration', 'help' => __('Commande information utilisateur', __FILE__), 'who' => $cmd);
 			}
 		}
@@ -83,7 +87,7 @@ class jeedom {
 			$cmds = config::byKey('alert::' . $level . 'Cmd', 'core', '');
 			preg_match_all("/#([0-9]*)#/", $cmds, $matches);
 			foreach ($matches[1] as $cmd_id) {
-				if (!cmd::byId($cmd_id)) {
+				if (!$commandRepository->get($cmd_id)) {
 					$return[] = array('detail' => 'Administration', 'help' => __('Commande sur ', __FILE__) . $value['name'], 'who' => '#' . $cmd_id . '#');
 				}
 			}
@@ -959,8 +963,9 @@ class jeedom {
 
 	public static function replaceTag(array $_replaces) {
 		$datas = array();
+        $commandRepository = new DBCommandRepository();
 		foreach ($_replaces as $key => $value) {
-			$datas = array_merge($datas, cmd::searchConfiguration($key));
+			$datas = array_merge($datas, $commandRepository->searchConfiguration($key));
 			$datas = array_merge($datas, eqLogic::searchConfiguration($key));
 			$datas = array_merge($datas, jeeObject::searchConfiguration($key));
 			$datas = array_merge($datas, scenario::searchByUse(array(array('action' => '#' . $key . '#'))));
@@ -1046,7 +1051,8 @@ class jeedom {
 			if (isset($return['cmd'][$cmd_id])) {
 				continue;
 			}
-			$cmd = cmd::byId($cmd_id);
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get($cmd_id);
 			if (!is_object($cmd)) {
 				continue;
 			}

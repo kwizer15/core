@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class jeeObject {
@@ -141,7 +144,8 @@ class jeeObject {
 		foreach (jeeObject::all() as $object) {
 			foreach ($object->getConfiguration('summary', '') as $key => $summary) {
 				foreach ($summary as $cmdInfo) {
-					if (!cmd::byId(str_replace('#', '', $cmdInfo['cmd']))) {
+                    $commandRepository = new DBCommandRepository();
+					if (!$commandRepository->get(str_replace('#', '', $cmdInfo['cmd']))) {
 						$return[] = array('detail' => 'Résumé ' . $object->getName(), 'help' => config::byKey('object:summary')[$key]['name'], 'who' => $cmdInfo['cmd']);
 					}
 				}
@@ -526,7 +530,8 @@ class jeeObject {
 		$eqLogics = eqLogic::byObjectId($this->getId(), $_onlyEnable, $_onlyVisible, $_eqType_name, $_logicalId);
 		$eqLogics_id = array();
 		foreach ($summaries[$_summary] as $infos) {
-			$cmd = cmd::byId(str_replace('#', '', $infos['cmd']));
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get(str_replace('#', '', $infos['cmd']));
 			if (is_object($cmd)) {
 				$eqLogics_id[$cmd->getEqLogic_id()] = $cmd->getEqLogic_id();
 			}

@@ -27,7 +27,7 @@ class Application
      * @return ResponseInterface
      * @throws \Exception
      */
-    public function run(ServerRequestInterface $request)
+    public function handle(ServerRequestInterface $request)
     {
         try {
             $this->registerEnvironementVariables();

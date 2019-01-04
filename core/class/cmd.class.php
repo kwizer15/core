@@ -17,6 +17,9 @@
 */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class cmd {
@@ -48,367 +51,6 @@ class cmd {
 	private static $_templateArray = array();
 
 	/*     * ***********************Méthodes statiques*************************** */
-
-	private static function cast($_inputs, $_eqLogic = null) {
-		if (is_object($_inputs) && class_exists($_inputs->getEqType() . 'Cmd')) {
-			if ($_eqLogic !== null) {
-				$_inputs->_eqLogic = $_eqLogic;
-			}
-			return cast($_inputs, $_inputs->getEqType() . 'Cmd');
-		}
-		if (is_array($_inputs)) {
-			$return = array();
-			foreach ($_inputs as $input) {
-				if ($_eqLogic !== null) {
-					$input->_eqLogic = $_eqLogic;
-				}
-				$return[] = self::cast($input);
-			}
-			return $return;
-		}
-		return $_inputs;
-	}
-
-	public static function byId($_id) {
-		if ($_id == '') {
-			return;
-		}
-		$values = array(
-			'id' => $_id,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM cmd
-		WHERE id=:id';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function byIds($_ids) {
-		if (!is_array($_ids) || count($_ids) == 0) {
-			return;
-		}
-		$in = trim(implode(',', $_ids), ',');
-		if (!empty($in)) {
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-			FROM cmd
-			WHERE id IN (' . $in . ')';
-			return self::cast(DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-		}
-	}
-
-	public static function all() {
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM cmd
-		ORDER BY id';
-		return self::cast(DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function allHistoryCmd() {
-		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'c') . '
-		FROM cmd c
-		INNER JOIN eqLogic el ON c.eqLogic_id=el.id
-		INNER JOIN object ob ON el.object_id=ob.id
-		WHERE isHistorized=1
-		AND type=\'info\'';
-		$sql .= ' ORDER BY ob.position,ob.name,el.name,c.name';
-		$result1 = self::cast(DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'c') . '
-		FROM cmd c
-		INNER JOIN eqLogic el ON c.eqLogic_id=el.id
-		WHERE el.object_id IS NULL
-		AND isHistorized=1
-		AND type=\'info\'';
-		$sql .= ' ORDER BY el.name,c.name';
-		$result2 = self::cast(DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-		return array_merge($result1, $result2);
-	}
-
-	public static function byEqLogicId($_eqLogic_id, $_type = null, $_visible = null, $_eqLogic = null, $_has_generic_type = null) {
-		$values = array();
-		if (is_array($_eqLogic_id)) {
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-			FROM cmd
-			WHERE eqLogic_id IN (' . implode(',', $_eqLogic_id) . ')';
-		} else {
-			$values = array(
-				'eqLogic_id' => $_eqLogic_id,
-			);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-			FROM cmd
-			WHERE eqLogic_id=:eqLogic_id';
-		}
-		if ($_type !== null) {
-			$values['type'] = $_type;
-			$sql .= ' AND `type`=:type';
-		}
-		if ($_visible !== null) {
-			$sql .= ' AND `isVisible`=1';
-		}
-		if ($_has_generic_type) {
-			$sql .= ' AND `generic_type` IS NOT NULL';
-		}
-		$sql .= ' ORDER BY `order`,`name`';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__), $_eqLogic);
-	}
-
-	public static function byLogicalId($_logical_id, $_type = null) {
-		$values = array(
-			'logicalId' => $_logical_id,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM cmd
-		WHERE logicalId=:logicalId';
-		if ($_type !== null) {
-			$values['type'] = $_type;
-			$sql .= ' AND `type`=:type';
-		}
-		$sql .= ' ORDER BY `order`';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function byGenericType($_generic_type, $_eqLogic_id = null, $_one = false) {
-		if (is_array($_generic_type)) {
-			$in = '';
-			foreach ($_generic_type as $value) {
-				$in .= "'" . $value . "',";
-			}
-			$values = array();
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-			FROM cmd
-			WHERE generic_type IN (' . trim($in, ',') . ')';
-		} else {
-			$values = array(
-				'generic_type' => $_generic_type,
-			);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-			FROM cmd
-			WHERE generic_type=:generic_type';
-		}
-		if ($_eqLogic_id !== null) {
-			$values['eqLogic_id'] = $_eqLogic_id;
-			$sql .= ' AND `eqLogic_id`=:eqLogic_id';
-		}
-		$sql .= ' ORDER BY `order`';
-		if ($_one) {
-			return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
-		}
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function searchConfiguration($_configuration, $_eqType = null) {
-		if (!is_array($_configuration)) {
-			$values = array(
-				'configuration' => '%' . $_configuration . '%',
-			);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-			FROM cmd
-			WHERE configuration LIKE :configuration';
-		} else {
-			$values = array(
-				'configuration' => '%' . $_configuration[0] . '%',
-			);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-			FROM cmd
-			WHERE configuration LIKE :configuration';
-			for ($i = 1; $i < count($_configuration); $i++) {
-				$values['configuration' . $i] = '%' . $_configuration[$i] . '%';
-				$sql .= ' OR configuration LIKE :configuration' . $i;
-			}
-		}
-		if ($_eqType !== null) {
-			$values['eqType'] = $_eqType;
-			$sql .= ' AND eqType=:eqType ';
-		}
-		$sql .= ' ORDER BY name';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function searchConfigurationEqLogic($_eqLogic_id, $_configuration, $_type = null) {
-		$values = array(
-			'configuration' => '%' . $_configuration . '%',
-			'eqLogic_id' => $_eqLogic_id,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM cmd
-		WHERE eqLogic_id=:eqLogic_id';
-		if ($_type !== null) {
-			$values['type'] = $_type;
-			$sql .= ' AND type=:type ';
-		}
-		$sql .= ' AND configuration LIKE :configuration';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function searchTemplate($_template, $_eqType = null, $_type = null, $_subtype = null) {
-		$values = array(
-			'template' => '%' . $_template . '%',
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM cmd
-		WHERE template LIKE :template';
-		if ($_eqType !== null) {
-			$values['eqType'] = $_eqType;
-			$sql .= ' AND eqType=:eqType ';
-		}
-		if ($_type !== null) {
-			$values['type'] = $_type;
-			$sql .= ' AND type=:type ';
-		}
-		if ($_subtype !== null) {
-			$values['subType'] = $_subtype;
-			$sql .= ' AND subType=:subType ';
-		}
-		$sql .= ' ORDER BY name';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function byEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_multiple = false, $_type = null) {
-		$values = array(
-			'eqLogic_id' => $_eqLogic_id,
-			'logicalId' => $_logicalId,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM cmd
-		WHERE eqLogic_id=:eqLogic_id
-		AND logicalId=:logicalId';
-		if ($_type !== null) {
-			$values['type'] = $_type;
-			$sql .= ' AND type=:type';
-		}
-		if ($_multiple) {
-			return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-		}
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function byEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_multiple = false, $_type = null) {
-		$values = array(
-			'eqLogic_id' => $_eqLogic_id,
-			'generic_type' => $_generic_type,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM cmd
-		WHERE eqLogic_id=:eqLogic_id
-		AND generic_type=:generic_type';
-		if ($_type !== null) {
-			$values['type'] = $_type;
-			$sql .= ' AND type=:type';
-		}
-		if ($_multiple) {
-			return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-		}
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function byValue($_value, $_type = null, $_onlyEnable = false) {
-		$values = array(
-			'value' => $_value,
-			'search' => '%#' . $_value . '#%',
-		);
-
-		if ($_onlyEnable) {
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'c') . '
-			FROM cmd c
-			INNER JOIN eqLogic el ON c.eqLogic_id=el.id
-			WHERE ( value=:value OR value LIKE :search)
-			AND el.isEnable=1
-			AND c.id!=:value';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND c.type=:type ';
-			}
-		} else {
-			$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-			FROM cmd
-			WHERE ( value=:value OR value LIKE :search)
-			AND id!=:value';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND type=:type ';
-			}
-		}
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function byTypeEqLogicNameCmdName($_eqType_name, $_eqLogic_name, $_cmd_name) {
-		$values = array(
-			'eqType_name' => $_eqType_name,
-			'eqLogic_name' => $_eqLogic_name,
-			'cmd_name' => $_cmd_name,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'c') . '
-		FROM cmd c
-		INNER JOIN eqLogic el ON c.eqLogic_id=el.id
-		WHERE c.name=:cmd_name
-		AND el.name=:eqLogic_name
-		AND el.eqType_name=:eqType_name';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function byEqLogicIdCmdName($_eqLogic_id, $_cmd_name) {
-		$values = array(
-			'eqLogic_id' => $_eqLogic_id,
-			'cmd_name' => $_cmd_name,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'c') . '
-		FROM cmd c
-		WHERE c.name=:cmd_name
-		AND c.eqLogic_id=:eqLogic_id';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function byObjectNameEqLogicNameCmdName($_object_name, $_eqLogic_name, $_cmd_name) {
-		$values = array(
-			'eqLogic_name' => $_eqLogic_name,
-			'cmd_name' => (html_entity_decode($_cmd_name) != '') ? html_entity_decode($_cmd_name) : $_cmd_name,
-		);
-
-		if ($_object_name == __('Aucun', __FILE__)) {
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'c') . '
-			FROM cmd c
-			INNER JOIN eqLogic el ON c.eqLogic_id=el.id
-			WHERE c.name=:cmd_name
-			AND el.name=:eqLogic_name
-			AND el.object_id IS NULL';
-		} else {
-			$values['object_name'] = $_object_name;
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'c') . '
-			FROM cmd c
-			INNER JOIN eqLogic el ON c.eqLogic_id=el.id
-			INNER JOIN object ob ON el.object_id=ob.id
-			WHERE c.name=:cmd_name
-			AND el.name=:eqLogic_name
-			AND ob.name=:object_name';
-		}
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function byObjectNameCmdName($_object_name, $_cmd_name) {
-		$values = array(
-			'object_name' => $_object_name,
-			'cmd_name' => $_cmd_name,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'c') . '
-		FROM cmd c
-		INNER JOIN eqLogic el ON c.eqLogic_id=el.id
-		INNER JOIN object ob ON el.object_id=ob.id
-		WHERE c.name=:cmd_name
-		AND ob.name=:object_name';
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__));
-	}
-
-	public static function byTypeSubType($_type, $_subType = '') {
-		$values = array(
-			'type' => $_type,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__, 'c') . '
-		FROM cmd c
-		WHERE c.type=:type';
-		if ($_subType != '') {
-			$values['subtype'] = $_subType;
-			$sql .= ' AND c.subtype=:subtype';
-		}
-		return self::cast(DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__));
-	}
 
 	public static function cmdToHumanReadable($_input) {
 		if (is_object($_input)) {
@@ -633,7 +275,8 @@ class cmd {
 	}
 
 	public static function returnState($_options) {
-		$cmd = cmd::byId($_options['cmd_id']);
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get($_options['cmd_id']);
 		if (is_object($cmd)) {
 			$cmd->event($cmd->getConfiguration('returnStateValue', 0));
 		}
@@ -641,11 +284,12 @@ class cmd {
 
 	public static function deadCmd() {
 		$return = array();
-		foreach (cmd::all() as $cmd) {
+        $commandRepository = new DBCommandRepository();
+		foreach ($commandRepository->all() as $cmd) {
 			if (is_array($cmd->getConfiguration('actionCheckCmd', ''))) {
 				foreach ($cmd->getConfiguration('actionCheckCmd', '') as $actionCmd) {
 					if ($actionCmd['cmd'] != '' && strpos($actionCmd['cmd'], '#') !== false) {
-						if (!cmd::byId(str_replace('#', '', $actionCmd['cmd']))) {
+						if (!$commandRepository->get(str_replace('#', '', $actionCmd['cmd']))) {
 							$return[] = array('detail' => 'Commande ' . $cmd->getName() . ' de ' . $cmd->getEqLogic()->getName() . ' (' . $cmd->getEqLogic()->getEqType_name() . ')', 'help' => 'Action sur valeur', 'who' => $actionCmd['cmd']);
 						}
 					}
@@ -654,7 +298,7 @@ class cmd {
 			if (is_array($cmd->getConfiguration('jeedomPostExecCmd', ''))) {
 				foreach ($cmd->getConfiguration('jeedomPostExecCmd', '') as $actionCmd) {
 					if ($actionCmd['cmd'] != '' && strpos($actionCmd['cmd'], '#') !== false) {
-						if (!cmd::byId(str_replace('#', '', $actionCmd['cmd']))) {
+						if (!$commandRepository->get(str_replace('#', '', $actionCmd['cmd']))) {
 							$return[] = array('detail' => 'Commande ' . $cmd->getName() . ' de ' . $cmd->getEqLogic()->getName() . ' (' . $cmd->getEqLogic()->getEqType_name() . ')', 'help' => 'Post Exécution', 'who' => $actionCmd['cmd']);
 						}
 					}
@@ -663,7 +307,7 @@ class cmd {
 			if (is_array($cmd->getConfiguration('jeedomPreExecCmd', ''))) {
 				foreach ($cmd->getConfiguration('jeedomPreExecCmd', '') as $actionCmd) {
 					if ($actionCmd['cmd'] != '' && strpos($actionCmd['cmd'], '#') !== false) {
-						if (!cmd::byId(str_replace('#', '', $actionCmd['cmd']))) {
+						if (!$commandRepository->get(str_replace('#', '', $actionCmd['cmd']))) {
 							$return[] = array('detail' => 'Commande ' . $cmd->getName() . ' de ' . $cmd->getEqLogic()->getName() . ' (' . $cmd->getEqLogic()->getEqType_name() . ')', 'help' => 'Pré Exécution', 'who' => $actionCmd['cmd']);
 						}
 					}
@@ -674,7 +318,8 @@ class cmd {
 	}
 
 	public static function cmdAlert($_options) {
-		$cmd = cmd::byId($_options['cmd_id']);
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get($_options['cmd_id']);
 		if (!is_object($cmd)) {
 			return;
 		}
@@ -690,7 +335,8 @@ class cmd {
 		$return['date'] = $_event['datetime'];
 		$return['type'] = $_event['type'];
 		$return['group'] = $_event['subtype'];
-		$cmd = cmd::byId($_event['id']);
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get($_event['id']);
 		if (!is_object($cmd)) {
 			return null;
 		}
@@ -993,7 +639,8 @@ class cmd {
 			}
 		}
 		if ($this->getConfiguration('updateCmdId') != '') {
-			$cmd = cmd::byId($this->getConfiguration('updateCmdId'));
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get($this->getConfiguration('updateCmdId'));
 			if (is_object($cmd)) {
 				$value = $this->getConfiguration('updateCmdToValue');
 				switch ($this->getSubType()) {
@@ -1455,7 +1102,8 @@ class cmd {
 	}
 
 	public static function duringAlertLevel($_options) {
-		$cmd = cmd::byId($_options['cmd_id']);
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get($_options['cmd_id']);
 		if (!is_object($cmd)) {
 			return;
 		}
@@ -1495,7 +1143,8 @@ class cmd {
 			$cmds = explode(('&&'), config::byKey('alert::' . $_level . 'Cmd'));
 			if (count($cmds) > 0 && trim(config::byKey('alert::' . $_level . 'Cmd')) != '') {
 				foreach ($cmds as $id) {
-					$cmd = cmd::byId(str_replace('#', '', $id));
+                    $commandRepository = new DBCommandRepository();
+					$cmd = $commandRepository->get(str_replace('#', '', $id));
 					if (is_object($cmd)) {
 						$cmd->execCmd(array(
 							'title' => __('[' . config::byKey('name', 'core', 'JEEDOM') . '] ', __FILE__) . $message,
@@ -2074,4 +1723,185 @@ class cmd {
 		return $this;
 	}
 
+    /********************************* DEPRECATED METHODS ********************************/
+
+    /**
+     * @deprecated Use DBCommandRepository::get instead
+     */
+    public static function byId($_id)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::get instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->get($_id);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByIds instead
+     */
+    public static function byIds($_ids)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByIds instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByIds($_ids);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::all instead
+     */
+    public static function all()
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::all instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->all();
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::allHistoryCmd instead
+     */
+    public static function allHistoryCmd()
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::allHistoryCmd instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->allHistoryCmd();
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByEqLogicId instead
+     */
+    public static function byEqLogicId($_eqLogic_id, $_type = null, $_visible = null, $_eqLogic = null, $_has_generic_type = null)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByEqLogicId instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByEqLogicId($_eqLogic_id, $_type, $_visible, $_eqLogic, $_has_generic_type);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByLogicalId instead
+     */
+    public static function byLogicalId($_logical_id, $_type = null)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByLogicalId instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByLogicalId($_logical_id, $_type);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByGenericType instead
+     */
+    public static function byGenericType($_generic_type, $_eqLogic_id = null, $_one = false)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByGenericType instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByGenericType($_generic_type, $_eqLogic_id, $_one);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::searchConfiguration instead
+     */
+    public static function searchConfiguration($_configuration, $_eqType = null)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::searchConfiguration instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->searchConfiguration($_configuration, $_eqType);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::searchConfigurationEqLogic instead
+     */
+    public static function searchConfigurationEqLogic($_eqLogic_id, $_configuration, $_type = null)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::searchConfigurationEqLogic instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->searchConfigurationEqLogic($_eqLogic_id, $_configuration, $_type);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::searchTemplate instead
+     */
+    public static function searchTemplate($_template, $_eqType = null, $_type = null, $_subtype = null)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::searchTemplate instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->searchTemplate($_template, $_eqType, $_type, $_subtype);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByEqLogicIdAndLogicalId instead
+     */
+    public static function byEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_multiple = false, $_type = null)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByEqLogicIdAndLogicalId instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_multiple, $_type);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByEqLogicIdAndGenericType instead
+     */
+    public static function byEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_multiple = false, $_type = null)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByEqLogicIdAndGenericType instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_multiple, $_type);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByValue instead
+     */
+    public static function byValue($_value, $_type = null, $_onlyEnable = false)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByValue instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByValue($_value, $_type, $_onlyEnable);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByTypeEqLogicNameCmdName instead
+     */
+    public static function byTypeEqLogicNameCmdName($_eqType_name, $_eqLogic_name, $_cmd_name)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByTypeEqLogicNameCmdName instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByTypeEqLogicNameCmdName($_eqType_name, $_eqLogic_name, $_cmd_name);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByEqLogicIdCmdName instead
+     */
+    public static function byEqLogicIdCmdName($_eqLogic_id, $_cmd_name)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByEqLogicIdCmdName instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByEqLogicIdCmdName($_eqLogic_id, $_cmd_name);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByObjectNameEqLogicNameCmdName instead
+     */
+    public static function byObjectNameEqLogicNameCmdName($_object_name, $_eqLogic_name, $_cmd_name)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByObjectNameEqLogicNameCmdName instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByObjectNameEqLogicNameCmdName($_object_name, $_eqLogic_name, $_cmd_name);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByObjectNameCmdName instead
+     */
+    public static function byObjectNameCmdName($_object_name, $_cmd_name)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByObjectNameCmdName instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByObjectNameCmdName($_object_name, $_cmd_name);
+    }
+
+    /**
+     * @deprecated Use DBCommandRepository::findByTypeSubType instead
+     */
+    public static function byTypeSubType($_type, $_subType = '')
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByTypeSubType instead', E_USER_DEPRECATED);
+        $commandRepository = new DBCommandRepository();
+        return $commandRepository->findByTypeSubType($_type, $_subType);
+    }
 }

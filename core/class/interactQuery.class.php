@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class interactQuery {
@@ -479,7 +482,8 @@ class interactQuery {
 		$result = jeedom::evaluateExpression(str_replace('#value#', $_options['value'], $_options['test']));
 		if ($result) {
 			listener::byId($_options['listener_id'])->remove();
-			$cmd = cmd::byId(str_replace('#', '', $warnMeCmd));
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get(str_replace('#', '', $warnMeCmd));
 			if (!is_object($cmd)) {
 				return;
 			}
@@ -615,7 +619,8 @@ class interactQuery {
 			$lastCmd = $_lastCmd;
 		}
 		$current = array();
-		$current['cmd'] = cmd::byId($lastCmd);
+        $commandRepository = new DBCommandRepository();
+		$current['cmd'] = $commandRepository->get($lastCmd);
 		if (is_object($current['cmd'])) {
 			$current['eqLogic'] = $current['cmd']->getEqLogic();
 			if (!is_object($current['eqLogic'])) {
@@ -834,7 +839,8 @@ class interactQuery {
 							$options['color'] = $colors[strtolower($options['color'])];
 						}
 					}
-					$cmd = cmd::byId(str_replace('#', '', $action['cmd']));
+                    $commandRepository = new DBCommandRepository();
+					$cmd = $commandRepository->get(str_replace('#', '', $action['cmd']));
 					if (is_object($cmd)) {
 						$replace['#unite#'] = $cmd->getUnite();
 						$replace['#commande#'] = $cmd->getName();

@@ -25,7 +25,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 try {
     $application = new Application(__DIR__);
     $request = ServerRequest::fromGlobals();
-    \Http\Response\send($application->run($request));
+    \Http\Response\send($application->handle($request));
 } catch (\Exception $e) {
     \Http\Response\send(new Response(403, [], $e->getMessage()));
 }

@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class view {
@@ -190,7 +193,8 @@ class view {
 								$replace = array();
 								preg_match_all("/#([0-9]*)#/", $viewData['configuration'][$i][$j], $matches);
 								foreach ($matches[1] as $cmd_id) {
-									$cmd = cmd::byId($cmd_id);
+                                    $commandRepository = new DBCommandRepository();
+									$cmd = $commandRepository->get($cmd_id);
 									if (!is_object($cmd)) {
 										continue;
 									}

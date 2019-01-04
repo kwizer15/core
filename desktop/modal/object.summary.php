@@ -1,4 +1,7 @@
 <?php
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 if (!isConnect()) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
@@ -51,8 +54,10 @@ foreach ($allObject as $object) {
 			continue;
 		}
 		foreach ($object->getConfiguration('summary')[$key] as $summary) {
-			if (cmd::byId(str_replace('#', '', $summary['cmd']))) {
-				$title .= '&#10;' . cmd::byId(str_replace('#', '', $summary['cmd']))->getHumanName();
+            $commandRepository = new DBCommandRepository();
+			if ($commandRepository->get(str_replace('#', '', $summary['cmd']))) {
+                $commandRepository = new DBCommandRepository();
+				$title .= '&#10;' . $commandRepository->get(str_replace('#', '', $summary['cmd']))->getHumanName();
 			} else {
 				$title .= '&#10;' . $summary['cmd'];
 			}

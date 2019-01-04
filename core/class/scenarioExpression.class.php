@@ -17,6 +17,10 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class scenarioExpression {
@@ -93,7 +97,8 @@ class scenarioExpression {
 			'#uid#' => 'exp' . mt_rand(),
 		);
 		$return = array('html' => '');
-		$cmd = cmd::byId(str_replace('#', '', cmd::humanReadableToCmd($_expression)));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(str_replace('#', '', cmd::humanReadableToCmd($_expression)));
 		if (is_object($cmd)) {
 			$return['html'] = trim($cmd->toHtml('scenario', $_options));
 			return $return;
@@ -121,6 +126,7 @@ class scenarioExpression {
 
 	public static function humanAction($_action) {
 		$return = '';
+        $commandRepository = new DBCommandRepository();
 		if ($_action['cmd'] == 'scenario') {
 			$scenario = scenario::byId($_action['options']['scenario_id']);
 			if (!is_object($scenario)) {
@@ -134,8 +140,8 @@ class scenarioExpression {
 			$name = $_action['options']['name'];
 			$value = $_action['options']['value'];
 			$return .= __('Variable : ', __FILE__) . $name . ' <i class="fa fa-arrow-right"></i> ' . $value;
-		} elseif (is_object(cmd::byId(str_replace('#', '', $_action['cmd'])))) {
-			$cmd = cmd::byId(str_replace('#', '', $_action['cmd']));
+		} elseif (is_object($commandRepository->get(str_replace('#', '', $_action['cmd'])))) {
+			$cmd = $commandRepository->get(str_replace('#', '', $_action['cmd']));
 			$eqLogic = $cmd->getEqLogic();
 			$return .= $eqLogic->getHumanName(true) . ' ' . $cmd->getName();
 		}
@@ -215,7 +221,8 @@ class scenarioExpression {
 			}
 			return array_sum($values) / count($values);
 		} else {
-			$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 			if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 				return '';
 			}
@@ -236,7 +243,8 @@ class scenarioExpression {
 	}
 
 	public static function averageBetween($_cmd_id, $_startDate, $_endDate) {
-		$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
 		}
@@ -273,7 +281,8 @@ class scenarioExpression {
 			}
 			return max($values);
 		} else {
-			$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 			if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 				return '';
 			}
@@ -294,7 +303,8 @@ class scenarioExpression {
 	}
 
 	public static function maxBetween($_cmd_id, $_startDate, $_endDate) {
-		$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
 		}
@@ -349,7 +359,8 @@ class scenarioExpression {
 			}
 			return min($values);
 		} else {
-			$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 			if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 				return '';
 			}
@@ -370,7 +381,8 @@ class scenarioExpression {
 	}
 
 	public static function minBetween($_cmd_id, $_startDate, $_endDate) {
-		$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
 		}
@@ -415,7 +427,8 @@ class scenarioExpression {
 	}
 
 	public static function tendance($_cmd_id, $_period = '1 hour', $_threshold = '') {
-		$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd)) {
 			return '';
 		}
@@ -453,9 +466,10 @@ class scenarioExpression {
 	}
 
 	public static function stateChanges($_cmd_id, $_value = null, $_period = '1 hour') {
+        $commandRepository = new DBCommandRepository();
 		if (!is_numeric(str_replace('#', '', $_cmd_id))) {
-			$cmd = cmd::byId(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
-		} else { $cmd = cmd::byId(str_replace('#', '', $_cmd_id));}
+			$cmd = $commandRepository->get(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
+		} else { $cmd = $commandRepository->get(str_replace('#', '', $_cmd_id));}
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
 		}
@@ -474,9 +488,10 @@ class scenarioExpression {
 	}
 
 	public static function stateChangesBetween($_cmd_id, $_value, $_startDate, $_endDate = null) {
+        $commandRepository = new DBCommandRepository();
 		if (!is_numeric(str_replace('#', '', $_cmd_id))) {
-			$cmd = cmd::byId(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
-		} else { $cmd = cmd::byId(str_replace('#', '', $_cmd_id));}
+			$cmd = $commandRepository->get(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
+		} else { $cmd = $commandRepository->get(str_replace('#', '', $_cmd_id));}
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
 		}
@@ -495,11 +510,12 @@ class scenarioExpression {
 	}
 
 	public static function duration($_cmd_id, $_value, $_period = '1 hour') {
+        $commandRepository = new DBCommandRepository();
 		$cmd_id = str_replace('#', '', $_cmd_id);
 		if (!is_numeric($cmd_id)) {
-			$cmd_id = cmd::byId(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
+			$cmd_id = $commandRepository->get(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
 		}
-		$cmd = cmd::byId($cmd_id);
+		$cmd = $commandRepository->get($cmd_id);
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
 		}
@@ -551,9 +567,10 @@ class scenarioExpression {
 	}
 
 	public static function durationBetween($_cmd_id, $_value, $_startDate, $_endDate) {
+        $commandRepository = new DBCommandRepository();
 		if (!is_numeric(str_replace('#', '', $_cmd_id))) {
-			$cmd = cmd::byId(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
-		} else { $cmd = cmd::byId(str_replace('#', '', $_cmd_id));}
+			$cmd = $commandRepository->get(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
+		} else { $cmd = $commandRepository->get(str_replace('#', '', $_cmd_id));}
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
 		}
@@ -594,7 +611,8 @@ class scenarioExpression {
 	}
 
 	public static function lastBetween($_cmd_id, $_startDate, $_endDate) {
-		$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
 		}
@@ -605,8 +623,8 @@ class scenarioExpression {
 	}
 
 	public static function statistics($_cmd_id, $_calc, $_period = '1 hour') {
-
-		$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
+        $commandRepository = new DBCommandRepository();
+		$cmd =$commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
 		}
@@ -627,7 +645,8 @@ class scenarioExpression {
 	}
 
 	public static function statisticsBetween($_cmd_id, $_calc, $_startDate, $_endDate) {
-		$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
 		}
@@ -670,7 +689,8 @@ class scenarioExpression {
 	}
 
 	public static function collectDate($_cmd_id, $_format = 'Y-m-d H:i:s') {
-		$cmd = cmd::byId(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
 		if (!is_object($cmd)) {
 			return -1;
 		}
@@ -682,7 +702,8 @@ class scenarioExpression {
 	}
 
 	public static function valueDate($_cmd_id, $_format = 'Y-m-d H:i:s') {
-		$cmd = cmd::byId(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
 		if (!is_object($cmd)) {
 			return '';
 		}
@@ -691,7 +712,8 @@ class scenarioExpression {
 	}
 
 	public static function value($_cmd_id) {
-		$cmd = cmd::byId(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
 		if (!is_object($cmd)) {
 			return '';
 		}
@@ -738,7 +760,8 @@ class scenarioExpression {
 
 	public static function triggerValue(&$_scenario = null) {
 		if ($_scenario !== null) {
-			$cmd = cmd::byId(str_replace('#', '', $_scenario->getRealTrigger()));
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get(str_replace('#', '', $_scenario->getRealTrigger()));
 			if (is_object($cmd)) {
 				return $cmd->execCmd();
 			}
@@ -858,9 +881,10 @@ class scenarioExpression {
 	}
 
 	public static function name($_type, $_cmd_id) {
-		$cmd = cmd::byId(str_replace('#', '', $_cmd_id));
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get(str_replace('#', '', $_cmd_id));
 		if (!is_object($cmd)) {
-			$cmd = cmd::byId(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
+			$cmd = $commandRepository->get(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
 		}
 		if (!is_object($cmd)) {
 			return __('Commande non trouvée', __FILE__);
@@ -978,7 +1002,8 @@ class scenarioExpression {
 		}
 
 		if (is_object($_scenario)) {
-			$cmd = cmd::byId(str_replace('#', '', $_scenario->getRealTrigger()));
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get(str_replace('#', '', $_scenario->getRealTrigger()));
 			if (is_object($cmd)) {
 				$replace1['#trigger#'] = $cmd->getHumanName();
 				$replace1['#trigger_value#'] = $cmd->execCmd();
@@ -1087,6 +1112,7 @@ class scenarioExpression {
 	}
 
 	public function execute(&$scenario = null) {
+        $commandRepository = new DBCommandRepository();
 		if ($scenario !== null && !$scenario->getDo()) {
 			return;
 		}
@@ -1109,7 +1135,8 @@ class scenarioExpression {
 		$message = '';
 		try {
 			if ($this->getType() == 'element') {
-				$element = scenarioElement::byId($this->getExpression());
+			    $scenarioElementRepository = new DBScenarioElementRepository();
+				$element = $scenarioElementRepository->get($this->getExpression());
 				if (is_object($element)) {
 					$this->setLog($scenario, __('Exécution d\'un bloc élément : ', __FILE__) . $this->getExpression());
 					return $element->execute($scenario);
@@ -1195,7 +1222,8 @@ class scenarioExpression {
 					}
 					return;
 				} elseif ($this->getExpression() == 'event') {
-					$cmd = cmd::byId(trim(str_replace('#', '', $options['cmd'])));
+                    $commandRepository = new DBCommandRepository();
+					$cmd = $commandRepository->get(trim(str_replace('#', '', $options['cmd'])));
 					if (!is_object($cmd)) {
 						throw new Exception(__('Commande introuvable : ', __FILE__) . $options['cmd']);
 					}
@@ -1347,7 +1375,8 @@ class scenarioExpression {
 					$dataStore->save();
 					$limit = (isset($options['timeout'])) ? $options['timeout'] : 300;
 					$options_cmd = array('title' => $options['question'], 'message' => $options['question'], 'answer' => explode(';', $options['answer']), 'timeout' => $limit, 'variable' => $this->getOptions('variable'));
-					$cmd = cmd::byId(str_replace('#', '', $this->getOptions('cmd')));
+                    $commandRepository = new DBCommandRepository();
+					$cmd = $commandRepository->get(str_replace('#', '', $this->getOptions('cmd')));
 					if (!is_object($cmd)) {
 						throw new Exception(__('Commande introuvable - Vérifiez l\'id : ', __FILE__) . $this->getOptions('cmd'));
 					}
@@ -1451,7 +1480,7 @@ class scenarioExpression {
 						throw new Exception(__('Erreur : Aucun rapport généré', __FILE__));
 					}
 					if ($this->getOptions('cmd') != '') {
-						$cmd = cmd::byId(str_replace('#', '', $this->getOptions('cmd')));
+						$cmd = $commandRepository->get(str_replace('#', '', $this->getOptions('cmd')));
 						if (!is_object($cmd)) {
 							throw new Exception(__('Commande introuvable veuillez vérifiez l\'id : ', __FILE__) . $this->getOptions('cmd'));
 						}
@@ -1464,7 +1493,7 @@ class scenarioExpression {
 					$this->setLog($scenario, __('Mise à jour du tag ', __FILE__) . '#' . $options['name'] . '#' . ' => ' . $options['value']);
 					$scenario->setTags($tags);
 				} else {
-					$cmd = cmd::byId(str_replace('#', '', $this->getExpression()));
+					$cmd = $commandRepository->get(str_replace('#', '', $this->getExpression()));
 					if (is_object($cmd)) {
 						if ($cmd->getSubtype() == 'slider' && isset($options['slider'])) {
 							$options['slider'] = evaluate($options['slider']);
@@ -1526,7 +1555,8 @@ class scenarioExpression {
 			'expression' => array(),
 		);
 		if ($this->getType() == 'element') {
-			$element = scenarioElement::byId($this->getExpression());
+		    $scenarioElementRepository = new DBScenarioElementRepository();
+			$element = $scenarioElementRepository->get($this->getExpression());
 			if (is_object($element)) {
 				$result = $element->getAllId();
 			}
@@ -1543,7 +1573,8 @@ class scenarioExpression {
 		$expressionCopy->setScenarioSubElement_id($_scenarioSubElement_id);
 		$expressionCopy->save();
 		if ($expressionCopy->getType() == 'element') {
-			$element = scenarioElement::byId($expressionCopy->getExpression());
+		    $scenarioElementRepository = new DBScenarioElementRepository();
+			$element = $scenarioElementRepository->get($expressionCopy->getExpression());
 			if (is_object($element)) {
 				$expressionCopy->setExpression($element->copy());
 				$expressionCopy->save();
@@ -1560,7 +1591,8 @@ class scenarioExpression {
 		if ($this->getType() != 'element') {
 			return;
 		}
-		$element = scenarioElement::byId($this->getExpression());
+		$scenarioElementRepository = new DBScenarioElementRepository();
+		$element = $scenarioElementRepository->get($this->getExpression());
 		if (is_object($element)) {
 			$element->resetRepeatIfStatus();
 		}
@@ -1569,7 +1601,8 @@ class scenarioExpression {
 	public function export() {
 		$return = '';
 		if ($this->getType() == 'element') {
-			$element = scenarioElement::byId($this->getExpression());
+		    $scenarioElementRepository = new DBScenarioElementRepository();
+            $element = $scenarioElementRepository->get($this->getExpression());
 			if (is_object($element)) {
 				$exports = explode("\n", $element->export());
 				foreach ($exports as $export) {

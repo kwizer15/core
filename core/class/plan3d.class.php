@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class plan3d {
@@ -185,7 +188,8 @@ class plan3d {
 			$scenario = scenario::byId($this->getLink_id());
 			return $scenario;
 		} else if ($this->getLink_type() == 'cmd') {
-			$cmd = cmd::byId($this->getLink_id());
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get($this->getLink_id());
 			return $cmd;
 		} else if ($this->getLink_type() == 'summary') {
 			$object = jeeObject::byId($this->getLink_id());
@@ -210,7 +214,8 @@ class plan3d {
 	public function additionalData() {
 		$return = array();
 		$return['cmd_id'] = str_replace('#', '', $this->getConfiguration('cmd::state'));
-		$cmd = cmd::byId($return['cmd_id']);
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get($return['cmd_id']);
 		if (is_object($cmd) && $cmd->getType() == 'info') {
 			$return['state'] = $cmd->execCmd();
 			$return['subType'] = $cmd->getSubType();
@@ -226,7 +231,8 @@ class plan3d {
 			if ($this->getConfiguration('3d::widget') == 'door') {
 				$return['cmds'] = array(str_replace('#', '', $this->getConfiguration('3d::widget::door::window')), str_replace('#', '', $this->getConfiguration('3d::widget::door::shutter')));
 				$return['state'] = 0;
-				$cmd = cmd::byId(str_replace('#', '', $this->getConfiguration('3d::widget::door::window')));
+                $commandRepository = new DBCommandRepository();
+				$cmd = $commandRepository->get(str_replace('#', '', $this->getConfiguration('3d::widget::door::window')));
 				if (is_object($cmd) && $cmd->getType() == 'info') {
 					$cmd_value = $cmd->execCmd();
 					if ($cmd->getSubType() == 'binary' && $cmd->getDisplay('invertBinary') == 1) {
@@ -235,7 +241,8 @@ class plan3d {
 					$return['state'] = $cmd_value;
 				}
 				if ($return['state'] > 0) {
-					$cmd = cmd::byId(str_replace('#', '', $this->getConfiguration('3d::widget::door::shutter')));
+                    $commandRepository = new DBCommandRepository();
+					$cmd = $commandRepository->get(str_replace('#', '', $this->getConfiguration('3d::widget::door::shutter')));
 					if (is_object($cmd) && $cmd->getType() == 'info') {
 						if ($cmd->execCmd()) {
 							$return['state'] = 2;

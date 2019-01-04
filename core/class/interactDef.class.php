@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class interactDef {
@@ -157,7 +160,8 @@ class interactDef {
 				preg_match_all("/#([0-9]*)#/", $interact->getActions('cmd'), $matches);
 				foreach ($matches[1] as $cmd_id) {
 					if (is_numeric($cmd_id)) {
-						if (!cmd::byId(str_replace('#', '', $cmd_id))) {
+                        $commandRepository = new DBCommandRepository();
+						if (!$commandRepository->get(str_replace('#', '', $cmd_id))) {
 							$return[] = array('detail' => 'Interaction ' . $interact->getName() . ' du groupe ' . $interact->getGroup(), 'help' => 'Action', 'who' => '#' . $cmd_id . '#');
 						}
 					}
@@ -167,7 +171,8 @@ class interactDef {
 				preg_match_all("/#([0-9]*)#/", $interact->getReply(), $matches);
 				foreach ($matches[1] as $cmd_id) {
 					if (is_numeric($cmd_id)) {
-						if (!cmd::byId(str_replace('#', '', $cmd_id))) {
+                        $commandRepository = new DBCommandRepository();
+						if (!$commandRepository->get(str_replace('#', '', $cmd_id))) {
 							$return[] = array('detail' => 'Interaction ' . $interact->getName() . ' du groupe ' . $interact->getGroup(), 'help' => 'Réponse', 'who' => '#' . $cmd_id . '#');
 						}
 					}

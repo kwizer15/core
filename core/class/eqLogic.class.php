@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class eqLogic {
@@ -311,7 +314,8 @@ class eqLogic {
 						$cmds = explode(('&&'), config::byKey('alert::timeoutCmd'));
 						if (count($cmds) > 0 && trim(config::byKey('alert::timeoutCmd')) != '') {
 							foreach ($cmds as $id) {
-								$cmd = cmd::byId(str_replace('#', '', $id));
+                                $commandRepository = new DBCommandRepository();
+								$cmd = $commandRepository->get(str_replace('#', '', $id));
 								if (is_object($cmd)) {
 									$cmd->execCmd(array(
 										'title' => __('[' . config::byKey('name', 'core', 'JEEDOM') . '] ', __FILE__) . $message,
@@ -1106,7 +1110,8 @@ class eqLogic {
 				$cmds = explode(('&&'), config::byKey('alert::batterydangerCmd'));
 				if (count($cmds) > 0 && trim(config::byKey('alert::batterydangerCmd')) != '') {
 					foreach ($cmds as $id) {
-						$cmd = cmd::byId(str_replace('#', '', $id));
+                        $commandRepository = new DBCommandRepository();
+						$cmd = $commandRepository->get(str_replace('#', '', $id));
 						if (is_object($cmd)) {
 							$cmd->execCmd(array(
 								'title' => __('[' . config::byKey('name', 'core', 'JEEDOM') . '] ', __FILE__) . $message,
@@ -1132,7 +1137,8 @@ class eqLogic {
 				$cmds = explode(('&&'), config::byKey('alert::batterywarningCmd'));
 				if (count($cmds) > 0 && trim(config::byKey('alert::batterywarningCmd')) != '') {
 					foreach ($cmds as $id) {
-						$cmd = cmd::byId(str_replace('#', '', $id));
+                        $commandRepository = new DBCommandRepository();
+						$cmd = $commandRepository->get(str_replace('#', '', $id));
 						if (is_object($cmd)) {
 							$cmd->execCmd(array(
 								'title' => __('[' . config::byKey('name', 'core', 'JEEDOM') . '] ', __FILE__) . $message,
@@ -1259,7 +1265,8 @@ class eqLogic {
 			foreach ($this->getCmd() as $eqLogic_cmd) {
 				foreach ($link_cmds as $cmd_id => $link_cmd) {
 					if ($link_cmd == $eqLogic_cmd->getName()) {
-						$cmd = cmd::byId($cmd_id);
+                        $commandRepository = new DBCommandRepository();
+						$cmd = $commandRepository->get($cmd_id);
 						if (is_object($cmd)) {
 							$cmd->setValue($eqLogic_cmd->getId());
 							$cmd->save();
@@ -1272,7 +1279,8 @@ class eqLogic {
 			foreach ($this->getCmd() as $eqLogic_cmd) {
 				foreach ($link_actions as $cmd_id => $link_action) {
 					if ($link_action == $eqLogic_cmd->getName()) {
-						$cmd = cmd::byId($cmd_id);
+                        $commandRepository = new DBCommandRepository();
+						$cmd = $commandRepository->get($cmd_id);
 						if (is_object($cmd)) {
 							$cmd->setConfiguration('updateCmdId', $eqLogic_cmd->getId());
 							$cmd->save();
@@ -1426,8 +1434,9 @@ class eqLogic {
 	}
 
 	public function getUsedBy($_array = false) {
+        $commandRepository = new DBCommandRepository();
 		$return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array(), 'plan' => array(), 'view' => array());
-		$return['cmd'] = cmd::searchConfiguration('#eqLogic' . $this->getId() . '#');
+		$return['cmd'] = $commandRepository->searchConfiguration('#eqLogic' . $this->getId() . '#');
 		$return['eqLogic'] = eqLogic::searchConfiguration(array('#eqLogic' . $this->getId() . '#', '"eqLogic":"' . $this->getId()));
 		$return['interactDef'] = interactDef::searchByUse(array('#eqLogic' . $this->getId() . '#', '"eqLogic":"' . $this->getId()));
 		$return['scenario'] = scenario::searchByUse(array(
@@ -1493,13 +1502,14 @@ class eqLogic {
 	}
 
 	public function getCmd($_type = null, $_logicalId = null, $_visible = null, $_multiple = false) {
+        $commandRepository = new DBCommandRepository();
 		if ($_logicalId !== null) {
 			if (isset($this->_cmds[$_logicalId . '.' . $_multiple . '.' . $_type])) {
 				return $this->_cmds[$_logicalId . '.' . $_multiple . '.' . $_type];
 			}
-			$cmds = cmd::byEqLogicIdAndLogicalId($this->id, $_logicalId, $_multiple, $_type);
+			$cmds = $commandRepository->findByEqLogicIdAndLogicalId($this->id, $_logicalId, $_multiple, $_type);
 		} else {
-			$cmds = cmd::byEqLogicId($this->id, $_type, $_visible, $this);
+			$cmds = $commandRepository->findByEqLogicId($this->id, $_type, $_visible, $this);
 		}
 		if (is_array($cmds)) {
 			foreach ($cmds as $cmd) {
@@ -1515,13 +1525,14 @@ class eqLogic {
 	}
 
 	public function getCmdByGenericType($_type = null, $_generic_type = null, $_visible = null, $_multiple = false) {
+        $commandRepository = new DBCommandRepository();
 		if ($_generic_type !== null) {
 			if (isset($this->_cmds[$_generic_type . '.' . $_multiple . '.' . $_type])) {
 				return $this->_cmds[$_generic_type . '.' . $_multiple . '.' . $_type];
 			}
-			$cmds = cmd::byEqLogicIdAndGenericType($this->id, $_generic_type, $_multiple, $_type);
+			$cmds = $commandRepository->findByEqLogicIdAndGenericType($this->id, $_generic_type, $_multiple, $_type);
 		} else {
-			$cmds = cmd::byEqLogicId($this->id, $_type, $_visible, $this);
+			$cmds = $commandRepository->findByEqLogicId($this->id, $_type, $_visible, $this);
 		}
 		if (is_array($cmds)) {
 			foreach ($cmds as $cmd) {
@@ -1537,7 +1548,8 @@ class eqLogic {
 	}
 
 	public function searchCmdByConfiguration($_configuration, $_type = null) {
-		return cmd::searchConfigurationEqLogic($this->id, $_configuration, $_type);
+        $commandRepository = new DBCommandRepository();
+		return $commandRepository->searchConfigurationEqLogic($this->id, $_configuration, $_type);
 	}
 
 	public function getEqReal_id($_default = null) {

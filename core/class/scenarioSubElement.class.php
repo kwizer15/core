@@ -161,7 +161,9 @@ class scenarioSubElement {
 	}
 
 	public function getElement() {
-		return scenarioElement::byId($this->getScenarioElement_id());
+		$repository = new \Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository();
+
+		return $repository->get($this->scenarioElement_id);
 	}
 
 	public function setScenarioElement_id($scenarioElement_id) {

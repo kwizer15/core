@@ -190,11 +190,6 @@ function getClientIp() {
 	return '';
 }
 
-function mySqlIsHere() {
-	require_once __DIR__ . '/../class/DB.class.php';
-	return is_object(DB::getConnection());
-}
-
 function displayExeption($e) {
 	trigger_error('La fonction displayExeption devient displayException', E_USER_DEPRECATED);
 	return displayException($e);

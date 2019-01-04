@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class plan {
@@ -166,7 +169,8 @@ class plan {
 			$scenario = scenario::byId($this->getLink_id());
 			return $scenario;
 		} else if ($this->getLink_type() == 'cmd') {
-			$cmd = cmd::byId($this->getLink_id());
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get($this->getLink_id());
 			return $cmd;
 		} else if ($this->getLink_type() == 'summary') {
 			$object = jeeObject::byId($this->getLink_id());
@@ -194,7 +198,8 @@ class plan {
 	public function doAction($_action) {
 		foreach ($this->getConfiguration('action_' . $_action) as $action) {
 			try {
-				$cmd = cmd::byId(str_replace('#', '', $action['cmd']));
+                $commandRepository = new DBCommandRepository();
+				$cmd = $commandRepository->get(str_replace('#', '', $action['cmd']));
 				if (is_object($cmd) && $this->getId() == $cmd->getEqLogic_id()) {
 					continue;
 				}

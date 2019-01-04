@@ -16,6 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . "/../php/core.inc.php";
 
 if (isset($argv)) {
@@ -28,6 +30,7 @@ if (isset($argv)) {
 }
 
 try {
+    $commandRepository = new DBCommandRepository();
 	$IP = getClientIp();
 	$request = init('request');
 	if ($request == '') {
@@ -490,15 +493,15 @@ try {
 
 		/*             * ************************Commande*************************** */
 		if ($jsonrpc->getMethod() == 'cmd::all') {
-			$jsonrpc->makeSuccess(utils::o2a(cmd::all()));
+			$jsonrpc->makeSuccess(utils::o2a($commandRepository->all()));
 		}
 
 		if ($jsonrpc->getMethod() == 'cmd::byEqLogicId') {
-			$jsonrpc->makeSuccess(utils::o2a(cmd::byEqLogicId($params['eqLogic_id'])));
+			$jsonrpc->makeSuccess(utils::o2a($commandRepository->findByEqLogicId($params['eqLogic_id'])));
 		}
 
 		if ($jsonrpc->getMethod() == 'cmd::byId') {
-			$cmd = cmd::byId($params['id']);
+			$cmd = $commandRepository->get($params['id']);
 			if (!is_object($cmd)) {
 				throw new Exception(__('Commande introuvable : ', __FILE__) . secureXSS($params['id']), -32701);
 			}
@@ -509,14 +512,14 @@ try {
 			if (is_array($params['id'])) {
 				$return = array();
 				foreach ($params['id'] as $id) {
-					$cmd = cmd::byId($id);
+					$cmd = $commandRepository->get($id);
 					if (!is_object($cmd)) {
 						throw new Exception(__('Commande introuvable : ', __FILE__) . secureXSS($id), -32702);
 					}
 					$return[$id] = array('value' => $cmd->execCmd($params['options']), 'collectDate' => $cmd->getCollectDate());
 				}
 			} else {
-				$cmd = cmd::byId($params['id']);
+				$cmd = $commandRepository->get($params['id']);
 				if (!is_object($cmd)) {
 					throw new Exception(__('Commande introuvable : ', __FILE__) . secureXSS($params['id']), -32702);
 				}
@@ -526,7 +529,7 @@ try {
 		}
 
 		if ($jsonrpc->getMethod() == 'cmd::getStatistique') {
-			$cmd = cmd::byId($params['id']);
+			$cmd = $commandRepository->get($params['id']);
 			if (!is_object($cmd)) {
 				throw new Exception(__('Commande introuvable : ', __FILE__) . secureXSS($params['id']), -32702);
 			}
@@ -534,7 +537,7 @@ try {
 		}
 
 		if ($jsonrpc->getMethod() == 'cmd::getTendance') {
-			$cmd = cmd::byId($params['id']);
+			$cmd = $commandRepository->get($params['id']);
 			if (!is_object($cmd)) {
 				throw new Exception(__('Commande introuvable : ', __FILE__) . secureXSS($params['id']), -32702);
 			}
@@ -542,7 +545,7 @@ try {
 		}
 
 		if ($jsonrpc->getMethod() == 'cmd::getHistory') {
-			$cmd = cmd::byId($params['id']);
+			$cmd = $commandRepository->get($params['id']);
 			if (!is_object($cmd)) {
 				throw new Exception('Commande introuvable : ' . secureXSS($params['id']), -32702);
 			}

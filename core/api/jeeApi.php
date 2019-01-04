@@ -15,6 +15,9 @@
  * You should have received a copy of the GNU General Public License
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 header('Access-Control-Allow-Origin: *');
 require_once __DIR__ . "/../php/core.inc.php";
 if (user::isBan()) {
@@ -58,7 +61,8 @@ if (init('type') != '') {
 			throw new Exception(__('Vous n\'êtes pas autorisé à effectuer cette action (HTTP API désactivé), IP : ', __FILE__) . getClientIp());
 		}
 		if ($type == 'ask') {
-			$cmd = cmd::byId(init('cmd_id'));
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get(init('cmd_id'));
 			if (!is_object($cmd)) {
 				throw new Exception(__('Commande inconnue : ', __FILE__) . init('cmd_id'));
 			}
@@ -77,7 +81,8 @@ if (init('type') != '') {
 				$ids = json_decode(init('id'), true);
 				$result = array();
 				foreach ($ids as $id) {
-					$cmd = cmd::byId($id);
+                    $commandRepository = new DBCommandRepository();
+					$cmd = $commandRepository->get($id);
 					if (!is_object($cmd)) {
 						throw new Exception(__('Aucune commande correspondant à l\'ID : ', __FILE__) . secureXSS($id));
 					}
@@ -92,7 +97,8 @@ if (init('type') != '') {
 				echo json_encode($result);
 				die();
 			} else {
-				$cmd = cmd::byId(init('id'));
+                $commandRepository = new DBCommandRepository();
+				$cmd = $commandRepository->get(init('id'));
 				if (!is_object($cmd)) {
 					throw new Exception(__('Aucune commande correspondant à l\'ID : ', __FILE__) . secureXSS(init('id')));
 				}
@@ -128,7 +134,8 @@ if (init('type') != '') {
 				$param['profile'] = init('profile');
 			}
 			if (init('reply_cmd') != '') {
-				$reply_cmd = cmd::byId(init('reply_cmd'));
+                $commandRepository = new DBCommandRepository();
+				$reply_cmd = $commandRepository->get(init('reply_cmd'));
 				if (is_object($reply_cmd)) {
 					$param['reply_cmd'] = $reply_cmd;
 					$param['force_reply_cmd'] = 1;
@@ -205,8 +212,9 @@ if (init('type') != '') {
 		}
 		if ($type == 'command') {
 			log::add('api', 'debug', __('Demande API pour les commandes', __FILE__));
+            $commandRepository = new DBCommandRepository();
 			header('Content-Type: application/json');
-			echo json_encode(utils::o2a(cmd::byEqLogicId(init('eqLogic_id'))), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE, 1024);
+			echo json_encode(utils::o2a($commandRepository->findByEqLogicId(init('eqLogic_id'))), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE, 1024);
 			die();
 		}
 		if ($type == 'fullData') {
@@ -623,9 +631,10 @@ try {
 	}
 
 	/*             * ************************Commande*************************** */
-	if ($jsonrpc->getMethod() == 'cmd::all') {
-		$return = array();
-		foreach (cmd::all() as $cmd) {
+    $commandRepository = new DBCommandRepository();
+    if ($jsonrpc->getMethod() == 'cmd::all') {
+        $return = array();
+		foreach ($commandRepository->all() as $cmd) {
 			$return[] = $cmd->exportApi();
 		}
 		$jsonrpc->makeSuccess($return);
@@ -633,14 +642,15 @@ try {
 
 	if ($jsonrpc->getMethod() == 'cmd::byEqLogicId') {
 		$return = array();
-		foreach (cmd::byEqLogicId($params['eqLogic_id']) as $cmd) {
+		foreach ($commandRepository->findByEqLogicId($params['eqLogic_id']) as $cmd) {
 			$return[] = $cmd->exportApi();
 		}
 		$jsonrpc->makeSuccess($return);
 	}
 
 	if ($jsonrpc->getMethod() == 'cmd::byId') {
-		$cmd = cmd::byId($params['id']);
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get($params['id']);
 		if (!is_object($cmd)) {
 			throw new Exception(__('Cmd introuvable : ', __FILE__) . secureXSS($params['id']), -32701);
 		}
@@ -651,7 +661,7 @@ try {
 		$return = array();
 		if (is_array($params['id'])) {
 			foreach ($params['id'] as $id) {
-				$cmd = cmd::byId($id);
+				$cmd = $commandRepository->get($id);
 				if (!is_object($cmd)) {
 					throw new Exception(__('Commande introuvable : ', __FILE__) . secureXSS($id), -32702);
 				}
@@ -675,7 +685,7 @@ try {
 				}
 			}
 		} else {
-			$cmd = cmd::byId($params['id']);
+			$cmd = $commandRepository->get($params['id']);
 			if (!is_object($cmd)) {
 				throw new Exception(__('Commande introuvable : ', __FILE__) . secureXSS($params['id']), -32702);
 			}
@@ -701,7 +711,7 @@ try {
 	}
 
 	if ($jsonrpc->getMethod() == 'cmd::getStatistique') {
-		$cmd = cmd::byId($params['id']);
+		$cmd = $commandRepository->get($params['id']);
 		if (!is_object($cmd)) {
 			throw new Exception('Commande introuvable : ' . secureXSS($params['id']), -32702);
 		}
@@ -709,7 +719,7 @@ try {
 	}
 
 	if ($jsonrpc->getMethod() == 'cmd::getTendance') {
-		$cmd = cmd::byId($params['id']);
+		$cmd = $commandRepository->get($params['id']);
 		if (!is_object($cmd)) {
 			throw new Exception('Commande introuvable : ' . secureXSS($params['id']), -32702);
 		}
@@ -717,7 +727,7 @@ try {
 	}
 
 	if ($jsonrpc->getMethod() == 'cmd::getHistory') {
-		$cmd = cmd::byId($params['id']);
+		$cmd = $commandRepository->get($params['id']);
 		if (!is_object($cmd)) {
 			throw new Exception('Commande introuvable : ' . secureXSS($params['id']), -32702);
 		}
@@ -732,7 +742,7 @@ try {
 			throw new Exception(__('Type incorrect (classe commande inexistante)', __FILE__) . secureXSS($typeCmd));
 		}
 		if (isset($params['id'])) {
-			$cmd = cmd::byId($params['id']);
+			$cmd = $commandRepository->get($params['id']);
 			if (is_object($_USER_GLOBAL) && !$cmd->hasRight($_USER_GLOBAL)) {
 				throw new Exception(__('Vous n\'êtes pas autorisé à faire cette action', __FILE__));
 			}
@@ -864,7 +874,8 @@ try {
 	/*             * ************************Interact*************************** */
 	if ($jsonrpc->getMethod() == 'interact::tryToReply') {
 		if (isset($params['reply_cmd'])) {
-			$reply_cmd = cmd::byId($params['reply_cmd']);
+            $commandRepository = new DBCommandRepository();
+			$reply_cmd = $commandRepository->get($params['reply_cmd']);
 			if (is_object($reply_cmd)) {
 				$params['reply_cmd'] = $reply_cmd;
 				$params['force_reply_cmd'] = 1;

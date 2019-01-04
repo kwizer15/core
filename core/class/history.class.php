@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class history {
@@ -30,7 +33,8 @@ class history {
 	/*     * ***********************Methode static*************************** */
 
 	public static function copyHistoryToCmd($_source_id, $_target_id) {
-		$source_cmd = cmd::byId(str_replace('#', '', $_source_id));
+        $commandRepository = new DBCommandRepository();
+		$source_cmd = $commandRepository->get(str_replace('#', '', $_source_id));
 		if (!is_object($source_cmd)) {
 			throw new Exception(__('La commande source n\'existe pas :', __FILE__) . ' ' . $_source_id);
 		}
@@ -40,7 +44,8 @@ class history {
 		if ($source_cmd->getType() != 'info') {
 			throw new Exception(__('La commande source n\'est pas de type info', __FILE__));
 		}
-		$target_cmd = cmd::byId(str_replace('#', '', $_target_id));
+        $commandRepository = new DBCommandRepository();
+		$target_cmd = $commandRepository->get(str_replace('#', '', $_target_id));
 		if (!is_object($target_cmd)) {
 			throw new Exception(__('La commande cible n\'existe pas :', __FILE__) . ' ' . $_target_id);
 		}
@@ -142,7 +147,8 @@ class history {
 		WHERE `datetime`<:archiveDatetime';
 		$list_sensors = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
 		foreach ($list_sensors as $sensors) {
-			$cmd = cmd::byId($sensors['cmd_id']);
+            $commandRepository = new DBCommandRepository();
+			$cmd = $commandRepository->get($sensors['cmd_id']);
 			if (!is_object($cmd) || $cmd->getType() != 'info' || $cmd->getIsHistorized() != 1) {
 				continue;
 			}
@@ -495,7 +501,8 @@ class history {
 	}
 
 	public static function stateDuration($_cmd_id, $_value = null) {
-		$cmd = cmd::byId($_cmd_id);
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get($_cmd_id);
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande introuvable : ', __FILE__) . $_cmd_id);
 		}
@@ -526,7 +533,8 @@ class history {
 	}
 
 	public static function lastStateDuration($_cmd_id, $_value = null) {
-		$cmd = cmd::byId($_cmd_id);
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get($_cmd_id);
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande introuvable : ', __FILE__) . $_cmd_id);
 		}
@@ -588,7 +596,8 @@ class history {
 	 * à la valeur passée en paramètre
 	 */
 	public static function lastChangeStateDuration($_cmd_id, $_value) {
-		$cmd = cmd::byId($_cmd_id);
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get($_cmd_id);
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande introuvable : ', __FILE__) . $_cmd_id);
 		}
@@ -660,7 +669,8 @@ class history {
 	 * @throws Exception
 	 */
 	public static function stateChanges($_cmd_id, $_value = null, $_startTime = null, $_endTime = null) {
-		$cmd = cmd::byId($_cmd_id);
+        $commandRepository = new DBCommandRepository();
+		$cmd = $commandRepository->get($_cmd_id);
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande introuvable : ', __FILE__) . $_cmd_id);
 		}
@@ -734,7 +744,8 @@ class history {
 		if (count($matches[1]) > 0) {
 			foreach ($matches[1] as $cmd_id) {
 				if (is_numeric($cmd_id)) {
-					$cmd = cmd::byId($cmd_id);
+                    $commandRepository = new DBCommandRepository();
+					$cmd = $commandRepository->get($cmd_id);
 					if (is_object($cmd) && $cmd->getIsHistorized() == 1) {
 						$prevDatetime = null;
 						$prevValue = 0;
@@ -884,7 +895,8 @@ class history {
 	}
 
 	public function getCmd() {
-		return cmd::byId($this->cmd_id);
+        $commandRepository = new DBCommandRepository();
+		return $commandRepository->get($this->cmd_id);
 	}
 
 	public function getValue() {
