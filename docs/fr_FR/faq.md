@@ -158,7 +158,7 @@ echo "GRANT ALL PRIVILEGES ON jeedom.* TO 'jeedom'@'localhost';" | mysql -uroot 
 cd /usr/share/nginx/www/jeedom
 sudo cp .env.sample .env
 sudo sed -i -e "s/#PASSWORD#/${bdd_password}/g" .env
-sudo chown www-data:www-data core/config/common.config.php
+sudo chown www-data:www-data .env
 ```
 
 J’ai des \{\{…​\}\} partout 

@@ -372,8 +372,7 @@ if (init('rescue', 0) == 0) {
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Utilisateur}}</label>
 						<div class="col-sm-1">
 							<?php
-global $CONFIG;
-echo $CONFIG['db']['username'];
+echo getenv('DB_USER');
 ?>
 						</div>
 					</div>
@@ -381,7 +380,7 @@ echo $CONFIG['db']['username'];
 						<label class="col-lg-2 col-md-3 col-sm-4 col-xs-6 control-label">{{Mot de passe}}</label>
 						<div class="col-sm-1">
 							<?php
-echo $CONFIG['db']['password'];
+echo getenv('DB_PASSWORD');
 ?>
 						</div>
 					</div>

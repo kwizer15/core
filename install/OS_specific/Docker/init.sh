@@ -36,7 +36,7 @@ if [ ! -z ${MODE_HOST} ] && [ ${MODE_HOST} -eq 1 ]; then
 	echo "127.0.0.1 localhost jeedom" > /etc/hosts
 fi
 
-if [ -f /var/www/html/core/config/common.config.php ]; then
+if [ -f /var/www/html/.env ]; then
 	echo 'Jeedom is already install'
 else
 	echo 'Start jeedom installation'

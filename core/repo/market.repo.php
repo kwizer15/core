@@ -240,7 +240,6 @@ class repo_market {
 			$base_dir . '/tests',
 			$base_dir . '/.git',
 			$base_dir . '/.log',
-			$base_dir . '/core/config/common.config.php',
 			$base_dir . '/' . config::byKey('backup::path'),
 		);
 		if (config::byKey('recordDir', 'camera') != '') {

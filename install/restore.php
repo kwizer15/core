@@ -47,7 +47,6 @@ try {
 		echo '***ERREUR*** ' . $e->getMessage();
 	}
 
-	global $CONFIG;
 	global $BACKUP_FILE;
 	if (isset($BACKUP_FILE)) {
 		$_GET['backup'] = $BACKUP_FILE;
@@ -88,24 +87,24 @@ try {
 	}
 
 	try {
-		echo "Vérifiez les droits...";
+		echo 'Vérifiez les droits...';
 		jeedom::cleanFileSytemRight();
-		echo "OK\n";
+		echo 'OK' . PHP_EOL;
 	} catch (Exception $e) {
 		echo '***ERREUR*** ' . $e->getMessage();
 	}
 
-	$jeedom_dir = realpath(__DIR__ . '/../');
+	$jeedom_dir = realpath(dirname(__DIR__));
 
-	echo "Fichier utilisé pour la restauration : " . $backup . "\n";
+	echo 'Fichier utilisé pour la restauration : ' . $backup . PHP_EOL;
 
-	echo "Backup database access configuration...";
+	echo 'Backup database access configuration...';
 
-	if (copy(__DIR__ . '/../core/config/common.config.php', '/tmp/common.config.php')) {
-		echo 'Can not copy ' . __DIR__ . "/../core/config/common.config.php\n";
+	if (copy(dirname(dirname(__DIR__)) . '/.env', '/tmp/.env')) {
+		echo 'Can not copy ' .dirname(dirname(__DIR__)) . '/.env' . PHP_EOL;
 	}
 
-	echo "OK\n";
+	echo 'OK' . PHP_EOL;
 
 	try {
 		jeedom::stop();
@@ -113,14 +112,14 @@ try {
 		$e->getMessage();
 	}
 
-	echo "Décompression de la sauvegarde...";
+	echo 'Décompression de la sauvegarde...';
 	$excludes = array(
 		'tmp',
 		'log',
 		'backup',
 		'.git',
 		'.log',
-		'core/config/common.config.php',
+		'.env',
 		config::byKey('backup::path'),
 	);
 	$exclude = '';
@@ -146,11 +145,17 @@ try {
 		echo "OK\n";
 	}
 
-	echo "Restauration de la base de données...";
-	shell_exec("mysql --host=" . $CONFIG['db']['host'] . " --port=" . $CONFIG['db']['port'] . " --user=" . $CONFIG['db']['username'] . " --password=" . $CONFIG['db']['password'] . " " . $CONFIG['db']['dbname'] . "  < " . $jeedom_dir . "/DB_backup.sql");
-	echo "OK\n";
+	echo 'Restauration de la base de données...';
+	shell_exec('mysql'
+        . ' --host=' . getenv('DB_HOST')
+        . ' --port=' . getenv('DB_PORT')
+        . ' --user=' . getenv('DB_USER')
+        . ' --password=' . getenv('DB_PASSWORD')
+        . ' ' . getenv('DB_NAME')
+        . '  < ' . $jeedom_dir . '/DB_backup.sql');
+	echo 'OK' . PHP_EOL;
 
-	echo "Active les contraintes...";
+	echo 'Active les contraintes...';
 	try {
 		DB::Prepare("SET foreign_key_checks = 1", array(), DB::FETCH_TYPE_ROW);
 	} catch (Exception $e) {
@@ -158,19 +163,19 @@ try {
 	}
 	echo "OK\n";
 
-	if (!file_exists(__DIR__ . '/../core/config/common.config.php')) {
-		echo "Restauration du fichier de configuration de la base de données...";
-		copy('/tmp/common.config.php', __DIR__ . '/../core/config/common.config.php');
-		echo "OK\n";
+	if (!file_exists(dirname(dirname(__DIR__)) . '/.env')) {
+		echo 'Restauration du fichier de configuration de la base de données...';
+		copy('/tmp/.env', dirname(dirname(__DIR__)) . '/.env');
+		echo 'OK' . PHP_EOL;
 	}
 
-	echo "Restauration du cache...";
+	echo 'Restauration du cache...';
 	try {
 		cache::restore();
 	} catch (Exception $e) {
 
 	}
-	echo "OK\n";
+	echo 'OK' . PHP_EOL;
 
 	foreach (plugin::listPlugin(true) as $plugin) {
 		$plugin_id = $plugin->getId();
