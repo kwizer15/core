@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 global $JEEDOM_INTERNAL_CONFIG;
@@ -964,14 +965,15 @@ class jeedom {
 	public static function replaceTag(array $_replaces) {
 		$datas = array();
         $commandRepository = new DBCommandRepository();
+        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
 		foreach ($_replaces as $key => $value) {
 			$datas = array_merge($datas, $commandRepository->searchConfiguration($key));
 			$datas = array_merge($datas, eqLogic::searchConfiguration($key));
 			$datas = array_merge($datas, jeeObject::searchConfiguration($key));
 			$datas = array_merge($datas, scenario::searchByUse(array(array('action' => '#' . $key . '#'))));
-			$datas = array_merge($datas, scenarioExpression::searchExpression($key, $key, false));
-			$datas = array_merge($datas, scenarioExpression::searchExpression('variable(' . str_replace('#', '', $key) . ')'));
-			$datas = array_merge($datas, scenarioExpression::searchExpression('variable', str_replace('#', '', $key), true));
+			$datas = array_merge($datas, $scenarioExpressionRepository->searchExpression($key, $key, false));
+			$datas = array_merge($datas, $scenarioExpressionRepository->searchExpression('variable(' . str_replace('#', '', $key) . ')'));
+			$datas = array_merge($datas, $scenarioExpressionRepository->searchExpression('variable', str_replace('#', '', $key), true));
 		}
 		if (count($datas) > 0) {
 			foreach ($datas as $data) {

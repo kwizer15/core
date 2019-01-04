@@ -20,6 +20,7 @@
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
 use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
+use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -36,60 +37,49 @@ class scenarioExpression {
 
 	/*     * ***********************Méthodes statiques*************************** */
 
-	public static function byId($_id) {
-		$values = array(
-			'id' => $_id,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM ' . __CLASS__ . '
-        WHERE id=:id';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+    /**
+     * @deprecated Use DBScenarioExpression::get instead
+     */
+    public static function byId($_id) {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioExpressionRepository::class.'::get instead', E_USER_DEPRECATED);
+	    $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+	    return $scenarioExpressionRepository->get($_id);
 	}
 
+    /**
+     * @deprecated Use DBScenarioExpression::all instead
+     */
 	public static function all() {
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM ' . __CLASS__;
-		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioExpressionRepository::class.'::all instead', E_USER_DEPRECATED);
+        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+        return $scenarioExpressionRepository->all();
 	}
 
+    /**
+     * @deprecated Use DBScenarioExpression::findByScenarioSubElementId instead
+     */
 	public static function byscenarioSubElementId($_scenarioSubElementId) {
-		$values = array(
-			'scenarioSubElement_id' => $_scenarioSubElementId,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM ' . __CLASS__ . '
-        WHERE scenarioSubElement_id=:scenarioSubElement_id
-        ORDER BY `order`';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioExpressionRepository::class.'::findByScenarioSubElementId instead', E_USER_DEPRECATED);
+        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+        return $scenarioExpressionRepository->findByScenarioSubElementId($_scenarioSubElementId);
 	}
 
+    /**
+     * @deprecated Use DBScenarioExpression::searchExpression instead
+     */
 	public static function searchExpression($_expression, $_options = null, $_and = true) {
-		$values = array(
-			'expression' => '%' . $_expression . '%',
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM ' . __CLASS__ . '
-        WHERE expression LIKE :expression';
-		if ($_options !== null) {
-			$values['options'] = '%' . $_options . '%';
-			if ($_and) {
-				$sql .= ' AND options LIKE :options';
-			} else {
-				$sql .= ' OR options LIKE :options';
-			}
-		}
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioExpressionRepository::class.'::searchExpression instead', E_USER_DEPRECATED);
+        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+        return $scenarioExpressionRepository->searchExpression($_expression, $_options , $_and);
 	}
 
+    /**
+     * @deprecated Use DBScenarioExpression::findByElement instead
+     */
 	public static function byElement($_element_id) {
-		$values = array(
-			'expression' => $_element_id,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM ' . __CLASS__ . '
-        WHERE expression=:expression
-        AND `type`= "element"';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioExpressionRepository::class.'::findByElement instead', E_USER_DEPRECATED);
+        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+        return $scenarioExpressionRepository->findByElement($_element_id);
 	}
 
 	public static function getExpressionOptions($_expression, $_options) {

@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
+use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -88,7 +89,8 @@ class scenarioElement {
 					$expression_ajax['id'] = '';
 				}
 				if (isset($expression_ajax['id']) && $expression_ajax['id'] != '') {
-					$expression_db = scenarioExpression::byId($expression_ajax['id']);
+				    $scenarioExepressionRepository = new DBScenarioExpressionRepository();
+					$expression_db = $scenarioExepressionRepository->get($expression_ajax['id']);
 				} else {
 					$expression_db = new scenarioExpression();
 				}
@@ -468,7 +470,8 @@ class scenarioElement {
 		if (is_object($scenario)) {
 			return $scenario;
 		}
-		$expression = scenarioExpression::byElement($this->getId());
+        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+		$expression = $scenarioExpressionRepository->findByElement($this->getId());
 		if (is_object($expression)) {
 			return $expression->getSubElement()->getElement()->getScenario();
 		}

@@ -20,6 +20,7 @@
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
 use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
+use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -588,7 +589,8 @@ class scenario {
 			if (!isset($search['option'])) {
 				$search['option'] = $search['action'];
 			}
-			$expressions = array_merge($expressions, scenarioExpression::searchExpression($search['action'], $search['option'], $search['and']));
+            $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+			$expressions = array_merge($expressions, $scenarioExpressionRepository->searchExpression($search['action'], $search['option'], $search['and']));
 		}
 		if (is_array($expressions) && count($expressions) > 0) {
 			foreach ($expressions as $expression) {

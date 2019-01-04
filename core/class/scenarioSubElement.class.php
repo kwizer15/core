@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class scenarioSubElement {
@@ -97,7 +100,8 @@ class scenarioSubElement {
 		if (is_array($this->_expression) && count($this->_expression) > 0) {
 			return $this->_expression;
 		}
-		$this->_expression = scenarioExpression::byscenarioSubElementId($this->getId());
+		$scenarioExpressionRepository = new DBScenarioExpressionRepository();
+		$this->_expression = $scenarioExpressionRepository->findByScenarioSubElementId($this->getId());
 		return $this->_expression;
 	}
 
