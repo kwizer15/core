@@ -311,7 +311,7 @@ class scenarioExpression {
 			return round($historyStatistique['max'], 1);
 		}
 	}
-	
+
 	function color_gradient($_from_color, $_to_color, $_min,$_max,$_value) {
 		if(!is_numeric($_value)){
 			$value = round(jeedom::evaluateExpression($_value));
@@ -348,7 +348,7 @@ class scenarioExpression {
 		}
 		return $RetVal[count($RetVal) - 1];
 	}
-	
+
 	public static function maxBetween($_cmd_id, $_startDate, $_endDate) {
 		$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
@@ -469,7 +469,7 @@ class scenarioExpression {
 		sort($values);
 		return $values[round(count($values) / 2) - 1];
 	}
-	
+
 	public static function avg() {
 		$args = func_get_args();
 		$values = array();
@@ -499,7 +499,7 @@ class scenarioExpression {
 		}
 		return array_sum($values)/count($values);
 	}
-	
+
 	public static function tendance($_cmd_id, $_period = '1 hour', $_threshold = '') {
 		$cmd = cmd::byId(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd)) {
@@ -774,7 +774,7 @@ class scenarioExpression {
 		$cmd->execCmd();
 		return date($_format, strtotime($cmd->getValueDate()));
 	}
-	
+
 	public static function lastCommunication($_eqLogic_id, $_format = 'Y-m-d H:i:s') {
 		$eqLogic = eqLogic::byId(trim(str_replace(array('#','#eqLogic','eqLogic'), '', eqLogic::fromHumanReadable('#' . str_replace('#', '', $_eqLogic_id) . '#'))));
 		if (!is_object($eqLogic)) {
@@ -782,7 +782,7 @@ class scenarioExpression {
 		}
 		return date($_format, strtotime($eqLogic->getStatus('lastCommunication', date('Y-m-d H:i:s'))));
 	}
-	
+
 	public static function value($_cmd_id) {
 		$cmd = cmd::byId(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
 		if (!is_object($cmd)) {
@@ -852,7 +852,6 @@ class scenarioExpression {
 		return round(floatval(str_replace(',', '.', $result)), $_decimal);
 	}
 	
-	
 	public static function time_op($_time, $_value = 0 ) {
 		$_time = self::setTags($_time);
 		$_value = self::setTags($_value);
@@ -877,8 +876,7 @@ class scenarioExpression {
 		}
 		return $date->format('Gi');
 	}
-	
-	
+
 	public static function time_between($_time, $_start, $_end) {
 		$_time = self::setTags($_time);
 		$_start = self::setTags($_start);
@@ -1548,6 +1546,7 @@ class scenarioExpression {
 						$cmd_parameters['title'] = __('[' . config::byKey('name') . '] Rapport ', __FILE__) . $plugin->getName() . __(' du ', __FILE__) . date('Y-m-d H:i:s');
 						$cmd_parameters['message'] = __('Veuillez trouver ci-joint le rapport ', __FILE__) . $plugin->getName() . __(' généré le ', __FILE__) . date('Y-m-d H:i:s');
 						break;
+
 						case 'eqAnalyse':
 						$url = network::getNetworkAccess('internal') . '/index.php?v=d&p=eqAnalyse&report=1';
 						$this->setLog($scenario, __('Génération du rapport ', __FILE__) . $url);
@@ -1737,7 +1736,7 @@ class scenarioExpression {
 	public function getId() {
 		return $this->id;
 	}
-	
+
 	public function setId($_id) {
 		$this->_changed = utils::attrChanged($this->_changed,$this->id,$_id);
 		$this->id = $_id;
@@ -1747,7 +1746,7 @@ class scenarioExpression {
 	public function getType() {
 		return $this->type;
 	}
-	
+
 	public function setType($_type) {
 		$this->_changed = utils::attrChanged($this->_changed,$this->type,$_type);
 		$this->type = $_type;
@@ -1761,7 +1760,7 @@ class scenarioExpression {
 	public function getSubElement() {
 		return scenarioSubElement::byId($this->getScenarioSubElement_id());
 	}
-	
+
 	public function setScenarioSubElement_id($_scenarioSubElement_id) {
 		$this->_changed = utils::attrChanged($this->_changed,$this->scenarioSubElement_id,$_scenarioSubElement_id);
 		$this->scenarioSubElement_id = $_scenarioSubElement_id;
@@ -1771,7 +1770,7 @@ class scenarioExpression {
 	public function getSubtype() {
 		return $this->subtype;
 	}
-	
+
 	public function setSubtype($_subtype) {
 		$this->_changed = utils::attrChanged($this->_changed,$this->subtype,$_subtype);
 		$this->subtype = $_subtype;
@@ -1781,7 +1780,7 @@ class scenarioExpression {
 	public function getExpression() {
 		return $this->expression;
 	}
-	
+
 	public function setExpression($_expression) {
 		$_expression = jeedom::fromHumanReadable($_expression);
 		$this->_changed = utils::attrChanged($this->_changed,$this->expression,$_expression);
@@ -1803,7 +1802,7 @@ class scenarioExpression {
 	public function getOrder() {
 		return $this->order;
 	}
-	
+
 	public function setOrder($_order) {
 		$this->_changed = utils::attrChanged($this->_changed,$this->order,$_order);
 		$this->order = $_order;
@@ -1815,7 +1814,7 @@ class scenarioExpression {
 			$_scenario->setLog($log);
 		}
 	}
-	
+
 	public function getChanged() {
 		return $this->_changed;
 	}
@@ -1824,5 +1823,5 @@ class scenarioExpression {
 		$this->_changed = $_changed;
 		return $this;
 	}
-	
+
 }
