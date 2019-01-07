@@ -5,7 +5,8 @@ namespace Jeedom\Core\Infrastructure\Repository;
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Infrastructure\Database\Connection;
 
-class DBCommandRepository implements CommandRepository
+// TODO: à impléméenter
+class InMemoryCommandRepository implements CommandRepository
 {
     /**
      * @param int $id

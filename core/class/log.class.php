@@ -114,7 +114,7 @@ class log {
 			$logger->$action($_message);
 			try {
 				$level = Logger::toMonologLevel($_type);
-				if ($level == Logger::ERROR && self::getConfig('addMessageForErrorLog') == 1) {
+				if ($level === Logger::ERROR && self::getConfig('addMessageForErrorLog') == 1) {
 					@message::add($_log, $_message, '', $_logicalId);
 				} elseif ($level > Logger::ALERT) {
 					@message::add($_log, $_message, '', $_logicalId);
@@ -127,7 +127,7 @@ class log {
 
 	public static function chunk($_log = '') {
 		$paths = array();
-		if ($_log != '') {
+		if ($_log !== '') {
 			$paths = array(self::getPathToLog($_log));
 		} else {
 			$relativeLogPaths = array('', 'scenarioLog/');
@@ -191,7 +191,8 @@ class log {
 			com_shell::execute(system::getCmdSudo() . 'chmod 664 ' . $path . '> /dev/null 2>&1;cat /dev/null > ' . $path);
 			return true;
 		}
-		return;
+
+		return false;
 	}
 
 	/**
@@ -200,13 +201,15 @@ class log {
 	public static function remove($_log) {
 		if (strpos($_log, 'nginx.error') !== false || strpos($_log, 'http.error') !== false) {
 			self::clear($_log);
-			return;
+			return false;
 		}
 		if (self::authorizeClearLog($_log)) {
 			$path = self::getPathToLog($_log);
 			com_shell::execute(system::getCmdSudo() . 'chmod 664 ' . $path . ' > /dev/null 2>&1; rm ' . $path . ' 2>&1 > /dev/null');
 			return true;
 		}
+
+		return false;
 	}
 
 	public static function removeAll() {
@@ -216,16 +219,16 @@ class log {
 				self::remove($log, $logPath);
 			}
 		}
+
 		return true;
 	}
 
-/*
- *
- * @param string $_log
- * @param int $_begin
- * @param int $_nbLines
- * @return boolean|array
- */
+    /**
+     * @param string $_log
+     * @param int $_begin
+     * @param int $_nbLines
+     * @return boolean|array
+     */
 	public static function get($_log = 'core', $_begin, $_nbLines) {
 		self::chunk($_log);
 		$path = (!file_exists($_log) || !is_file($_log)) ? self::getPathToLog($_log) : $_log;
@@ -262,12 +265,14 @@ class log {
 		return $return;
 	}
 
-	/**
-	 * Fixe le niveau de rapport d'erreurs PHP
-	 * @param int $log_level
-	 * @since 2.1.4
-	 * @author KwiZeR <kwizer@kw12er.com>
-	 */
+    /**
+     * Fixe le niveau de rapport d'erreurs PHP
+     *
+     * @param int $log_level
+     *
+     * @throws Exception
+     * @since 2.1.4
+     */
 	public static function define_error_reporting($log_level) {
 		switch ($log_level) {
 			case logger::DEBUG:
@@ -291,7 +296,7 @@ class log {
 				error_reporting(E_ERROR | E_PARSE);
 				break;
 			default:
-				throw new Exception('log::level invalide ("' . $log_level . '")');
+				throw new \Exception('log::level invalide ("' . $log_level . '")');
 		}
 	}
 

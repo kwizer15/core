@@ -1,6 +1,8 @@
 <?php
 
-namespace Jeedom\Common\Domain\Repository;
+namespace Jeedom\Core\Domain\Repository;
+
+use Jeedom\Common\Domain\Repository\Repository;
 
 interface ScenarioElementRepository extends Repository
 {

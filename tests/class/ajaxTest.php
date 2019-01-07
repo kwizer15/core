@@ -16,27 +16,31 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-class ajaxTest extends \PHPUnit_Framework_TestCase
+namespace Tests;
+
+use PHPUnit\Framework\TestCase;
+
+class ajaxTest extends TestCase
 {
 	public function getSuccessResponses()
 	{
-		return array(
-			array(
-				array('foo'=>'bar','bar'=>'baz'),
+		return [
+			[
+				['foo'=>'bar','bar'=>'baz'],
 				'{"state":"ok","result":{"foo":"bar","bar":"baz"}}',
-			),
-		);
+            ],
+        ];
 	}
 	
 	public function getErrorResponses()
 	{
-		return array(
-				array(
-						array('foo'=>'bar','bar'=>'baz'),
-						1234,
-						'{"state":"error","result":{"foo":"bar","bar":"baz"},"code":1234}',
-				),
-		);
+		return [
+            [
+                ['foo'=>'bar','bar'=>'baz'],
+                1234,
+                '{"state":"error","result":{"foo":"bar","bar":"baz"},"code":1234}',
+            ],
+        ];
 	}
 	
 	/**
@@ -46,7 +50,7 @@ class ajaxTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testSuccess($data, $out)
 	{
-		$response = ajax::getResponse($data);
+		$response = \ajax::getResponse($data);
 		$this->assertEquals($out, $response);
 	}
 	
@@ -58,7 +62,7 @@ class ajaxTest extends \PHPUnit_Framework_TestCase
 	 */
 	public function testError($data, $code, $out)
 	{
-		$response = ajax::getResponse($data, $code);
+		$response = \ajax::getResponse($data, $code);
 		$this->assertEquals($out, $response);
 	}
 }

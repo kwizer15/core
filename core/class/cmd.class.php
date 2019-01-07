@@ -18,8 +18,10 @@
 
 /* * ***************************Includes********************************* */
 
+use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
 use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -129,7 +131,8 @@ class cmd {
 					continue;
 				}
 				if (isset($matches[1][$i]) && isset($matches[2][$i]) && isset($matches[3][$i])) {
-					$cmd = self::byObjectNameEqLogicNameCmdName($matches[1][$i], $matches[2][$i], $matches[3][$i]);
+				    $commandRepository = RepositoryFactory::build(CommandRepository::class);
+					$cmd = $commandRepository->findByObjectNameEqLogicNameCmdName($matches[1][$i], $matches[2][$i], $matches[3][$i]);
 					if (is_object($cmd)) {
 						$replace[$matches[0][$i]] = '#' . $cmd->getId() . '#';
 					}
@@ -140,7 +143,8 @@ class cmd {
 	}
 
 	public static function byString($_string) {
-		$cmd = self::byId(str_replace('#', '', self::humanReadableToCmd($_string)));
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
+		$cmd = $commandRepository->get(str_replace('#', '', self::humanReadableToCmd($_string)));
 		if (!is_object($cmd)) {
 			throw new Exception(__('La commande n\'a pas pu être trouvée : ', __FILE__) . $_string . __(' => ', __FILE__) . self::humanReadableToCmd($_string));
 		}
@@ -183,7 +187,8 @@ class cmd {
 				$valueDate = utils::getJsonAttr($cache, 'valueDate', date('Y-m-d H:i:s'));
 				$cmd_value = utils::getJsonAttr($cache, 'value', '');
 			} else {
-				$cmd = self::byId($cmd_id);
+                $commandRepository = RepositoryFactory::build(CommandRepository::class);
+				$cmd = $commandRepository->get($cmd_id);
 				if (!is_object($cmd) || $cmd->getType() != 'info') {
 					continue;
 				}

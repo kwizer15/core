@@ -19,24 +19,41 @@
 /* ------------------------------------------------------------ Inclusions */
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
-class com_shell {
-	/*     * ***********************Attributs************************* */
-
+class com_shell
+{
+    /**
+     * @var \com_shell
+     */
 	private static $instance;
 
-	private $cmds = array();
+    /**
+     * @var array
+     */
+	private $cmds = [];
+
+    /**
+     * @var bool
+     */
 	private $background;
-	private $cache = array();
-	private $history = array();
+
+    /**
+     * @var array
+     */
+	private $cache = [];
+
+    /**
+     * @var array
+     */
+	private $history = [];
 
 	/*     * ********************Functions static********************* */
 
 	/**
-	 * @access public
-	 * @param type $_cmd
-	 * @param type $_background
+	 * @param string $_cmd
+	 * @param bool $_background
 	 */
-	public function __construct($_cmd = null, $_background = false) {
+	public function __construct($_cmd = null, $_background = false)
+    {
 		$this->setBackground($_background);
 		if ($_cmd !== null) {
 			$this->addCmd($_cmd);
@@ -47,19 +64,25 @@ class com_shell {
 	 * Get the instance of com_shell
 	 * @return com_shell
 	 */
-	public static function getInstance() {
+	public static function getInstance()
+    {
 		if (self::$instance === null) {
 			self::$instance = new self();
 		}
 		return self::$instance;
 	}
 
-	/**
-	 * Execute a command
-	 * @param string $_cmd
-	 * @param bool $_background
-	 */
-	public static function execute($_cmd, $_background = false) {
+    /**
+     * Execute a command
+     *
+     * @param string $_cmd
+     * @param bool $_background
+     *
+     * @return string
+     * @throws Exception
+     */
+	public static function execute($_cmd, $_background = false)
+    {
 		$shell = self::getInstance();
 		$shell->clear();
 		$shell->addCmd($_cmd, $_background);
@@ -71,12 +94,14 @@ class com_shell {
 	 * @param string $_cmd
 	 * @return boolean
 	 */
-	public static function commandExists($_cmd) {
-		$fp = popen("which " . $_cmd, "r");
-		$value = fgets($fp, 255);
-		$exists = !empty($value);
-		pclose($fp);
-		return $exists;
+	public static function commandExists($_cmd)
+    {
+        try {
+            self::execute('which '. $_cmd);
+        } catch ( \Exception $e ) {
+            return false;
+        }
+        return true;
 	}
 
 	/*     * ************* Functions ************************************ */
@@ -86,7 +111,8 @@ class com_shell {
 	 * @throws Exception
 	 * @return string
 	 */
-	public function exec() {
+	public function exec()
+    {
 		$output = array();
 		$retval = 0;
 		$return = array();
@@ -97,13 +123,17 @@ class com_shell {
 			exec($cmd, $output, $retval);
 			$return[] = implode("\n", $output);
 			if ($retval != 0) {
-				throw new Exception('Erreur dans l\'exécution du terminal, la valeur retournée est : ' . $retval . '. Détails : ' . implode("\n", $output));
+				throw new Exception(
+				    'Erreur dans l\'exécution du terminal, la valeur retournée est : ' . $retval
+                    . '. Détails : ' . implode("\n", $output)
+                );
 			}
 			$this->history[] = $cmd;
 		}
 		$this->cmds = $this->cache;
-		$this->cache = array();
-		return implode("\n", $return);
+		$this->cache = [];
+
+		return implode(PHP_EOL, $return);
 	}
 
 	/**
@@ -111,38 +141,60 @@ class com_shell {
 	 * @param string $_cmd
 	 * @return boolean
 	 */
-	public function commandExist($_cmd) {
+	public function commandExist($_cmd)
+    {
 		return self::commandExists($_cmd);
 	}
 
-	public function clear() {
+	public function clear()
+    {
 		$this->cache = array_merge($this->cache, $this->cmds);
-		$this->cmds = array();
+		$this->cmds = [];
 	}
 
-	public function clearHistory() {
-		$this->history = array();
+	public function clearHistory()
+    {
+		$this->history = [];
 	}
 
-	/*     * **********************Getteur Setteur*************************** */
-
-	public function getCmd() {
-		return implode("\n", $this->cmds);
+    /**
+     * @return string
+     */
+	public function getCmd()
+    {
+		return implode(PHP_EOL, $this->cmds);
 	}
 
-	public function addCmd($_cmd, $_background = null) {
+    /**
+     * @param string $_cmd
+     * @param bool $_background
+     *
+     * @return bool
+     */
+	public function addCmd($_cmd, $_background = null)
+    {
 		$bg = ($_background === null) ? $this->getBackground() : $_background;
 		$add = $bg ? ' >> /dev/null 2>&1 &' : '';
 		$this->cmds[] = $_cmd . $add;
 		return true;
 	}
 
-	public function setBackground($background) {
+    /**
+     * @param bool $background
+     *
+     * @return $this
+     */
+	public function setBackground($background)
+    {
 		$this->background = $background;
 		return $this;
 	}
 
-	public function getBackground() {
+    /**
+     * @return bool
+     */
+	public function getBackground()
+    {
 		return $this->background;
 	}
 
@@ -150,7 +202,8 @@ class com_shell {
 	 * Get the history of commands
 	 * @return array
 	 */
-	public function getHistory() {
+	public function getHistory()
+    {
 		return $this->history;
 	}
 }

@@ -2,7 +2,9 @@
 
 namespace Jeedom\Core\Domain\Repository;
 
-interface EquipmentLogicRepository
+use Jeedom\Common\Domain\Repository\Repository;
+
+interface EquipmentLogicRepository extends Repository
 {
     public function get($id);
 
