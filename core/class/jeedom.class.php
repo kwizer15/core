@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
 use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -965,10 +966,11 @@ class jeedom {
 	public static function replaceTag(array $_replaces) {
 		$datas = array();
         $commandRepository = new DBCommandRepository();
+        $equipmentLogicRepostory = new DBEquipmentLogicRepository();
         $scenarioExpressionRepository = new DBScenarioExpressionRepository();
 		foreach ($_replaces as $key => $value) {
 			$datas = array_merge($datas, $commandRepository->searchConfiguration($key));
-			$datas = array_merge($datas, eqLogic::searchConfiguration($key));
+			$datas = array_merge($datas, $equipmentLogicRepostory->searchConfiguration($key));
 			$datas = array_merge($datas, jeeObject::searchConfiguration($key));
 			$datas = array_merge($datas, scenario::searchByUse(array(array('action' => '#' . $key . '#'))));
 			$datas = array_merge($datas, $scenarioExpressionRepository->searchExpression($key, $key, false));
@@ -1083,11 +1085,12 @@ class jeedom {
 			$return['scenario'][$scenario_id] = $scenario;
 		}
 		preg_match_all("/#eqLogic([0-9]*)#/", $_string, $matches);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
 		foreach ($matches[1] as $eqLogic_id) {
 			if (isset($return['eqLogic'][$eqLogic_id])) {
 				continue;
 			}
-			$eqLogic = eqLogic::byId($eqLogic_id);
+			$eqLogic = $equipmentLogicRepository->get($eqLogic_id);
 			if (!is_object($eqLogic)) {
 				continue;
 			}
@@ -1098,7 +1101,7 @@ class jeedom {
 			if (isset($return['eqLogic'][$eqLogic_id])) {
 				continue;
 			}
-			$eqLogic = eqLogic::byId($eqLogic_id);
+			$eqLogic = $equipmentLogicRepository->get($eqLogic_id);
 			if (!is_object($eqLogic)) {
 				continue;
 			}

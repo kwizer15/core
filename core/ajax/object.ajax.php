@@ -16,6 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
 	include_file('core', 'authentification', 'php');
@@ -108,10 +110,11 @@ try {
 			}
 			$return = array();
 			$i = 0;
+            $equipmentLogicRepository = new DBEquipmentLogicRepository();
 			foreach ($objects as $id) {
 				$html = '';
 				if (init('summary') == '') {
-					$eqLogics = eqLogic::byObjectId($id, true, true);
+					$eqLogics = $equipmentLogicRepository->findByObjectId($id, true, true);
 				} else {
 					$object = jeeObject::byId($id);
 					$eqLogics = $object->getEqLogicBySummary(init('summary'), true, false);
@@ -132,7 +135,7 @@ try {
 		} else {
 			$html = '';
 			if (init('summary') == '') {
-				$eqLogics = eqLogic::byObjectId(init('id'), true, true);
+				$eqLogics = $equipmentLogicRepository->findByObjectId(init('id'), true, true);
 			} else {
 				$object = jeeObject::byId(init('id'));
 				$eqLogics = $object->getEqLogicBySummary(init('summary'), true, false);

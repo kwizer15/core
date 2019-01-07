@@ -16,6 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
 	include_file('core', 'authentification', 'php');
@@ -130,7 +132,8 @@ try {
 				continue;
 			}
 			$sql .= 'UPDATE viewData SET `order`= ' . $eqLogic_json['order'] . '  WHERE link_id=' . $eqLogic_json['id'] . ' AND  viewZone_id=' . $eqLogic_json['viewZone_id'] . ';';
-			$eqLogic = eqLogic::byId($eqLogic_json['id']);
+			$equipmentLogicRepository = new DBEquipmentLogicRepository();
+			$eqLogic = $equipmentLogicRepository->findById($eqLogic_json['id']);
 			if (!is_object($eqLogic)) {
 				continue;
 			}

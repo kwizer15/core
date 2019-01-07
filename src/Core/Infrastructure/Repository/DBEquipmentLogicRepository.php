@@ -3,6 +3,7 @@
 namespace Jeedom\Core\Infrastructure\Repository;
 
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Database\Connection;
 
 class DBEquipmentLogicRepository implements EquipmentLogicRepository
 {
@@ -20,10 +21,10 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
         $values = array(
             'id' => $id,
         );
-        $sql = 'SELECT ' . \DB::buildField(\eqLogic::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\eqLogic::class) . '
         FROM eqLogic
         WHERE id=:id';
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \eqLogic::class));
+        return self::cast(Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \eqLogic::class));
     }
 
     /**
@@ -33,14 +34,14 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
      * @throws \Exception
      */
     public function all($_onlyEnable = false) {
-        $sql = 'SELECT ' . \DB::buildField(\eqLogic::class, 'el') . '
+        $sql = 'SELECT ' . Connection::buildField(\eqLogic::class, 'el') . '
         FROM eqLogic el
         LEFT JOIN object ob ON el.object_id=ob.id';
         if ($_onlyEnable) {
             $sql .= ' AND isEnable=1';
         }
         $sql .= ' ORDER BY ob.name,el.name';
-        return self::cast(\DB::Prepare($sql, array(), \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
+        return self::cast(Connection::Prepare($sql, array(), Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
     }
 
     /**
@@ -53,10 +54,10 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
         $values = array(
             'eqReal_id' => $_eqReal_id,
         );
-        $sql = 'SELECT ' . \DB::buildField(\eqLogic::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\eqLogic::class) . '
         FROM eqLogic
         WHERE eqReal_id=:eqReal_id';
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
+        return self::cast(Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
     }
 
     /**
@@ -72,7 +73,7 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
      */
     public function findByObjectId($_object_id, $_onlyEnable = true, $_onlyVisible = false, $_eqType_name = null, $_logicalId = null, $_orderByName = false) {
         $values = array();
-        $sql = 'SELECT ' . \DB::buildField(\eqLogic::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\eqLogic::class) . '
         FROM eqLogic';
         if ($_object_id === null) {
             $sql .= ' WHERE object_id IS NULL';
@@ -99,7 +100,7 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
         } else {
             $sql .= ' ORDER BY `order`,category';
         }
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
+        return self::cast(Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
     }
 
     /**
@@ -115,14 +116,14 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
             'logicalId' => $_logicalId,
             'eqType_name' => $_eqType_name,
         );
-        $sql = 'SELECT ' . \DB::buildField(\eqLogic::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\eqLogic::class) . '
         FROM eqLogic
         WHERE logicalId=:logicalId
         AND eqType_name=:eqType_name';
         if ($_multiple) {
-            return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
+            return self::cast(Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
         }
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \eqLogic::class));
+        return self::cast(Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \eqLogic::class));
     }
 
     /**
@@ -136,7 +137,7 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
         $values = array(
             'eqType_name' => $_eqType_name,
         );
-        $sql = 'SELECT ' . \DB::buildField(\eqLogic::class, 'el') . '
+        $sql = 'SELECT ' . Connection::buildField(\eqLogic::class, 'el') . '
         FROM eqLogic el
         LEFT JOIN object ob ON el.object_id=ob.id
         WHERE eqType_name=:eqType_name ';
@@ -144,7 +145,7 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
             $sql .= ' AND isEnable=1';
         }
         $sql .= ' ORDER BY ob.name,el.name';
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
+        return self::cast(Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
     }
 
     /**
@@ -159,12 +160,12 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
             'category2' => '%"' . $_category . '":"1"%',
         );
 
-        $sql = 'SELECT ' . \DB::buildField(\eqLogic::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\eqLogic::class) . '
         FROM eqLogic
         WHERE category LIKE :category
         OR category LIKE :category2
         ORDER BY name';
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
+        return self::cast(Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
     }
 
     /**
@@ -179,12 +180,12 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
             'eqType_name' => $_eqType_name,
             'configuration' => '%' . $_configuration . '%',
         );
-        $sql = 'SELECT ' . \DB::buildField(\eqLogic::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\eqLogic::class) . '
         FROM eqLogic
         WHERE eqType_name=:eqType_name
         AND configuration LIKE :configuration
         ORDER BY name';
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
+        return self::cast(Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
     }
 
     /**
@@ -199,14 +200,14 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
             $values = array(
                 'configuration' => '%' . $_configuration . '%',
             );
-            $sql = 'SELECT ' . \DB::buildField(\eqLogic::class) . '
+            $sql = 'SELECT ' . Connection::buildField(\eqLogic::class) . '
 			        FROM eqLogic
 			        WHERE configuration LIKE :configuration';
         } else {
             $values = array(
                 'configuration' => '%' . $_configuration[0] . '%',
             );
-            $sql = 'SELECT ' . \DB::buildField(\eqLogic::class) . '
+            $sql = 'SELECT ' . Connection::buildField(\eqLogic::class) . '
 			        FROM eqLogic
 			        WHERE configuration LIKE :configuration';
             $configurationCount = \count($_configuration);
@@ -220,7 +221,7 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
             $sql .= ' AND eqType_name=:eqType_name ';
         }
         $sql .= ' ORDER BY name';
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
+        return self::cast(Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
     }
 
     /**
@@ -234,13 +235,13 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
         $values = array(
             'timeout' => $_timeout,
         );
-        $sql = 'SELECT ' . \DB::buildField(\eqLogic::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\eqLogic::class) . '
         FROM eqLogic
         WHERE timeout>=:timeout';
         if ($_onlyEnable) {
             $sql .= ' AND isEnable=1';
         }
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
+        return self::cast(Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
     }
 
     /**
@@ -256,7 +257,7 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
             $values = array(
                 'eqLogic_name' => $_eqLogic_name,
             );
-            $sql = 'SELECT ' . \DB::buildField(\eqLogic::class) . '
+            $sql = 'SELECT ' . Connection::buildField(\eqLogic::class) . '
             FROM eqLogic
             WHERE name=:eqLogic_name
             AND object_id IS NULL';
@@ -265,13 +266,13 @@ class DBEquipmentLogicRepository implements EquipmentLogicRepository
                 'eqLogic_name' => $_eqLogic_name,
                 'object_name' => $_object_name,
             );
-            $sql = 'SELECT ' . \DB::buildField(\eqLogic::class, 'el') . '
+            $sql = 'SELECT ' . Connection::buildField(\eqLogic::class, 'el') . '
             FROM eqLogic el
             INNER JOIN object ob ON el.object_id=ob.id
             WHERE el.name=:eqLogic_name
             AND ob.name=:object_name';
         }
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
+        return self::cast(Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \eqLogic::class));
     }
 
     private static function cast($inputs) {

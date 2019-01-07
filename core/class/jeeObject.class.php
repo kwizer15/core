@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -184,6 +185,7 @@ class jeeObject {
 			}
 			$events[] = $event;
 		}
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
 		if (count($toRefreshCmd) > 0) {
 			foreach ($toRefreshCmd as $value) {
 				try {
@@ -192,7 +194,7 @@ class jeeObject {
 					if ($value['object']->getConfiguration('summary_virtual_id') == '') {
 						continue;
 					}
-					$virtual = eqLogic::byId($value['object']->getConfiguration('summary_virtual_id'));
+					$virtual = $equipmentLogicRepository->get($value['object']->getConfiguration('summary_virtual_id'));
 					if (!is_object($virtual)) {
 						$object->getConfiguration('summary_virtual_id', '');
 						$object->save();
@@ -219,7 +221,7 @@ class jeeObject {
 						continue;
 					}
 					$event['keys'][$key] = array('value' => $result);
-					$virtual = eqLogic::byLogicalId('summaryglobal', 'virtual');
+					$virtual = $equipmentLogicRepository->findByLogicalId('summaryglobal', 'virtual');
 					if (!is_object($virtual)) {
 						continue;
 					}
@@ -362,7 +364,8 @@ class jeeObject {
 			throw new Exception(__('Le plugin virtuel doit être actif', __FILE__));
 		}
 
-		$virtual = eqLogic::byLogicalId('summaryglobal', 'virtual');
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+		$virtual = $equipmentLogicRepository->findByLogicalId('summaryglobal', 'virtual');
 		if (!is_object($virtual)) {
 			$virtual = new virtual();
 			$virtual->setName(__('Résumé Global', __FILE__));
@@ -390,6 +393,7 @@ class jeeObject {
 		$cmd->setUnite($def[$_key]['unit']);
 		$cmd->save();
 
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
 		foreach (jeeObject::all() as $object) {
 			$summaries = $object->getConfiguration('summary');
 			if (!is_array($summaries)) {
@@ -398,7 +402,7 @@ class jeeObject {
 			if (!isset($summaries[$_key]) || !is_array($summaries[$_key]) || count($summaries[$_key]) == 0) {
 				continue;
 			}
-			$virtual = eqLogic::byLogicalId('summary' . $object->getId(), 'virtual');
+			$virtual = $equipmentLogicRepository->findByLogicalId('summary' . $object->getId(), 'virtual');
 			if (!is_object($virtual)) {
 				$virtual = new virtual();
 				$virtual->setName(__('Résumé', __FILE__));
@@ -501,7 +505,8 @@ class jeeObject {
 	}
 
 	public function getEqLogic($_onlyEnable = true, $_onlyVisible = false, $_eqType_name = null, $_logicalId = null, $_searchOnchild = false) {
-		$eqLogics = eqLogic::byObjectId($this->getId(), $_onlyEnable, $_onlyVisible, $_eqType_name, $_logicalId);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+		$eqLogics = $equipmentLogicRepository->findByObjectId($this->getId(), $_onlyEnable, $_onlyVisible, $_eqType_name, $_logicalId);
 		if (is_array($eqLogics)) {
 			foreach ($eqLogics as &$eqLogic) {
 				$eqLogic->setObject($this);
@@ -527,7 +532,8 @@ class jeeObject {
 		if (!isset($summaries[$_summary])) {
 			return array();
 		}
-		$eqLogics = eqLogic::byObjectId($this->getId(), $_onlyEnable, $_onlyVisible, $_eqType_name, $_logicalId);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+		$eqLogics = $equipmentLogicRepository->findByObjectId($this->getId(), $_onlyEnable, $_onlyVisible, $_eqType_name, $_logicalId);
 		$eqLogics_id = array();
 		foreach ($summaries[$_summary] as $infos) {
             $commandRepository = new DBCommandRepository();

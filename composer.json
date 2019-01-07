@@ -16,7 +16,10 @@
         "sabre/dav": "^3.2",
         "vlucas/phpdotenv": "^2.5",
         "guzzlehttp/guzzle": "^6.3",
-        "http-interop/response-sender": "^1.0"
+        "http-interop/response-sender": "^1.0",
+        "ext-json": "^1.5",
+        "ext-gd": "^7.1",
+        "ext-PDO": "^7.1"
     },
     "license": "GPL",
     "config": {

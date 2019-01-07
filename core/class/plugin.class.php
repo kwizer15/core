@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class plugin {
@@ -244,7 +247,8 @@ class plugin {
 				if ($heartbeat == 0 || is_nan($heartbeat)) {
 					continue;
 				}
-				$eqLogics = eqLogic::byType($plugin->getId(), true);
+                $equipmentLogicRepository = new DBEquipmentLogicRepository();
+				$eqLogics = $equipmentLogicRepository->findByType($plugin->getId(), true);
 				if (count($eqLogics) == 0) {
 					continue;
 				}
@@ -743,8 +747,9 @@ class plugin {
 		}
 		$deamonAutoState = config::byKey('deamonAutoMode', $this->getId(), 1);
 		config::save('deamonAutoMode', 0, $this->getId());
-		if ($_state == 0) {
-			$eqLogics = eqLogic::byType($this->getId());
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        if ($_state == 0) {
+			$eqLogics = $equipmentLogicRepository->findByType($this->getId());
 			if (is_array($eqLogics)) {
 				foreach ($eqLogics as $eqLogic) {
 					try {
@@ -767,7 +772,7 @@ class plugin {
 				}
 			}
 		} else if ($alreadyActive == 0 && $_state == 1) {
-			foreach (eqLogic::byType($this->getId()) as $eqLogic) {
+			foreach ($equipmentLogicRepository->findByType($this->getId()) as $eqLogic) {
 				try {
 					$eqLogic->setIsEnable($eqLogic->getConfiguration('previousIsEnable', 1));
 					$eqLogic->setIsVisible($eqLogic->getConfiguration('previousIsVisible', 1));

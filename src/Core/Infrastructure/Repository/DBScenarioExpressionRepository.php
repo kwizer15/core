@@ -3,6 +3,7 @@
 namespace Jeedom\Core\Infrastructure\Repository;
 
 use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
+use Jeedom\Core\Infrastructure\Database\Connection;
 
 class DBScenarioExpressionRepository implements ScenarioExpressionRepository
 {
@@ -11,17 +12,17 @@ class DBScenarioExpressionRepository implements ScenarioExpressionRepository
         $values = [
             'id' => $id,
         ];
-        $sql = 'SELECT ' . \DB::buildField(\scenarioExpression::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\scenarioExpression::class) . '
         FROM ' . \scenarioExpression::class . '
         WHERE id=:id';
-        return \DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \scenarioExpression::class);
+        return Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \scenarioExpression::class);
     }
 
     public function all()
     {
-        $sql = 'SELECT ' . \DB::buildField(\scenarioExpression::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\scenarioExpression::class) . '
         FROM ' . \scenarioExpression::class;
-        return \DB::Prepare($sql, array(), \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \scenarioExpression::class);
+        return Connection::Prepare($sql, array(), Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \scenarioExpression::class);
     }
 
     public function findByScenarioSubElementId($scenarioSubElementId)
@@ -29,11 +30,11 @@ class DBScenarioExpressionRepository implements ScenarioExpressionRepository
         $values = [
             'scenarioSubElement_id' => $scenarioSubElementId,
         ];
-        $sql = 'SELECT ' . \DB::buildField(\scenarioExpression::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\scenarioExpression::class) . '
         FROM ' . \scenarioExpression::class . '
         WHERE scenarioSubElement_id=:scenarioSubElement_id
         ORDER BY `order`';
-        return \DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \scenarioExpression::class);
+        return Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \scenarioExpression::class);
     }
 
     public function searchExpression($expression, $options = null, $and = true)
@@ -41,7 +42,7 @@ class DBScenarioExpressionRepository implements ScenarioExpressionRepository
         $values = [
             'expression' => '%' . $expression . '%',
         ];
-        $sql = 'SELECT ' . \DB::buildField(\scenarioExpression::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\scenarioExpression::class) . '
         FROM ' . \scenarioExpression::class . '
         WHERE expression LIKE :expression';
         if ($options !== null) {
@@ -52,7 +53,7 @@ class DBScenarioExpressionRepository implements ScenarioExpressionRepository
                 $sql .= ' OR options LIKE :options';
             }
         }
-        return \DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \scenarioExpression::class);
+        return Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \scenarioExpression::class);
     }
 
     public function findByElement($elementId)
@@ -60,10 +61,10 @@ class DBScenarioExpressionRepository implements ScenarioExpressionRepository
         $values = [
             'expression' => $elementId,
         ];
-        $sql = 'SELECT ' . \DB::buildField(\scenarioExpression::class) . '
+        $sql = 'SELECT ' . Connection::buildField(\scenarioExpression::class) . '
         FROM ' . \scenarioExpression::class . '
         WHERE expression=:expression
         AND `type`= "element"';
-        return \DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \scenarioExpression::class);
+        return Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \scenarioExpression::class);
     }
 }

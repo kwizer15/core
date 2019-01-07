@@ -25,7 +25,6 @@ function include_file($_folder, $_fn, $_type, $_plugin = '') {
 	}
 	if ($_folder == '3rdparty') {
 		$_fn .= '.' . $_type;
-		$path = __DIR__ . '/../../' . $_folder . '/' . $_fn;
 		$type = $_type;
 	} else {
 		$config = array(
@@ -129,11 +128,11 @@ function resizeImage($contents, $width, $height) {
 	$wh = imagecolorallocate($dest_image, 0xFF, 0xFF, 0xFF);
 	imagefill($dest_image, 0, 0, $wh);
 
-	$offcet_x = ($width - $dest_width) / 2;
-	$offcet_y = ($height - $dest_height) / 2;
+	$offset_x = ($width - $dest_width) / 2;
+	$offset_y = ($height - $dest_height) / 2;
 	if ($dest_image && $contents) {
-		if (!imagecopyresampled($dest_image, $contents, $offcet_x, $offcet_y, 0, 0, $dest_width, $dest_height, $width_orig, $height_orig)) {
-			error_log("Error image copy resampled");
+		if (!imagecopyresampled($dest_image, $contents, $offset_x, $offset_y, 0, 0, $dest_width, $dest_height, $width_orig, $height_orig)) {
+			error_log('Error image copy resampled');
 			return false;
 		}
 	}
@@ -155,9 +154,10 @@ function redirect($_url, $_forceType = null) {
 		echo '<script type="text/javascript">';
 		echo "window.location.href='$_url';";
 		echo '</script>';
-	} else {
-		exit(header("Location: $_url"));
-	}
+    } else {
+        header("Location: $_url");
+        exit();
+    }
 	return;
 }
 
@@ -793,8 +793,11 @@ function getDirectorySize($path) {
 function sizeFormat($size) {
 	$mod = 1024;
 	$units = explode(' ', 'B KB MB GB TB PB');
-	for ($i = 0; $size > $mod; $i++) {
+	$nbUnits = \count($units);
+	$i = 0;
+	while ($size > $mod && $i < $nbUnits) {
 		$size /= $mod;
+        $i++;
 	}
 	return round($size, 2) . ' ' . $units[$i];
 }

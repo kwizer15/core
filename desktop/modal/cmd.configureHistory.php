@@ -1,10 +1,14 @@
     <?php
-if (!isConnect('admin')) {
+
+    use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
+    if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 $count = array('history' => 0, 'timeline' => 0);
 $list_cmd = array();
-foreach (cmd::all() as $cmd) {
+$commandRepository = new DBCommandRepository();
+foreach ($commandRepository->all() as $cmd) {
 	$info_cmd = utils::o2a($cmd);
 	$info_cmd['humanName'] = $cmd->getHumanName(true);
 	$eqLogic = $cmd->getEqLogic();

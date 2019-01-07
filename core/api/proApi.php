@@ -17,6 +17,7 @@
  */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
 
 require_once __DIR__ . "/../php/core.inc.php";
 
@@ -366,20 +367,21 @@ try {
 		}
 
 		/*             * ************************Equipement*************************** */
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
 		if ($jsonrpc->getMethod() == 'eqLogic::all') {
-			$jsonrpc->makeSuccess(utils::o2a(eqLogic::all()));
+			$jsonrpc->makeSuccess(utils::o2a($equipmentLogicRepository->all()));
 		}
 
 		if ($jsonrpc->getMethod() == 'eqLogic::byType') {
-			$jsonrpc->makeSuccess(utils::o2a(eqLogic::byType($params['type'])));
+			$jsonrpc->makeSuccess(utils::o2a($equipmentLogicRepository->findByType($params['type'])));
 		}
 
 		if ($jsonrpc->getMethod() == 'eqLogic::byObjectId') {
-			$jsonrpc->makeSuccess(utils::o2a(eqLogic::byObjectId($params['object_id'])));
+			$jsonrpc->makeSuccess(utils::o2a($equipmentLogicRepository->findByObjectId($params['object_id'])));
 		}
 
 		if ($jsonrpc->getMethod() == 'eqLogic::byId') {
-			$eqLogic = eqLogic::byId($params['id']);
+			$eqLogic = $equipmentLogicRepository->get($params['id']);
 			if (!is_object($eqLogic)) {
 				throw new Exception('EqLogic introuvable : ' . secureXSS($params['id']), -32602);
 			}
@@ -387,7 +389,7 @@ try {
 		}
 
 		if ($jsonrpc->getMethod() == 'eqLogic::fullById') {
-			$eqLogic = eqLogic::byId($params['id']);
+			$eqLogic = $equipmentLogicRepository->get($params['id']);
 			if (!is_object($eqLogic)) {
 				throw new Exception('EqLogic introuvable : ' . secureXSS($params['id']), -32602);
 			}
@@ -454,7 +456,7 @@ try {
 			$return = array();
 			foreach ($params['eqType'] as $eqType) {
 				$info_eqLogics = array();
-				foreach (eqLogic::byType($eqType) as $eqLogic) {
+				foreach ($equipmentLogicRepository->findByType($eqType) as $eqLogic) {
 					$info_cmds = array();
 					foreach ($eqLogic->getCmd() as $cmd) {
 						$info_cmd = utils::o2a($cmd);
@@ -472,7 +474,7 @@ try {
 			}
 
 			foreach ($params['id'] as $id) {
-				$eqLogic = eqLogic::byId($id);
+				$eqLogic = $equipmentLogicRepository->get($id);
 				$info_cmds = array();
 				foreach ($eqLogic->getCmd() as $cmd) {
 					$info_cmd = utils::o2a($cmd);

@@ -16,7 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 date_default_timezone_set('Europe/Brussels');
-require_once __DIR__ . '/../class/DB.class.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
+require_once __DIR__ . '/../class/DB.class.php';    // TODO: Remplacer par Jeedom\Core\Infrastructure\Database\Connection
 require_once __DIR__ . '/../class/config.class.php';
 require_once __DIR__ . '/../class/jeedom.class.php';
 require_once __DIR__ . '/../class/plugin.class.php';
@@ -34,8 +35,6 @@ try {
 	}
 } catch (Exception $e) {
 
-} catch (Error $e) {
-
 }
 
 try {
@@ -44,16 +43,12 @@ try {
 	}
 } catch (Exception $e) {
 
-} catch (Error $e) {
-
 }
 
 function jeedomCoreAutoload($classname) {
 	try {
 		include_file('core', $classname, 'class');
 	} catch (Exception $e) {
-
-	} catch (Error $e) {
 
 	}
 }
@@ -74,8 +69,6 @@ function jeedomPluginAutoload($_classname) {
 		}
 	} catch (Exception $e) {
 
-	} catch (Error $e) {
-
 	}
 }
 
@@ -85,15 +78,11 @@ function jeedomOtherAutoload($classname) {
 		return;
 	} catch (Exception $e) {
 
-	} catch (Error $e) {
-
 	}
 	try {
 		include_file('core', substr($classname, 5), 'repo');
 		return;
 	} catch (Exception $e) {
-
-	} catch (Error $e) {
 
 	}
 }

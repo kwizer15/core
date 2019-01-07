@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class cache {
@@ -256,6 +259,7 @@ class cache {
 			'cronCacheAttr' => 'cron',
 			'cron' => 'cron',
 		);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
 		foreach ($result as $key) {
 			$matches = null;
 			if (strpos($key, '::lastCommunication') !== false) {
@@ -288,7 +292,7 @@ class cache {
 				if (!is_numeric($matches[1][0])) {
 					continue;
 				}
-				$object = eqLogic::byId($matches[1][0]);
+				$object = $equipmentLogicRepository->findById($matches[1][0]);
 				if (!is_object($object)) {
 					cache::delete($key);
 				}
@@ -298,7 +302,7 @@ class cache {
 				if (!is_numeric($matches[1][0])) {
 					continue;
 				}
-				$object = eqLogic::byId($matches[1][0]);
+				$object = $equipmentLogicRepository->get($matches[1][0]);
 				if (!is_object($object)) {
 					cache::delete($key);
 				}

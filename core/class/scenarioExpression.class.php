@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
 use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
 use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
 
@@ -180,7 +181,8 @@ class scenarioExpression {
 
 	public static function eqEnable($_eqLogic_id) {
 		$id = str_replace(array('eqLogic', '#'), '', trim($_eqLogic_id));
-		$eqLogic = eqLogic::byId($id);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+		$eqLogic = $equipmentLogicRepository->get($id);
 		if (!is_object($eqLogic)) {
 			return -2;
 		}
@@ -1233,7 +1235,8 @@ class scenarioExpression {
 					$this->setLog($scenario, __('Affichage du popup : ', __FILE__) . $options['message']);
 					return;
 				} elseif ($this->getExpression() == 'equipment' || $this->getExpression() == 'equipement') {
-					$eqLogic = eqLogic::byId(str_replace(array('#eqLogic', '#'), '', $this->getOptions('eqLogic')));
+                    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+					$eqLogic = $equipmentLogicRepository->get(str_replace(array('#eqLogic', '#'), '', $this->getOptions('eqLogic')));
 					if (!is_object($eqLogic)) {
 						throw new Exception(__('Action sur l\'équipement impossible. Equipement introuvable - Vérifiez l\'id : ', __FILE__) . $this->getOptions('eqLogic'));
 					}

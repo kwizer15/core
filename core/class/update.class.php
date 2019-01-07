@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class update {
@@ -372,7 +375,8 @@ class update {
 							} catch (Error $e) {
 
 							}
-							foreach (eqLogic::byType($this->getLogicalId()) as $eqLogic) {
+                            $equipmentLogicRepository = new DBEquipmentLogicRepository();
+							foreach ($equipmentLogicRepository->findByType($this->getLogicalId()) as $eqLogic) {
 								try {
 									$eqLogic->remove();
 								} catch (Exception $e) {

@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -245,7 +246,8 @@ class interactQuery {
 			if ($_data !== null && is_object($_data['object'])) {
 				$objects = $_data['object']->getEqLogic();
 			} else {
-				$objects = eqLogic::all(true);
+			    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+				$objects = $equipmentLogicRepository->all(true);
 			}
 		} elseif ($_type == 'cmd') {
 			if ($_data !== null && is_object($_data['eqLogic'])) {
@@ -261,7 +263,8 @@ class interactQuery {
 					}
 				}
 			} else {
-				$objects = cmd::all();
+			    $commandRepository = new DBCommandRepository();
+				$objects = $commandRepository->all();
 			}
 		} elseif ($_type == 'summary') {
 			foreach (config::byKey('object:summary') as $key => $value) {

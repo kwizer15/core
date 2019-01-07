@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class eqReal {
@@ -119,7 +122,8 @@ class eqReal {
 	/*     * **********************Getteur Setteur*************************** */
 
 	public function getEqLogic() {
-		return eqLogic::byEqRealId($this->id);
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+		return $equipmentLogicRepository->findByEqRealId($this->id);
 	}
 
 	public function getId() {

@@ -17,6 +17,7 @@
  */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
 
 header('Access-Control-Allow-Origin: *');
 require_once __DIR__ . "/../php/core.inc.php";
@@ -77,11 +78,11 @@ if (init('type') != '') {
 		}
 
 		if ($type == 'cmd') {
+            $commandRepository = new DBCommandRepository();
 			if (is_json(init('id'))) {
 				$ids = json_decode(init('id'), true);
 				$result = array();
 				foreach ($ids as $id) {
-                    $commandRepository = new DBCommandRepository();
 					$cmd = $commandRepository->get($id);
 					if (!is_object($cmd)) {
 						throw new Exception(__('Aucune commande correspondant à l\'ID : ', __FILE__) . secureXSS($id));
@@ -97,7 +98,6 @@ if (init('type') != '') {
 				echo json_encode($result);
 				die();
 			} else {
-                $commandRepository = new DBCommandRepository();
 				$cmd = $commandRepository->get(init('id'));
 				if (!is_object($cmd)) {
 					throw new Exception(__('Aucune commande correspondant à l\'ID : ', __FILE__) . secureXSS(init('id')));
@@ -121,7 +121,7 @@ if (init('type') != '') {
 			$type::event();
 			die();
 		}
-		if ($type == 'interact') {
+		if ($type === 'interact') {
 			$query = init('query');
 			if (init('utf8', 0) == 1) {
 				$query = utf8_encode($query);
@@ -145,7 +145,7 @@ if (init('type') != '') {
 			echo $reply['reply'];
 			die();
 		}
-		if ($type == 'scenario') {
+		if ($type === 'scenario') {
 			log::add('api', 'debug', __('Demande API pour les scénarios', __FILE__));
 			$scenario = scenario::byId(init('id'));
 			if (!is_object($scenario)) {
@@ -193,37 +193,38 @@ if (init('type') != '') {
 			echo 'ok';
 			die();
 		}
-		if ($type == 'message') {
+		if ($type === 'message') {
 			log::add('api', 'debug', __('Demande API pour ajouter un message', __FILE__));
 			message::add(init('category'), init('message'));
 			die();
 		}
-		if ($type == 'object') {
+		if ($type === 'object') {
 			log::add('api', 'debug', __('Demande API pour les objets', __FILE__));
 			header('Content-Type: application/json');
 			echo json_encode(utils::o2a(jeeObject::all()), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE, 1024);
 			die();
 		}
-		if ($type == 'eqLogic') {
+		if ($type === 'eqLogic') {
 			log::add('api', 'debug', __('Demande API pour les équipements', __FILE__));
 			header('Content-Type: application/json');
-			echo json_encode(utils::o2a(eqLogic::byObjectId(init('object_id'))), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE, 1024);
+            $equipmentLogicRepository = new DBEquipmentLogicRepository();
+			echo json_encode(utils::o2a($equipmentLogicRepository->findByObjectId(init('object_id'))), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE, 1024);
 			die();
 		}
-		if ($type == 'command') {
+		if ($type === 'command') {
 			log::add('api', 'debug', __('Demande API pour les commandes', __FILE__));
             $commandRepository = new DBCommandRepository();
 			header('Content-Type: application/json');
 			echo json_encode(utils::o2a($commandRepository->findByEqLogicId(init('eqLogic_id'))), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE, 1024);
 			die();
 		}
-		if ($type == 'fullData') {
+		if ($type === 'fullData') {
 			log::add('api', 'debug', __('Demande API pour les commandes', __FILE__));
 			header('Content-Type: application/json');
 			echo json_encode(jeeObject::fullData(), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE, 1024);
 			die();
 		}
-		if ($type == 'variable') {
+		if ($type === 'variable') {
 			log::add('api', 'debug', __('Demande API pour les variables', __FILE__));
 			if (init('value') == '') {
 				$dataStore = dataStore::byTypeLinkIdKey('scenario', -1, trim(init('name')));
@@ -522,20 +523,21 @@ try {
 	}
 
 	/*             * ************************Equipement*************************** */
+    $commandRepository = new DBCommandRepository();
 	if ($jsonrpc->getMethod() == 'eqLogic::all') {
-		$jsonrpc->makeSuccess(utils::o2a(eqLogic::all()));
+		$jsonrpc->makeSuccess(utils::o2a($equipmentLogicRepository->all()));
 	}
 
 	if ($jsonrpc->getMethod() == 'eqLogic::byType') {
-		$jsonrpc->makeSuccess(utils::o2a(eqLogic::byType($params['type'])));
+		$jsonrpc->makeSuccess(utils::o2a($equipmentLogicRepository->findByType($params['type'])));
 	}
 
 	if ($jsonrpc->getMethod() == 'eqLogic::byObjectId') {
-		$jsonrpc->makeSuccess(utils::o2a(eqLogic::byObjectId($params['object_id'])));
+		$jsonrpc->makeSuccess(utils::o2a($equipmentLogicRepository->findByObjectId($params['object_id'])));
 	}
 
 	if ($jsonrpc->getMethod() == 'eqLogic::byId') {
-		$eqLogic = eqLogic::byId($params['id']);
+		$eqLogic = $equipmentLogicRepository->get($params['id']);
 		if (!is_object($eqLogic)) {
 			throw new Exception(__('EqLogic introuvable : ', __FILE__) . secureXSS($params['id']), -32602);
 		}
@@ -543,7 +545,7 @@ try {
 	}
 
 	if ($jsonrpc->getMethod() == 'eqLogic::fullById') {
-		$eqLogic = eqLogic::byId($params['id']);
+		$eqLogic = $equipmentLogicRepository->get($params['id']);
 		if (!is_object($eqLogic)) {
 			throw new Exception(__('EqLogic introuvable : ', __FILE__) . secureXSS($params['id']), -32602);
 		}
@@ -608,7 +610,7 @@ try {
 		$return = array();
 		foreach ($params['eqType'] as $eqType) {
 			$info_eqLogics = array();
-			foreach (eqLogic::byType($eqType) as $eqLogic) {
+			foreach ($equipmentLogicRepository->findByType($eqType) as $eqLogic) {
 				$info_eqLogic = utils::o2a($eqLogic);
 				foreach ($eqLogic->getCmd() as $cmd) {
 					$info_eqLogic['cmds'][] = $cmd->exportApi();
@@ -619,7 +621,7 @@ try {
 		}
 
 		foreach ($params['id'] as $id) {
-			$eqLogic = eqLogic::byId($id);
+			$eqLogic = $equipmentLogicRepository->get($id);
 			$info_eqLogic = utils::o2a($eqLogic);
 			foreach ($eqLogic->getCmd() as $cmd) {
 				$info_eqLogic['cmds'][] = $cmd->exportApi();

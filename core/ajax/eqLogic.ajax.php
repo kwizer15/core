@@ -16,6 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
 	include_file('core', 'authentification', 'php');
@@ -56,11 +58,12 @@ try {
 		ajax::success(utils::o2a($eqLogic));
 	}
 
-	if (init('action') == 'toHtml') {
+    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+    if (init('action') == 'toHtml') {
 		if (init('ids') != '') {
 			$return = array();
 			foreach (json_decode(init('ids'), true) as $id => $value) {
-				$eqLogic = eqLogic::byId($id);
+				$eqLogic = $equipmentLogicRepository->get($id);
 				if (!is_object($eqLogic)) {
 					continue;
 				}
@@ -73,7 +76,7 @@ try {
 			}
 			ajax::success($return);
 		} else {
-			$eqLogic = eqLogic::byId(init('id'));
+			$eqLogic = $equipmentLogicRepository->get(init('id'));
 			if (!is_object($eqLogic)) {
 				throw new Exception(__('Eqlogic inconnu. Vérifiez l\'ID', __FILE__));
 			}
@@ -88,7 +91,7 @@ try {
 
 	if (init('action') == 'htmlAlert') {
 		$return = array();
-		foreach (eqLogic::all() as $eqLogic) {
+		foreach ($equipmentLogicRepository->all() as $eqLogic) {
 			if ($eqLogic->getAlert() == '') {
 				continue;
 			}
@@ -105,7 +108,7 @@ try {
 	if (init('action') == 'htmlBattery') {
 		$return = array();
 		$list = array();
-		foreach (eqLogic::all() as $eqLogic) {
+		foreach ($equipmentLogicRepository->all() as $eqLogic) {
 			$battery_type = str_replace(array('(', ')'), array('', ''), $eqLogic->getConfiguration('battery_type', ''));
 			if ($eqLogic->getStatus('battery', -2) != -2) {
 				$list[] = $eqLogic;
@@ -126,7 +129,7 @@ try {
 	}
 
 	if (init('action') == 'listByType') {
-		ajax::success(utils::a2o(eqLogic::byType(init('type'))));
+		ajax::success(utils::a2o($equipmentLogicRepository->findByType(init('type'))));
 	}
 
 	if (init('action') == 'listByObjectAndCmdType') {
@@ -136,14 +139,14 @@ try {
 
 	if (init('action') == 'listByObject') {
 		$object_id = (init('object_id') != -1) ? init('object_id') : null;
-		ajax::success(utils::o2a(eqLogic::byObjectId($object_id, init('onlyEnable', true), init('onlyVisible', false), init('eqType_name', null), init('logicalId', null), init('orderByName', false))));
+		ajax::success(utils::o2a($equipmentLogicRepository->findByObjectId($object_id, init('onlyEnable', true), init('onlyVisible', false), init('eqType_name', null), init('logicalId', null), init('orderByName', false))));
 	}
 
 	if (init('action') == 'listByTypeAndCmdType') {
 		$results = eqLogic::listByTypeAndCmdType(init('type'), init('typeCmd'), init('subTypeCmd'));
 		$return = array();
 		foreach ($results as $result) {
-			$eqLogic = eqLogic::byId($result['id']);
+			$eqLogic = $equipmentLogicRepository->get($result['id']);
 			$info['eqLogic'] = utils::o2a($eqLogic);
 			$info['object'] = array('name' => 'Aucun');
 			if (is_object($eqLogic)) {
@@ -162,7 +165,7 @@ try {
 		if (!isConnect('admin')) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
-		$eqLogic = eqLogic::byId(init('id'));
+		$eqLogic = $equipmentLogicRepository->get(init('id'));
 		if (!is_object($eqLogic)) {
 			throw new Exception(__('EqLogic inconnu. Vérifiez l\'ID', __FILE__));
 		}
@@ -181,7 +184,7 @@ try {
 			if (!isset($eqLogic_json['id']) || trim($eqLogic_json['id']) == '') {
 				continue;
 			}
-			$eqLogic = eqLogic::byId($eqLogic_json['id']);
+			$eqLogic = $equipmentLogicRepository->get($eqLogic_json['id']);
 			if (!is_object($eqLogic)) {
 				continue;
 			}
@@ -195,7 +198,7 @@ try {
 		unautorizedInDemo();
 		$eqLogics = json_decode(init('eqLogics'), true);
 		foreach ($eqLogics as $id) {
-			$eqLogic = eqLogic::byId($id);
+			$eqLogic = $equipmentLogicRepository->get($id);
 			if (!is_object($eqLogic)) {
 				throw new Exception(__('EqLogic inconnu. Vérifiez l\'ID', __FILE__) . ' ' . $id);
 			}
@@ -211,7 +214,7 @@ try {
 		unautorizedInDemo();
 		$eqLogics = json_decode(init('eqLogics'), true);
 		foreach ($eqLogics as $id) {
-			$eqLogic = eqLogic::byId($id);
+			$eqLogic = $equipmentLogicRepository->get($id);
 			if (!is_object($eqLogic)) {
 				throw new Exception(__('EqLogic inconnu. Vérifiez l\'ID', __FILE__) . ' ' . $id);
 			}
@@ -228,7 +231,7 @@ try {
 		unautorizedInDemo();
 		$eqLogics = json_decode(init('eqLogics'), true);
 		foreach ($eqLogics as $id) {
-			$eqLogic = eqLogic::byId($id);
+			$eqLogic = $equipmentLogicRepository->get($id);
 			if (!is_object($eqLogic)) {
 				throw new Exception(__('EqLogic inconnu. Vérifiez l\'ID', __FILE__) . ' ' . $id);
 			}
@@ -247,7 +250,7 @@ try {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
 		$eqLogicSave = json_decode(init('eqLogic'), true);
-		$eqLogic = eqLogic::byId($eqLogicSave['id']);
+		$eqLogic = $equipmentLogicRepository->get($eqLogicSave['id']);
 		if (!is_object($eqLogic)) {
 			throw new Exception(__('EqLogic inconnu. Vérifiez l\'ID ', __FILE__) . $eqLogicsSave['id']);
 		}
@@ -265,7 +268,7 @@ try {
 		if (!isConnect('admin')) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
-		$eqLogic = eqLogic::byId(init('id'));
+		$eqLogic = $equipmentLogicRepository->get(init('id'));
 		if (!is_object($eqLogic)) {
 			throw new Exception(__('EqLogic inconnu. Vérifiez l\'ID', __FILE__));
 		}
@@ -280,7 +283,7 @@ try {
 		if (!isConnect('admin')) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
-		$eqLogic = eqLogic::byId(init('id'));
+		$eqLogic = $equipmentLogicRepository->get(init('id'));
 		if (!is_object($eqLogic)) {
 			throw new Exception(__('EqLogic inconnu. Vérifiez l\'ID ', __FILE__) . init('id'));
 		}
@@ -387,7 +390,7 @@ try {
 
 	if (init('action') == 'getAlert') {
 		$alerts = array();
-		foreach (eqLogic::all() as $eqLogic) {
+		foreach ($equipmentLogicRepository->all() as $eqLogic) {
 			if ($eqLogic->getAlert() == '') {
 				continue;
 			}

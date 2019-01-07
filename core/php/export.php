@@ -16,6 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 include_file('core', 'authentification', 'php');
 if (!isConnect()) {
@@ -41,7 +43,8 @@ switch ($type) {
 		}
 		break;
 	case 'eqLogic':
-		$eqLogic = eqLogic::byId(init('id'));
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+		$eqLogic = $equipmentLogicRepository->get(init('id'));
 		if (!is_object($eqLogic)) {
 			throw new Exception(__('Commande introuvable : ', __FILE__) . init('id'));
 		}

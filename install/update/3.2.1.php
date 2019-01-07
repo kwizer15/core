@@ -1,6 +1,11 @@
 <?php
+
+use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
-foreach (cmd::all() as $cmd) {
+
+$commandRepository = new DBCommandRepository();
+foreach ($commandRepository->all() as $cmd) {
 	if ($cmd->getDisplay('generic_type') == '') {
 		continue;
 	}

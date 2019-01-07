@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -77,7 +78,8 @@ class cmd {
 		if (count($matches[1]) == 0) {
 			return $_input;
 		}
-		$cmds = self::byIds($matches[1]);
+		$commandRepository = new DBCommandRepository();
+		$cmds = $commandRepository->findByIds($matches[1]);
 		foreach ($cmds as $cmd) {
 			if (isset($replace['#' . $cmd->getId() . '#'])) {
 				continue;
@@ -1447,9 +1449,11 @@ class cmd {
 	}
 
 	public function getUsedBy($_array = false) {
+	    $commandRepository = new DBCommandRepository();
+	    $equipmentLogicRepository = new DBEquipmentLogicRepository();
 		$return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array(), 'plan' => array(), 'view' => array());
-		$return['cmd'] = self::searchConfiguration('#' . $this->getId() . '#');
-		$return['eqLogic'] = eqLogic::searchConfiguration('#' . $this->getId() . '#');
+		$return['cmd'] = $commandRepository->searchConfiguration('#' . $this->getId() . '#');
+		$return['eqLogic'] = $equipmentLogicRepository->searchConfiguration('#' . $this->getId() . '#');
 		$return['scenario'] = scenario::searchByUse(array(array('action' => '#' . $this->getId() . '#')));
 		$return['interactDef'] = interactDef::searchByUse('#' . $this->getId() . '#');
 		$return['view'] = view::searchByUse('cmd', $this->getId());
@@ -1519,8 +1523,9 @@ class cmd {
 	}
 
 	public function getEqLogic() {
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
 		if ($this->_eqLogic === null) {
-			$this->setEqLogic(eqLogic::byId($this->eqLogic_id));
+			$this->setEqLogic($equipmentLogicRepository->get($this->eqLogic_id));
 		}
 		return $this->_eqLogic;
 	}

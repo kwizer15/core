@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -162,8 +163,9 @@ class plan {
 	}
 
 	public function getLink() {
-		if ($this->getLink_type() == 'eqLogic') {
-			$eqLogic = eqLogic::byId($this->getLink_id());
+        if ($this->getLink_type() == 'eqLogic') {
+            $equipmentLogicRepository = new DBEquipmentLogicRepository();
+            $eqLogic = $equipmentLogicRepository->get($this->getLink_id());
 			return $eqLogic;
 		} else if ($this->getLink_type() == 'scenario') {
 			$scenario = scenario::byId($this->getLink_id());
@@ -275,7 +277,8 @@ class plan {
 			if ($this->getConfiguration('display_mode', 'image') == 'image') {
 				$html .= '<img style="width:100%;height:100%" src="' . $this->getDisplay('path', 'core/img/no_image.gif') . '"/>';
 			} else {
-				$camera = eqLogic::byId(str_replace(array('#', 'eqLogic'), array('', ''), $this->getConfiguration('camera')));
+                $equipmentLogicRepository = new DBEquipmentLogicRepository();
+				$camera = $equipmentLogicRepository->get(str_replace(array('#', 'eqLogic'), array('', ''), $this->getConfiguration('camera')));
 				if (is_object($camera)) {
 					$html .= $camera->toHtml($_version, true);
 				}

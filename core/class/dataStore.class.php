@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -157,9 +158,10 @@ class dataStore {
 
 	public function getUsedBy($_array = false) {
         $commandRepository = new DBCommandRepository();
+        $equipmentLogicRepository = new DBEquipmentLogicRepository();
 		$return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array());
 		$return['cmd'] = $commandRepository->searchConfiguration(array('"cmd":"variable"%"name":"' . $this->getKey() . '"', 'variable(' . $this->getKey() . ')', '"name":"' . $this->getKey() . '"%"cmd":"variable"'));
-		$return['eqLogic'] = eqLogic::searchConfiguration(array('"cmd":"variable"%"name":"' . $this->getKey() . '"', 'variable(' . $this->getKey() . ')', '"name":"' . $this->getKey() . '"%"cmd":"variable"'));
+		$return['eqLogic'] = $equipmentLogicRepository->searchConfiguration(array('"cmd":"variable"%"name":"' . $this->getKey() . '"', 'variable(' . $this->getKey() . ')', '"name":"' . $this->getKey() . '"%"cmd":"variable"'));
 		$return['interactDef'] = interactDef::searchByUse(array('"cmd":"variable"%"name":"' . $this->getKey() . '"', 'variable(' . $this->getKey() . ')', '"name":"' . $this->getKey() . '"%"cmd":"variable"'));
 		$return['scenario'] = scenario::searchByUse(array(
 			array('action' => 'variable(' . $this->getKey() . ')', 'option' => 'variable(' . $this->getKey() . ')'),

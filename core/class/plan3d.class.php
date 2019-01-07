@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -182,7 +183,8 @@ class plan3d {
 
 	public function getLink() {
 		if ($this->getLink_type() == 'eqLogic') {
-			$eqLogic = eqLogic::byId(str_replace(array('#', 'eqLogic'), '', $this->getLink_id()));
+            $equipmentLogicRepository = new DBEquipmentLogicRepository();
+			$eqLogic = $equipmentLogicRepository->get(str_replace(array('#', 'eqLogic'), '', $this->getLink_id()));
 			return $eqLogic;
 		} else if ($this->getLink_type() == 'scenario') {
 			$scenario = scenario::byId($this->getLink_id());

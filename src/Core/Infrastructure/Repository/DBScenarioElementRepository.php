@@ -3,6 +3,7 @@
 namespace Jeedom\Core\Infrastructure\Repository;
 
 use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
+use Jeedom\Core\Infrastructure\Database\Connection;
 
 class DBScenarioElementRepository implements ScenarioElementRepository
 {
@@ -17,12 +18,12 @@ class DBScenarioElementRepository implements ScenarioElementRepository
         $values = array(
             'id' => $id,
         );
-        $sql = 'SELECT ' . \DB::buildField(\scenarioElement::class)
+        $sql = 'SELECT ' . Connection::buildField(\scenarioElement::class)
             . ' FROM ' . \scenarioElement::class
             . ' WHERE id=:id'
         ;
 
-        return \DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \scenarioElement::class);
+        return Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \scenarioElement::class);
     }
 
     /**
