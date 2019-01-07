@@ -75,7 +75,34 @@ Changelog
 3.3.31
 =====
 
-- Correction de bugs
+-   Possibilité de supprimer une variable.
+-   Ajout d'un affichage 3D.
+-   Refonte du système de backup cloud (backup incrémental et chiffré).
+-   Ajout d'un système de prise de note intégré (dans Analyse -> Note).
+-   Ajout de la notion de tag sur les équipements (se trouve dans la configuration avancée de l'équipement).
+-   Ajout d'un système d'historique sur la suppression des commandes, équipements, objets, vue, design, design 3d, scénario et utilisateur.
+-   Ajout de l'action jeedom_reboot pour lancer un redémarrage de Jeedom.
+-   Ajout d'option dans la fenêtre de génération de cron.
+-   Un message est maintenant ajouté si une expression invalide est trouvée lors de l’exécution d'un scénario.
+-   Ajout d'une commande dans les scénarios : value(commande) permet d'avoir la valeur d'une commande si elle n'est pas donnée automatiquement par jeedom (cas lors du stockage du nom de la commande dans une variable).
+-   Ajout d'un bouton pour rafraichir les messages du centre message.
+-   Ajout dans la configuration d'action sur valeur d'une commande un bouton pour chercher une action interne (scénario, pause...).
+-   Ajout d'un action "Remise à zero des SI" sur les scénarios
+-   Possibilité d'ajouter des images en fond sur les vues
+-   Possibilité d'ajouter des images en fond sur les objets
+-   Ajout d'un thème Jeedom
+-   L'information de mise à jour disponible est maintenant masquée aux utilisateurs non admin
+-   Amélioration du support des () dans le calcul d'expressions
+-   Possibilité d'éditer les scénarios en mode text/json
+-   Ajout sur la page santé d'une vérification de l'espace libre pour le tmp Jeedom
+-   Possibilitée d'ajouter des options dans les rapports
+-   Ajout d'un heartbeat par plugin et de redemarrage automatique de démon en cas de soucis
+-   Ajout des listeners sur la page de moteur de tâche
+-   Optimisations
+-   Possibilité de consulter les logs en version mobile (wepapp)
+-   Ajout d'une action tag dans les scénarios (voir documentation)
+-   Possibilité d'avoir une vue en pleine écran en ajoutant "&fullscree=1" dans l'url
+-   Ajout de lastCommunication dans les scénarios (pour avoir la date de derniere communication d'un équipement)
 
 3.3.30
 =====
