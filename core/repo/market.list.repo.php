@@ -1,4 +1,7 @@
 <?php
+
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
+
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
@@ -225,8 +228,9 @@ if ($type !== null && $type != 'plugin') {
 	</div>
 	<div class="form-group">
 		<?php
-if (config::byKey('market::username') != '') {
-	echo '<span class="label label-info pull-right" style="font-size : 1em;">' . config::byKey('market::username');
+        $configuration = ConfigurationFactory::build();
+if ($configuration->get('market::username') != '') {
+	echo '<span class="label label-info pull-right" style="font-size : 1em;">' . $configuration->get('market::username');
 	try {
 		repo_market::test();
 		echo ' <i class="fa fa-check"></i>';
@@ -324,7 +328,7 @@ foreach ($markets as $market) {
 			break;
 	}
 
-	$urlPath = config::byKey('market::address') . '/' . $market->getImg('icon');
+	$urlPath = $configuration->get('market::address') . '/' . $market->getImg('icon');
 	if ($market->getType() == 'widget') {
 		echo '<img class="lazy" src="' . $default_image . '" data-original="' . $urlPath . '" height="105" width="95" style="margin-left: 20px;border: 1px solid #C5C5C5;border-radius:5px; padding: 3px" />';
 	} else {

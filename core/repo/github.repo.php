@@ -18,6 +18,8 @@
 
 /* * ***************************Includes********************************* */
 
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class repo_github {
@@ -77,8 +79,9 @@ class repo_github {
 		$client = new \Github\Client(
 			new \Github\HttpClient\CachedHttpClient(array('cache_dir' => jeedom::getTmpFolder('github') . '/cache'))
 		);
-		if (config::byKey('github::token') != '') {
-			$client->authenticate(config::byKey('github::token'), '', Github\Client::AUTH_URL_TOKEN);
+		$configuration = ConfigurationFactory::build();
+		if ($configuration->get('github::token') != '') {
+			$client->authenticate($configuration->get('github::token'), '', Github\Client::AUTH_URL_TOKEN);
 		}
 		return $client;
 	}
@@ -138,10 +141,11 @@ class repo_github {
 
 		$url = 'https://api.github.com/repos/' . $_update->getConfiguration('user') . '/' . $_update->getConfiguration('repository') . '/zipball/' . $_update->getConfiguration('version', 'master');
 		log::add('update', 'alert', __('Téléchargement de ', __FILE__) . $_update->getLogicalId() . '...');
-		if (config::byKey('github::token') == '') {
+        $configuration = ConfigurationFactory::build();
+		if ($configuration->get('github::token') == '') {
 			$result = shell_exec('curl -s -L ' . $url . ' > ' . $tmp);
 		} else {
-			$result = shell_exec('curl -s -H "Authorization: token ' . config::byKey('github::token') . '" -L ' . $url . ' > ' . $tmp);
+			$result = shell_exec('curl -s -H "Authorization: token ' . $configuration->get('github::token') . '" -L ' . $url . ' > ' . $tmp);
 		}
 		log::add('update', 'alert', $result);
 
@@ -157,32 +161,33 @@ class repo_github {
 
 	public static function objectInfo($_update) {
 		return array(
-			'doc' => 'https://github.com/' . $_update->getConfiguration('user') . '/' . $_update->getConfiguration('repository') . '/blob/' . $_update->getConfiguration('version', 'master') . '/doc/' . config::byKey('language', 'core', 'fr_FR') . '/index.asciidoc',
+			'doc' => 'https://github.com/' . $_update->getConfiguration('user') . '/' . $_update->getConfiguration('repository') . '/blob/' . $_update->getConfiguration('version', 'master') . '/doc/' . ConfigurationFactory::build()->get('language', 'fr_FR') . '/index.asciidoc',
 			'changelog' => 'https://github.com/' . $_update->getConfiguration('user') . '/' . $_update->getConfiguration('repository') . '/commits/' . $_update->getConfiguration('version', 'master'),
 		);
 	}
 
 	public static function downloadCore($_path) {
+	    $configuration = ConfigurationFactory::build();
 		$client = self::getGithubClient();
 		try {
-			$client->api('repo')->branches(config::byKey('github::core::user', 'core', 'jeedom'), config::byKey('github::core::repository', 'core', 'core'), config::byKey('github::core::branch', 'core', 'stable'));
+			$client->api('repo')->branches($configuration->get('github::core::user', 'jeedom'), $configuration->get('github::core::repository', 'core'), $configuration->get('github::core::branch', 'stable'));
 		} catch (Exception $e) {
-			throw new Exception(__('Dépot github non trouvé : ', __FILE__) . config::byKey('github::core::user', 'core', 'jeedom') . '/' . config::byKey('github::core::repository', 'core', 'core') . '/' . config::byKey('github::core::branch', 'core', 'stable'));
+			throw new Exception(__('Dépot github non trouvé : ', __FILE__) . $configuration->get('github::core::user', 'jeedom') . '/' . $configuration->get('github::core::repository', 'core') . '/' . $configuration->get('github::core::branch', 'stable'));
 		}
-		$url = 'https://api.github.com/repos/' . config::byKey('github::core::user', 'core', 'jeedom') . '/' . config::byKey('github::core::repository', 'core', 'core') . '/zipball/' . config::byKey('github::core::branch', 'core', 'stable');
+		$url = 'https://api.github.com/repos/' . $configuration->get('github::core::user', 'jeedom') . '/' . $configuration->get('github::core::repository', 'core') . '/zipball/' . $configuration->get('github::core::branch', 'stable');
 		echo __('Téléchargement de ', __FILE__) . $url . '...';
-		if (config::byKey('github::token') == '') {
+		if ($configuration->get('github::token') == '') {
 			echo shell_exec('curl -s -L ' . $url . ' > ' . $_path);
 		} else {
-			echo shell_exec('curl -s -H "Authorization: token ' . config::byKey('github::token') . '" -L ' . $url . ' > ' . $_path);
+			echo shell_exec('curl -s -H "Authorization: token ' . $configuration->get('github::token') . '" -L ' . $url . ' > ' . $_path);
 		}
-		return;
 	}
 
 	public static function versionCore() {
+        $configuration = ConfigurationFactory::build();
 		try {
 			$client = self::getGithubClient();
-			$fileContent = $client->api('repo')->contents()->download(config::byKey('github::core::user', 'core', 'jeedom'), config::byKey('github::core::repository', 'core', 'core'), 'core/config/version', config::byKey('github::core::branch', 'core', 'stable'));
+			$fileContent = $client->api('repo')->contents()->download($configuration->get('github::core::user', 'jeedom'), $configuration->get('github::core::repository', 'core'), 'core/config/version', $configuration->get('github::core::branch', 'stable'));
 			return trim($fileContent);
 		} catch (Exception $e) {
 

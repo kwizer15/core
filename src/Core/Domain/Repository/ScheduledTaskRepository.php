@@ -9,7 +9,7 @@ interface ScheduledTaskRepository
      *
      * @param bool $_order
      *
-     * @return array
+     * @return \cron[]
      */
     public function all($_order = false);
 
@@ -18,7 +18,7 @@ interface ScheduledTaskRepository
      *
      * @param int $_id
      *
-     * @return object
+     * @return \cron
      */
     public function get($_id);
 
@@ -29,9 +29,20 @@ interface ScheduledTaskRepository
      * @param string $_function
      * @param string $_option
      *
-     * @return object
+     * @return \cron
      */
     public function findByClassAndFunction($_class, $_function, $_option = '');
+
+    /**
+     *
+     * @param string $_class
+     * @param string $_function
+     * @param string $_option
+     *
+     * @return \cron[]
+     * @throws \ReflectionException
+     */
+    public function searchClassAndFunction($_class, $_function, $_option = '');
 
     /**
      * Save cron object

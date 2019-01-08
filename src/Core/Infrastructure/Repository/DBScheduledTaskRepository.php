@@ -133,4 +133,15 @@ class DBScheduledTaskRepository implements ScheduledTaskRepository
 
         return $this;
     }
-}
+
+    /**
+     * Déstinée à être supprimée
+     *
+     * @param $cron
+     *
+     * @return mixed
+     */
+    public function refresh($cron)
+    {
+        // TODO: Implement refresh() method.
+}}

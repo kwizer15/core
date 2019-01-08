@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
 use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
@@ -126,14 +127,15 @@ class history {
 		DB::Prepare($sql, array());
 		$sql = 'DELETE FROM historyArch WHERE `value` IS NULL';
 		DB::Prepare($sql, array());
-		if (config::byKey('historyArchivePackage') >= config::byKey('historyArchiveTime')) {
-			config::save('historyArchivePackage', config::byKey('historyArchiveTime') - 1);
+		$configuration = ConfigurationFactory::build();
+		if ($configuration->get('historyArchivePackage') >= $configuration->get('historyArchiveTime')) {
+            $configuration->set('historyArchivePackage', $configuration->get('historyArchiveTime') - 1);
 		}
-		$archiveDatetime = (config::byKey('historyArchiveTime') < 1) ? date('Y-m-d H:i:s', strtotime('- 1 hours')) : date('Y-m-d H:i:s', strtotime('- ' . config::byKey('historyArchiveTime', 'core', 1) . ' hours'));
-		if (config::byKey('historyArchivePackage') < 1) {
-			$archivePackage = '00:' . config::byKey('historyArchivePackage') * 60 . ':00';
+		$archiveDatetime = ($configuration->get('historyArchiveTime') < 1) ? date('Y-m-d H:i:s', strtotime('- 1 hours')) : date('Y-m-d H:i:s', strtotime('- ' . $configuration->get('historyArchiveTime',  1) . ' hours'));
+		if ($configuration->get('historyArchivePackage') < 1) {
+			$archivePackage = '00:' . $configuration->get('historyArchivePackage') * 60 . ':00';
 		} else {
-			$archivePackage = config::byKey('historyArchivePackage') . ':00:00';
+			$archivePackage = $configuration->get('historyArchivePackage') . ':00:00';
 			if (strlen($archivePackage) < 8) {
 				$archivePackage = '0' . $archivePackage;
 			}

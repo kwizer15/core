@@ -16,6 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 if (php_sapi_name() != 'cli' || isset($_SERVER['REQUEST_METHOD']) || !isset($_SERVER['argc'])) {
 	header("Statut: 404 Page non trouvée");
 	header('HTTP/1.0 404 Not Found');
@@ -36,13 +39,15 @@ if (isset($argv)) {
 
 require_once __DIR__ . "/core.inc.php";
 
+/** @var ScheduledTaskRepository $schduledTaskRepository */
+$schduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
 if (init('cron_id') != '') {
 	if (jeedom::isStarted() && config::byKey('enableCron', 'core', 1, true) == 0) {
 		die(__('Tous les crons sont actuellement désactivés', __FILE__));
 	}
 	$datetime = date('Y-m-d H:i:s');
 	$datetimeStart = strtotime('now');
-	$cron = cron::byId(init('cron_id'));
+	$cron = $schduledTaskRepository->get(init('cron_id'));
 	if (!is_object($cron)) {
 		die();
 	}
@@ -136,7 +141,7 @@ if (init('cron_id') != '') {
 			}
 		}
 		if ($cron->getOnce() == 1) {
-			$cron->remove(false);
+		    $schduledTaskRepository->remove($cron, false);
 		} else {
 			if (!$cron->refresh()) {
 				die();
@@ -192,7 +197,7 @@ if (init('cron_id') != '') {
 	if ($started && config::byKey('enableCron', 'core', 1, true) == 0) {
 		die(__('Tous les crons sont actuellement désactivés', __FILE__));
 	}
-	foreach (cron::all() as $cron) {
+	foreach ($schduledTaskRepository->all() as $cron) {
 		try {
 			if ($cron->getDeamon() == 1) {
 				$cron->refresh();

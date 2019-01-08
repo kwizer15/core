@@ -16,6 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 try {
 	require_once __DIR__ . '/../php/core.inc.php';
 	include_file('core', 'authentification', 'php');
@@ -32,26 +35,28 @@ try {
 		ajax::success();
 	}
 
+    /** @var ScheduledTaskRepository $scheduledTaskRepository */
+    $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
 	if (init('action') == 'remove') {
 		unautorizedInDemo();
-		$cron = cron::byId(init('id'));
+		$cron = $scheduledTaskRepository->get(init('id'));
 		if (!is_object($cron)) {
 			throw new Exception(__('Cron id inconnu', __FILE__));
 		}
-		$cron->remove();
+		$scheduledTaskRepository->remove($cron);
 		ajax::success();
 	}
 
 	if (init('action') == 'all') {
-		$crons = cron::all(true);
+		$crons = $scheduledTaskRepository->all(true);
 		foreach ($crons as $cron) {
-			$cron->refresh();
+            $cron->refresh();
 		}
 		ajax::success(utils::o2a($crons));
 	}
 
 	if (init('action') == 'start') {
-		$cron = cron::byId(init('id'));
+		$cron = $scheduledTaskRepository->get(init('id'));
 		if (!is_object($cron)) {
 			throw new Exception(__('Cron id inconnu', __FILE__));
 		}
@@ -61,7 +66,7 @@ try {
 	}
 
 	if (init('action') == 'stop') {
-		$cron = cron::byId(init('id'));
+		$cron = $scheduledTaskRepository->get(init('id'));
 		if (!is_object($cron)) {
 			throw new Exception(__('Cron id inconnu', __FILE__));
 		}

@@ -20,6 +20,7 @@
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -807,14 +808,15 @@ class interactQuery {
 			if (date('Y', $executeDate) < 2000) {
 				return __('Erreur : impossible de calculer la date de programmation', __FILE__);
 			}
-			if ($executeDate < (strtotime('now') + 60)) {
-				$executeDate = strtotime('now') + 60;
+			if ($executeDate < (time() + 60)) {
+				$executeDate = time() + 60;
 			}
-			$crons = cron::searchClassAndFunction('interactQuery', 'doIn', '"interactQuery_id":' . $this->getId());
+            $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+			$crons = $scheduledTaskRepository->searchClassAndFunction('interactQuery', 'doIn', '"interactQuery_id":' . $this->getId());
 			if (is_array($crons)) {
 				foreach ($crons as $cron) {
 					if ($cron->getState() != 'run') {
-						$cron->remove();
+                        $scheduledTaskRepository->remove($cron);
 					}
 				}
 			}
@@ -825,7 +827,7 @@ class interactQuery {
 			$cron->setLastRun(date('Y-m-d H:i:s'));
 			$cron->setOnce(1);
 			$cron->setSchedule(cron::convertDateToCron($executeDate));
-			$cron->save();
+            $scheduledTaskRepository->add($cron);
 			$replace['#valeur#'] = date('Y-m-d H:i:s', $executeDate);
 			$result = scenarioExpression::setTags(str_replace(array_keys($replace), $replace, $reply));
 			return $result;

@@ -22,6 +22,8 @@ use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
 use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
 use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
 use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
@@ -43,7 +45,8 @@ class jeedom {
 		if (!file_exists($path)) {
 			return array();
 		}
-		com_shell::execute(system::getCmdSudo() . 'chmod 666 ' . $path . ' > /dev/null 2>&1;echo "$(tail -n ' . config::byKey('timeline::maxevent') . ' ' . $path . ')" > ' . $path);
+		$configuration = ConfigurationFactory::build();
+		com_shell::execute(system::getCmdSudo() . 'chmod 666 ' . $path . ' > /dev/null 2>&1;echo "$(tail -n ' . $configuration->get('timeline::maxevent') . ' ' . $path . ')" > ' . $path);
 		$lines = explode("\n", trim(file_get_contents($path)));
 		$result = array();
 		foreach ($lines as $line) {
@@ -75,7 +78,8 @@ class jeedom {
 	public static function deadCmd() {
 		global $JEEDOM_INTERNAL_CONFIG;
 		$return = array();
-        $cmd = config::byKey('interact::warnme::defaultreturncmd', 'core', '');
+		$configuration = ConfigurationFactory::build();
+        $cmd = $configuration->get('interact::warnme::defaultreturncmd', '');
         /** @var CommandRepository $commandRepository */
         $commandRepository = RepositoryFactory::build(CommandRepository::class);
         if ($cmd != '') {
@@ -83,14 +87,14 @@ class jeedom {
 				$return[] = array('detail' => 'Administration', 'help' => __('Commande retour interactions', __FILE__), 'who' => $cmd);
 			}
 		}
-		$cmd = config::byKey('emailAdmin', 'core', '');
+		$cmd = $configuration->get('emailAdmin', '');
 		if ($cmd != '') {
 			if (!$commandRepository->get(str_replace('#', '', $cmd))) {
 				$return[] = array('detail' => 'Administration', 'help' => __('Commande information utilisateur', __FILE__), 'who' => $cmd);
 			}
 		}
 		foreach ($JEEDOM_INTERNAL_CONFIG['alerts'] as $level => $value) {
-			$cmds = config::byKey('alert::' . $level . 'Cmd', 'core', '');
+			$cmds = $configuration->get('alert::' . $level . 'Cmd', '');
 			preg_match_all("/#([0-9]*)#/", $cmds, $matches);
 			foreach ($matches[1] as $cmd_id) {
 				if (!$commandRepository->get($cmd_id)) {
@@ -112,7 +116,8 @@ class jeedom {
 			'comment' => '',
 		);
 
-		$state = (config::byKey('enableCron', 'core', 1, true) != 0) ? true : false;
+        $configuration = ConfigurationFactory::build();
+		$state = $configuration->get('enableCron', 1) != 0;
 		$return[] = array(
 			'name' => __('Cron actif', __FILE__),
 			'state' => $state,
@@ -122,7 +127,7 @@ class jeedom {
 
         /** @var ScenarioRepository $scenarioRepository */
         $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
-		$state = (config::byKey('enableScenario') == 0 && $scenarioRepository->count() > 0) ? false : true;
+		$state = ($configuration->get('enableScenario') == 0 && $scenarioRepository->count() > 0) ? false : true;
 		$return[] = array(
 			'name' => __('Scénario actif', __FILE__),
 			'state' => $state,
@@ -284,7 +289,7 @@ class jeedom {
 
 		$cache_health = array('comment' => '', 'name' => __('Persistance du cache', __FILE__));
 		if (cache::isPersistOk()) {
-			if (config::byKey('cache::engine') != 'FilesystemCache' && config::byKey('cache::engine') != 'PhpFileCache') {
+			if ($configuration->get('cache::engine') != 'FilesystemCache' && $configuration->get('cache::engine') != 'PhpFileCache') {
 				$cache_health['state'] = true;
 				$cache_health['result'] = __('OK', __FILE__);
 			} else {
@@ -329,22 +334,25 @@ class jeedom {
 	}
 
 	public static function getApiKey($_plugin = 'core') {
+	    $configuration = ConfigurationFactory::build();
 		if ($_plugin == 'apipro') {
-			if (config::byKey('apipro') == '') {
-				config::save('apipro', config::genKey());
+			if ($configuration->get('apipro') == '') {
+                $configuration->set('apipro', config::genKey());
 			}
-			return config::byKey('apipro');
+			return $configuration->get('apipro');
 		}
 		if ($_plugin == 'apimarket') {
-			if (config::byKey('apimarket') == '') {
-				config::save('apimarket', config::genKey());
+			if ($configuration->get('apimarket') == '') {
+                $configuration->set('apimarket', config::genKey());
 			}
-			return config::byKey('apimarket');
+			return $configuration->get('apimarket');
 		}
-		if (config::byKey('api', $_plugin) == '') {
-			config::save('api', config::genKey(), $_plugin);
-		}
-		return config::byKey('api', $_plugin);
+
+        $pluginConfiguration = ConfigurationFactory::build($_plugin);
+        if ($pluginConfiguration->get('api') == '') {
+            $pluginConfiguration->set('api', config::genKey());
+        }
+		return $pluginConfiguration->get('api');
 	}
 
 	public static function apiModeResult($_mode = 'enable') {
@@ -354,8 +362,9 @@ class jeedom {
 			case 'whiteip':
 				$ip = getClientIp();
 				$find = false;
-				$whiteIps = explode(';', config::byKey('security::whiteips'));
-				if (config::byKey('security::whiteips') != '' && count($whiteIps) > 0) {
+				$configuration = ConfigurationFactory::build();
+				$whiteIps = explode(';', $configuration->get('security::whiteips'));
+				if ($configuration->get('security::whiteips') != '' && count($whiteIps) > 0) {
 					foreach ($whiteIps as $whiteip) {
 						if (netMatch($whiteip, $ip)) {
 							$find = true;
@@ -379,7 +388,7 @@ class jeedom {
 		if (trim($_apikey) == '') {
 			return false;
 		}
-		if ($_plugin != 'core' && $_plugin != 'proapi' && !self::apiModeResult(config::byKey('api::' . $_plugin . '::mode', 'core', 'enable'))) {
+		if ($_plugin != 'core' && $_plugin != 'proapi' && !self::apiModeResult(ConfigurationFactory::build()->get('api::' . $_plugin . '::mode', 'enable'))) {
 			return false;
 		}
 		$apikey = self::getApiKey($_plugin);
@@ -408,13 +417,14 @@ class jeedom {
 		}
         /** @var ScenarioRepository $scenarioRepository */
         $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
-		if (config::byKey('enableScenario') == 0 && $scenarioRepository->count() > 0) {
+        $configuration = ConfigurationFactory::build();
+		if ($configuration->get('enableScenario') == 0 && $scenarioRepository->count() > 0) {
 			return false;
 		}
 		if (!self::isCapable('sudo')) {
 			return false;
 		}
-		if (config::byKey('enableCron', 'core', 1, true) == 0) {
+		if ($configuration->get('enableCron', 1) == 0) {
 			return false;
 		}
 		return true;
@@ -540,10 +550,11 @@ class jeedom {
 	}
 
 	public static function listBackup() {
-		if (substr(config::byKey('backup::path'), 0, 1) != '/') {
-			$backup_dir = __DIR__ . '/../../' . config::byKey('backup::path');
+        $configuration = ConfigurationFactory::build();
+		if (substr($configuration->get('backup::path'), 0, 1) != '/') {
+			$backup_dir = __DIR__ . '/../../' . $configuration->get('backup::path');
 		} else {
-			$backup_dir = config::byKey('backup::path');
+			$backup_dir = $configuration->get('backup::path');
 		}
 		$backups = ls($backup_dir, '*.tar.gz', false, array('files', 'quiet', 'datetime_asc'));
 		$return = array();
@@ -631,7 +642,7 @@ class jeedom {
 			self::$jeedomConfiguration[$_key] = $_value;
 			return $_value;
 		} else {
-			$config = config::byKey($_key);
+			$config = ConfigurationFactory::build()->get($_key);
 			return ($config == '') ? $_value : $config;
 		}
 	}
@@ -646,9 +657,12 @@ class jeedom {
 	/**********************START AND DATE MANAGEMENT*************************************************************/
 
 	public static function stop() {
+	    $configuration = ConfigurationFactory::build();
 		echo "Disable all task";
-		config::save('enableCron', 0);
-		foreach (cron::all() as $cron) {
+		$configuration->set('enableCron', 0);
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+		foreach ($scheduledTaskRepository->all() as $cron) {
 			if ($cron->running()) {
 				try {
 					$cron->halt();
@@ -677,7 +691,7 @@ class jeedom {
 		/*         * *********Arrêt des scénarios**************** */
 
 		echo "Disable all scenario";
-		config::save('enableScenario', 0);
+        $configuration->set('enableScenario', 0);
         /** @var ScenarioRepository $scenarioRepository */
         $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
 		foreach ($scenarioRepository->all() as $scenario) {
@@ -696,14 +710,15 @@ class jeedom {
 	}
 
 	public static function start() {
+	    $configuration = ConfigurationFactory::build();
 		try {
 			/*             * *********Réactivation des scénarios**************** */
 			echo "Enable scenario : ";
-			config::save('enableScenario', 1);
+			$configuration->set('enableScenario', 1);
 			echo "OK\n";
 			/*             * *********Réactivation des tâches**************** */
 			echo "Enable task : ";
-			config::save('enableCron', 1);
+			$configuration->set('enableCron', 1);
 			echo "OK\n";
 		} catch (Exception $e) {
 			if (!isset($_GET['mode']) || $_GET['mode'] != 'force') {
@@ -729,7 +744,8 @@ class jeedom {
 	 * @return boolean
 	 */
 	public static function isDateOk() {
-		if (config::byKey('ignoreHourCheck') == 1) {
+	    $configuration = ConfigurationFactory::build();
+		if ($configuration->get('ignoreHourCheck') == 1) {
 			return true;
 		}
 		$cache = cache::byKey('hour');
@@ -763,6 +779,7 @@ class jeedom {
 	/*****************************************CRON JEEDOM****************************************************************/
 
 	public static function cron5() {
+        $configuration = ConfigurationFactory::build();
 		try {
 			network::cron5();
 		} catch (Exception $e) {
@@ -773,7 +790,7 @@ class jeedom {
 		try {
 			foreach (update::listRepo() as $name => $repo) {
 				$class = 'repo_' . $name;
-				if (class_exists($class) && method_exists($class, 'cron5') && config::byKey($name . '::enable') == 1) {
+				if (class_exists($class) && method_exists($class, 'cron5') && $configuration->get($name . '::enable') == 1) {
 					$class::cron5();
 				}
 			}
@@ -797,7 +814,9 @@ class jeedom {
 			log::add('starting', 'debug', __('Démarrage de jeedom', __FILE__));
 			try {
 				log::add('starting', 'debug', __('Arrêt des crons', __FILE__));
-				foreach (cron::all() as $cron) {
+				/** @var ScheduledTaskRepository $scheduledTaskRepository */
+				$scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+				foreach ($scheduledTaskRepository->all() as $cron) {
 					if ($cron->running() && $cron->getClass() != 'jeedom' && $cron->getFunction() != 'cron') {
 						try {
 							$cron->halt();
@@ -898,7 +917,8 @@ class jeedom {
 			}
 
 			try {
-				if (config::byKey('market::enable') == 1) {
+                $configuration = ConfigurationFactory::build();
+				if ($configuration->get('market::enable') == 1) {
 					log::add('starting', 'debug', __('Test de connexion au market', __FILE__));
 					repo_market::test();
 				}
@@ -938,7 +958,11 @@ class jeedom {
 			log::add('jeedom', 'error', $e->getMessage());
 		}
 		try {
-			if (config::byKey('update::autocheck', 'core', 1) == 1 && (config::byKey('update::lastCheck') == '' || (strtotime('now') - strtotime(config::byKey('update::lastCheck'))) > (23 * 3600))) {
+            $configuration = ConfigurationFactory::build();
+			if ($configuration->get('update::autocheck', 'core', 1) == 1
+                && ($configuration->get('update::lastCheck') == ''
+                    || (strtotime('now') - strtotime($configuration->get('update::lastCheck'))) > (23 * 3600))
+            ) {
 				update::checkAllUpdate();
 				$updates = update::byStatus('update');
 				if (count($updates) > 0) {
@@ -960,7 +984,7 @@ class jeedom {
 		try {
 			foreach (update::listRepo() as $name => $repo) {
 				$class = 'repo_' . $name;
-				if (class_exists($class) && method_exists($class, 'cronHourly') && config::byKey($name . '::enable') == 1) {
+				if (class_exists($class) && method_exists($class, 'cronHourly') && $configuration->get($name . '::enable') == 1) {
 					$class::cronHourly();
 				}
 			}
@@ -1185,7 +1209,9 @@ class jeedom {
 	}
 
 	public static function forceSyncHour() {
-		shell_exec(system::getCmdSudo() . 'service ntp stop;' . system::getCmdSudo() . 'ntpdate -s ' . config::byKey('ntp::optionalServer', 'core', '0.debian.pool.ntp.org') . ';' . system::getCmdSudo() . 'service ntp start');
+        $configuration = ConfigurationFactory::build();
+        $sudo = system::getCmdSudo();
+		shell_exec($sudo . 'service ntp stop;' . $sudo . 'ntpdate -s ' . $configuration->get('ntp::optionalServer', '0.debian.pool.ntp.org') . ';' . $sudo . 'service ntp start');
 	}
 
 	public static function cleanFileSytemRight() {
@@ -1206,7 +1232,8 @@ class jeedom {
 	}
 
 	public static function getTmpFolder($_plugin = null) {
-		$return = '/' . trim(config::byKey('folder::tmp'), '/');
+        $configuration = ConfigurationFactory::build();
+		$return = '/' . trim($configuration->get('folder::tmp'), '/');
 		if ($_plugin !== null) {
 			$return .= '/' . $_plugin;
 		}
@@ -1221,17 +1248,19 @@ class jeedom {
 /*     * ******************hardware management*************************** */
 
 	public static function getHardwareKey() {
-		$return = config::byKey('jeedom::installKey');
+        $configuration = ConfigurationFactory::build();
+		$return = $configuration->get('jeedom::installKey');
 		if ($return == '') {
 			$return = substr(sha512(microtime() . config::genKey()), 0, 63);
-			config::save('jeedom::installKey', $return);
+            $configuration->set('jeedom::installKey', $return);
 		}
 		return $return;
 	}
 
 	public static function getHardwareName() {
-		if (config::byKey('hardware_name') != '') {
-			return config::byKey('hardware_name');
+        $configuration = ConfigurationFactory::build();
+		if ($configuration->get('hardware_name') != '') {
+			return $configuration->get('hardware_name');
 		}
 		$result = 'diy';
 		$uname = shell_exec('uname -a');
@@ -1245,15 +1274,16 @@ class jeedom {
 		if (file_exists('/media/boot/multiboot/meson64_odroidc2.dtb.linux')) {
 			$result = 'smart';
 		}
-		config::save('hardware_name', $result);
-		return config::byKey('hardware_name');
+        $configuration->set('hardware_name', $result);
+		return $configuration->get('hardware_name');
 	}
 
 	public static function isCapable($_function, $_forceRefresh = false) {
+        $configuration = ConfigurationFactory::build();
 		global $JEEDOM_COMPATIBILIY_CONFIG;
 		if ($_function == 'sudo') {
 			if (!$_forceRefresh) {
-				$cache = cache::byKey('jeedom::isCapable::sudo');
+				$cache = $configuration->get('jeedom::isCapable::sudo');
 				if ($cache->getValue(0) == 1) {
 					return true;
 				}
@@ -1333,15 +1363,16 @@ class jeedom {
 		}
 		$return['database_update_' . $param['database_update']] = getmicrotime() - $starttime;
 
+		$configuration = ConfigurationFactory::build();
 		$starttime = getmicrotime();
 		for ($i = 0; $i < $param['database_replace']; $i++) {
-			config::save('jeedom_benchmark', $i);
+            $configuration->set('jeedom_benchmark', $i);
 		}
 		$return['database_replace_' . $param['database_replace']] = getmicrotime() - $starttime;
 
 		$starttime = getmicrotime();
 		for ($i = 0; $i < $param['database_read']; $i++) {
-			config::byKey('jeedom_benchmark');
+            $configuration->get('jeedom_benchmark');
 		}
 		$return['database_read_' . $param['database_read']] = getmicrotime() - $starttime;
 

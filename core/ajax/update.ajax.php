@@ -16,6 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
 	include_file('core', 'authentification', 'php');
@@ -74,7 +77,9 @@ try {
 			if ($update->getType() != 'core') {
 				log::add('update', 'alert', __("Launch cron dependancy plugins", __FILE__));
 				try {
-					$cron = cron::byClassAndFunction('plugin', 'checkDeamon');
+				    /** @var ScheduledTaskRepository $scheduledTask */
+                    $scheduledTask = RepositoryFactory::build(ScheduledTaskRepository::class);
+					$cron = $scheduledTask->findByClassAndFunction('plugin', 'checkDeamon');
 					if (is_object($cron)) {
 						$cron->start();
 					}

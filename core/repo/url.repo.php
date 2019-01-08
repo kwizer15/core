@@ -18,6 +18,8 @@
 
 /* * ***************************Includes********************************* */
 
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class repo_url {
@@ -86,19 +88,19 @@ class repo_url {
 	}
 
 	public static function downloadCore($_path) {
-		exec('wget --no-check-certificate --progress=dot --dot=mega ' . config::byKey('url::core::url') . ' -O ' . $_path);
-		return;
+		exec('wget --no-check-certificate --progress=dot --dot=mega ' . ConfigurationFactory::build()->get('url::core::url') . ' -O ' . $_path);
 	}
 
 	public static function versionCore() {
-		if (config::byKey('url::core::version') == '') {
+	    $configuration = ConfigurationFactory::build();
+		if ($configuration->get('url::core::version') == '') {
 			return null;
 		}
 		try {
 			if (file_exists(jeedom::getTmpFolder('url') . '/version')) {
 				com_shell::execute(system::getCmdSudo() . 'rm /tmp/jeedom_version');
 			}
-			exec('wget --no-check-certificate --progress=dot --dot=mega ' . config::byKey('url::core::version') . ' -O /tmp/jeedom_version');
+			exec('wget --no-check-certificate --progress=dot --dot=mega ' . $configuration->get('url::core::version') . ' -O /tmp/jeedom_version');
 			if (!file_exists(jeedom::getTmpFolder('url') . '/version')) {
 				return null;
 			}
@@ -116,5 +118,4 @@ class repo_url {
 	/*     * *********************Methode d'instance************************* */
 
 	/*     * **********************Getteur Setteur*************************** */
-
 }

@@ -21,6 +21,7 @@
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
 use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -130,7 +131,7 @@ class dataStore {
 
 	public function getLinkData(&$_data = array('node' => array(), 'link' => array()), $_level = 0, $_drill = null) {
 		if ($_drill == null) {
-			$_drill = config::byKey('graphlink::dataStore::drill');
+			$_drill = ConfigurationFactory::build()->get('graphlink::dataStore::drill');
 		}
 		if (isset($_data['node']['dataStore' . $this->getId()])) {
 			return;

@@ -18,6 +18,8 @@
 
 /* * ***************************Includes********************************* */
 
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -174,7 +176,9 @@ class cron {
 			throw new Exception(__('La programmation ne peut pas être vide : ', __FILE__) . print_r($this, true));
 		}
 		if ($this->getOption() == '' || count($this->getOption()) == 0) {
-			$cron = cron::byClassAndFunction($this->getClass(), $this->getFunction());
+		    /** @var ScheduledTaskRepository $scheduledTaskRepository */
+		    $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+			$cron = $scheduledTaskRepository->findByClassAndFunction($this->getClass(), $this->getFunction());
 			if (is_object($cron)) {
 				$this->setId($cron->getId());
 			}
@@ -291,13 +295,14 @@ class cron {
 			if ($this->getPID() > 0) {
 				system::kill($this->getPID());
 				$retry = 0;
-				while ($this->running() && $retry < (config::byKey('deamonsSleepTime') + 5)) {
+                $configuration = ConfigurationFactory::build();
+				while ($this->running() && $retry < ($configuration->get('deamonsSleepTime') + 5)) {
 					sleep(1);
 					system::kill($this->getPID());
 					$retry++;
 				}
 				$retry = 0;
-				while ($this->running() && $retry < (config::byKey('deamonsSleepTime') + 5)) {
+				while ($this->running() && $retry < ($configuration->get('deamonsSleepTime') + 5)) {
 					sleep(1);
 					system::kill($this->getPID());
 					$retry++;
@@ -355,7 +360,8 @@ class cron {
 				return false;
 			}
 			$diff = abs((strtotime('now') - $prev) / 60);
-			if (strtotime($this->getLastRun()) < $prev && ($diff <= config::byKey('maxCatchAllow') || config::byKey('maxCatchAllow') == -1)) {
+			$configuration = ConfigurationFactory::build();
+			if (strtotime($this->getLastRun()) < $prev && ($diff <= $configuration->get('maxCatchAllow') || $configuration->get('maxCatchAllow') == -1)) {
 				return true;
 			}
 		} catch (Exception $e) {
@@ -484,7 +490,7 @@ class cron {
 	public function getTimeout() {
 		$timeout = $this->timeout;
 		if ($timeout == 0) {
-			$timeout = config::byKey('maxExecTimeCrontask');
+			$timeout = ConfigurationFactory::build()->get('maxExecTimeCrontask');
 		}
 		return $timeout;
 	}
@@ -497,7 +503,7 @@ class cron {
 	public function getDeamonSleepTime() {
 		$deamonSleepTime = $this->deamonSleepTime;
 		if ($deamonSleepTime == 0) {
-			$deamonSleepTime = config::byKey('deamonsSleepTime');
+			$deamonSleepTime = ConfigurationFactory::build()->get('deamonsSleepTime');
 		}
 		return $deamonSleepTime;
 	}

@@ -16,6 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 if (php_sapi_name() != 'cli' || isset($_SERVER['REQUEST_METHOD']) || !isset($_SERVER['argc'])) {
 	header("Statut: 404 Page non trouvée");
 	header('HTTP/1.0 404 Not Found');
@@ -395,7 +398,9 @@ try {
 
 try {
 	echo "Launch cron dependancy plugins...";
-	$cron = cron::byClassAndFunction('plugin', 'checkDeamon');
+    /** @var ScheduledTaskRepository $scheduledTaskRepository */
+    $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+	$cron = $scheduledTaskRepository->findByClassAndFunction('plugin', 'checkDeamon');
 	if (is_object($cron)) {
 		$cron->start();
 	}

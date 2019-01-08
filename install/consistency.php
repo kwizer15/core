@@ -18,6 +18,8 @@
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 if (php_sapi_name() != 'cli' || isset($_SERVER['REQUEST_METHOD']) || !isset($_SERVER['argc'])) {
@@ -43,8 +45,9 @@ if (isset($argv)) {
 try {
 	require_once __DIR__ . '/../core/php/core.inc.php';
 
-	if (config::byKey('object:summary') == '' || !is_array(config::byKey('object:summary'))) {
-		config::save('object:summary',
+	$configuration = ConfigurationFactory::build();
+	if ($configuration->get('object:summary') == '' || !is_array($configuration->get('object:summary'))) {
+        $configuration->set('object:summary',
 			array('security' => array('key' => 'security', 'name' => 'Alerte', 'calcul' => 'sum', 'icon' => '<i class="icon jeedom-alerte2"></i>', 'unit' => '', 'count' => 'binary', 'allowDisplayZero' => false),
 				'motion' => array('key' => 'motion', 'name' => 'Mouvement', 'calcul' => 'sum', 'icon' => '<i class="icon jeedom-mouvement"></i>', 'unit' => '', 'count' => 'binary', 'allowDisplayZero' => false),
 				'door' => array('key' => 'door', 'name' => 'Porte', 'calcul' => 'sum', 'icon' => '<i class="icon jeedom-porte-ouverte"></i>', 'unit' => '', 'count' => 'binary', 'allowDisplayZero' => false),
@@ -60,7 +63,9 @@ try {
 		);
 	}
 
-	$crons = cron::all();
+	/** @var ScheduledTaskRepository $scheduledTaskRepository */
+	$scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+	$crons = $scheduledTaskRepository->all();
 	if (is_array($crons)) {
 		if (class_exists('Cron\CronExpression')) {
 			foreach ($crons as $cron) {
@@ -71,42 +76,42 @@ try {
 					}
 				} catch (Exception $ex) {
 					echo "Suppression de  : " . $cron->getName() . ' car il n\'y a pas de lancement prévu';
-					$cron->remove();
+					$scheduledTaskRepository->remove($cron);
 				}
 			}
 		}
 	}
 
-	$cron = cron::byClassAndFunction('jeedom', 'persist');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('jeedom', 'persist');
 	if (is_object($cron)) {
-		$cron->remove();
+        $scheduledTaskRepository->remove($cron);
 	}
 
-	$cron = cron::byClassAndFunction('history', 'historize');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('history', 'historize');
 	if (is_object($cron)) {
-		$cron->remove();
+		$scheduledTaskRepository->remove($cron);
 	}
-	$cron = cron::byClassAndFunction('cmd', 'collect');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('cmd', 'collect');
 	if (is_object($cron)) {
-		$cron->remove();
-	}
-
-	$cron = cron::byClassAndFunction('jeedom', 'updateSystem');
-	if (is_object($cron)) {
-		$cron->remove();
+		$scheduledTaskRepository->remove($cron);
 	}
 
-	$cron = cron::byClassAndFunction('jeedom', 'checkAndCollect');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('jeedom', 'updateSystem');
 	if (is_object($cron)) {
-		$cron->remove();
+		$scheduledTaskRepository->remove($cron);
 	}
 
-	$cron = cron::byClassAndFunction('DB', 'optimize');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('jeedom', 'checkAndCollect');
 	if (is_object($cron)) {
-		$cron->remove();
+		$scheduledTaskRepository->remove($cron);
 	}
 
-	$cron = cron::byClassAndFunction('plugin', 'cronDaily');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('DB', 'optimize');
+	if (is_object($cron)) {
+		$scheduledTaskRepository->remove($cron);
+	}
+
+	$cron = $scheduledTaskRepository->findByClassAndFunction('plugin', 'cronDaily');
 	if (!is_object($cron)) {
 		echo "Create plugin::cronDaily\n";
 		$cron = new cron();
@@ -117,9 +122,9 @@ try {
 	$cron->setTimeout(240);
 	$cron->setEnable(1);
 	$cron->setDeamon(0);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('jeedom', 'backup');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('jeedom', 'backup');
 	if (!is_object($cron)) {
 		echo "Create jeedom::backup\n";
 		$cron = new cron();
@@ -129,10 +134,10 @@ try {
 		$cron->setEnable(1);
 		$cron->setDeamon(0);
 		$cron->setTimeout(60);
-		$cron->save();
+        $scheduledTaskRepository->add($cron);
 	}
 
-	$cron = cron::byClassAndFunction('plugin', 'cronHourly');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('plugin', 'cronHourly');
 	if (!is_object($cron)) {
 		echo "Create plugin::cronHourly\n";
 		$cron = new cron();
@@ -143,9 +148,9 @@ try {
 	$cron->setEnable(1);
 	$cron->setDeamon(0);
 	$cron->setTimeout(60);
-	$cron->save();
+    $scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('scenario', 'check');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('scenario', 'check');
 	if (!is_object($cron)) {
 		echo "Create scenario::check\n";
 		$cron = new cron();
@@ -156,9 +161,9 @@ try {
 	$cron->setEnable(1);
 	$cron->setDeamon(0);
 	$cron->setTimeout(30);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('scenario', 'control');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('scenario', 'control');
 	if (!is_object($cron)) {
 		echo "Create scenario::control\n";
 		$cron = new cron();
@@ -169,9 +174,9 @@ try {
 	$cron->setEnable(1);
 	$cron->setDeamon(0);
 	$cron->setTimeout(30);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('jeedom', 'cronDaily');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('jeedom', 'cronDaily');
 	if (!is_object($cron)) {
 		echo "Create jeedom::cronDaily\n";
 		$cron = new cron();
@@ -182,9 +187,9 @@ try {
 	$cron->setEnable(1);
 	$cron->setDeamon(0);
 	$cron->setTimeout(240);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('jeedom', 'cronHourly');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('jeedom', 'cronHourly');
 	if (!is_object($cron)) {
 		echo "Create jeedom::cronHourly\n";
 		$cron = new cron();
@@ -195,9 +200,9 @@ try {
 	$cron->setEnable(1);
 	$cron->setDeamon(0);
 	$cron->setTimeout(60);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('jeedom', 'cron5');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('jeedom', 'cron5');
 	if (!is_object($cron)) {
 		echo "Create jeedom::cron5\n";
 		$cron = new cron();
@@ -208,9 +213,9 @@ try {
 	$cron->setEnable(1);
 	$cron->setDeamon(0);
 	$cron->setTimeout(5);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('jeedom', 'cron');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('jeedom', 'cron');
 	if (!is_object($cron)) {
 		echo "Create jeedom::cron\n";
 		$cron = new cron();
@@ -220,9 +225,9 @@ try {
 	$cron->setSchedule('* * * * * *');
 	$cron->setTimeout(2);
 	$cron->setDeamon(0);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('plugin', 'cron');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('plugin', 'cron');
 	if (!is_object($cron)) {
 		echo "Create plugin::cron\n";
 		$cron = new cron();
@@ -232,9 +237,9 @@ try {
 	$cron->setSchedule('* * * * * *');
 	$cron->setTimeout(2);
 	$cron->setDeamon(0);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('plugin', 'cron5');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('plugin', 'cron5');
 	if (!is_object($cron)) {
 		echo "Create plugin::cron5\n";
 		$cron = new cron();
@@ -244,9 +249,9 @@ try {
 	$cron->setSchedule('*/5 * * * * *');
 	$cron->setTimeout(5);
 	$cron->setDeamon(0);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('plugin', 'cron15');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('plugin', 'cron15');
 	if (!is_object($cron)) {
 		echo "Create plugin::cron15\n";
 		$cron = new cron();
@@ -256,9 +261,9 @@ try {
 	$cron->setSchedule('*/15 * * * * *');
 	$cron->setTimeout(15);
 	$cron->setDeamon(0);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('plugin', 'cron30');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('plugin', 'cron30');
 	if (!is_object($cron)) {
 		echo "Create plugin::cron30\n";
 		$cron = new cron();
@@ -268,9 +273,9 @@ try {
 	$cron->setSchedule('*/30 * * * * *');
 	$cron->setTimeout(30);
 	$cron->setDeamon(0);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('plugin', 'checkDeamon');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('plugin', 'checkDeamon');
 	if (!is_object($cron)) {
 		echo "Create plugin::checkDeamon\n";
 		$cron = new cron();
@@ -280,9 +285,9 @@ try {
 	$cron->setSchedule('*/5 * * * * *');
 	$cron->setTimeout(5);
 	$cron->setDeamon(0);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('cache', 'persist');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('cache', 'persist');
 	if (!is_object($cron)) {
 		echo "Create cache::persist\n";
 		$cron = new cron();
@@ -292,9 +297,9 @@ try {
 	$cron->setSchedule('*/30 * * * * *');
 	$cron->setTimeout(30);
 	$cron->setDeamon(0);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('history', 'archive');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('history', 'archive');
 	if (!is_object($cron)) {
 		echo "Create history::archive\n";
 		$cron = new cron();
@@ -304,9 +309,9 @@ try {
 	$cron->setSchedule('00 5 * * * *');
 	$cron->setTimeout(240);
 	$cron->setDeamon(0);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
-	$cron = cron::byClassAndFunction('plugin', 'heartbeat');
+	$cron = $scheduledTaskRepository->findByClassAndFunction('plugin', 'heartbeat');
 	if (!is_object($cron)) {
 		echo "Create plugin::heartbeat\n";
 		$cron = new cron();
@@ -317,7 +322,7 @@ try {
 	$cron->setEnable(1);
 	$cron->setDeamon(0);
 	$cron->setTimeout(10);
-	$cron->save();
+	$scheduledTaskRepository->add($cron);
 
 	if (!file_exists(__DIR__ . '/../plugins')) {
 		mkdir(__DIR__ . '/../plugins');
@@ -330,9 +335,9 @@ try {
 		echo "NOK\n";
 	}
 
-	config::save('hardware_name', '');
-	if (config::byKey('api') == '') {
-		config::save('api', config::genKey());
+	$configuration->set('hardware_name', '');
+	if ($configuration->get('api') == '') {
+        $configuration->set('api', config::genKey());
 	}
 	if (file_exists(__DIR__ . '/../core/nodeJS')) {
 		shell_exec(system::getCmdSudo() . 'rm -rf ' . __DIR__ . '/../core/nodeJS');

@@ -4,6 +4,7 @@ namespace Jeddom\Core;
 
 use Dotenv\Exception\InvalidPathException;
 use GuzzleHttp\Psr7\Response;
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
@@ -84,7 +85,7 @@ class Application
 
                         }
                     } else if (init('p') != '') {
-                        $title = ucfirst(init('p')) . ' - ' . \config::byKey('product_name');
+                        $title = ucfirst(init('p')) . ' - ' . ConfigurationFactory::build()->get('product_name');
                     }
                     echo '<script>';
                     echo 'document.title = "' . $title . '"';

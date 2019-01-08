@@ -20,6 +20,7 @@
 
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
 use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -65,7 +66,7 @@ class cache {
 	public static function stats($_details = false) {
 		$return = self::getCache()->getStats();
 		$return['count'] = __('Inconnu', __FILE__);
-		if (config::byKey('cache::engine') == 'FilesystemCache') {
+		if (ConfigurationFactory::build()->get('cache::engine') == 'FilesystemCache') {
 			$return['count'] = 0;
 			foreach (ls(self::getFolder()) as $folder) {
 				foreach (ls(self::getFolder() . '/' . $folder) as $file) {

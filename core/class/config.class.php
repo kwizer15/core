@@ -20,36 +20,17 @@
 
 use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
 use Jeedom\Core\Infrastructure\Event\Configured;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class config {
-
-    private static $configurations = [];
-
-    private static $eventDispatcher;
-
-    public static function getConfiguration($plugin)
-    {
-        if (null === self::$eventDispatcher) {
-            self::$eventDispatcher = new EventDispatcher();
-            self::$eventDispatcher->addListener('preConfig', [self::class, 'listenConfigure']);
-            self::$eventDispatcher->addListener('postConfig', [self::class, 'listenConfigure']);
-        }
-        if (!isset(self::$configurations[$plugin])) {
-            self::$configurations[$plugin] = ConfigurationFactory::build($plugin, self::$eventDispatcher);
-        }
-
-        return self::$configurations[$plugin];
-    }
 
     /**
      * @deprecated Death code
      */
 	public static function getDefaultConfiguration($plugin = 'core')
     {
-        return self::getConfiguration($plugin)->multiGet('*');
+        return ConfigurationFactory::build($plugin)->multiGet('*');
 	}
 
 	/**
@@ -61,7 +42,7 @@ class config {
 	 */
 	public static function save($key, $value, $plugin = 'core')
     {
-        return self::getConfiguration($plugin)->set($key, $value);
+        return ConfigurationFactory::build($plugin)->set($key, $value);
 	}
 
 	/**
@@ -71,7 +52,7 @@ class config {
 	 */
 	public static function remove($key, $plugin = 'core')
     {
-	    return self::getConfiguration($plugin)->remove($key);
+	    return ConfigurationFactory::build($plugin)->remove($key);
 	}
 
 	/**
@@ -81,16 +62,16 @@ class config {
 	 */
 	public static function byKey($key, $plugin = 'core', $default = '', $forceFresh = false)
     {
-	    return self::getConfiguration($plugin)->get($key, $default);
+	    return ConfigurationFactory::build($plugin)->get($key, $default);
 	}
 
 	public static function byKeys($keys, $plugin = 'core', $default = '')
     {
-        return self::getConfiguration($plugin)->multiGet($keys, $default);
+        return ConfigurationFactory::build($plugin)->multiGet($keys, $default);
 	}
 
 	public static function searchKey($key, $plugin = 'core') {
-        return self::getConfiguration($plugin)->search($key);
+        return ConfigurationFactory::build($plugin)->search($key);
 	}
 
 	public static function genKey($_car = 32) {

@@ -15,6 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
+
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 header('Access-Control-Allow-Origin: *');
 require_once __DIR__ . "/../php/core.inc.php";
 if (user::isBan() && false) {
@@ -35,12 +39,13 @@ try {
 		if (jeedom::isStarted() && config::byKey('enableCron', 'core', 1, true) == 0) {
 			die(__('Tous les crons sont actuellement désactivés', __FILE__));
 		}
+        $crons = $scheduledTaskRepository->searchClassAndFunction('interactQuery', 'doIn', '"interactQuery_id":' . $this->getId());
 		$cron = new cron();
 		$cron->setClass('repo_market');
 		$cron->setFunction('test');
 		$cron->setOnce(1);
 		$cron->setSchedule(cron::convertDateToCron(strtotime('now')));
-		$cron->save();
+		$scheduledTaskRepository->add($cron);
 		$cron->start();
 	}
 } catch (Exception $e) {

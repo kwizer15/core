@@ -18,6 +18,8 @@
 
 /* * ***************************Includes********************************* */
 require_once __DIR__ . '/../../core/php/core.inc.php';
+
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 use Monolog\Handler\SyslogHandler;
@@ -38,7 +40,10 @@ class log {
 
 	public static function getConfig($_key, $_default = '') {
 		if (self::$config === null) {
-			self::$config = array_merge(config::getLogLevelPlugin(), config::byKeys(array('log::engine', 'log::formatter', 'log::level', 'addMessageForErrorLog', 'maxLineLog')));
+		    $configuration = ConfigurationFactory::build();
+			self::$config = array_merge(config::getLogLevelPlugin(), $configuration->multiGet(
+                ['log::engine', 'log::formatter', 'log::level', 'addMessageForErrorLog', 'maxLineLog']
+            ));
 		}
 		if (isset(self::$config[$_key])) {
 			return self::$config[$_key];
@@ -57,7 +62,8 @@ class log {
 				$handler = new SyslogHandler(self::getLogLevel($_log));
 				break;
 			case 'SyslogUdp':
-				$handler = new SyslogUdpHandler(config::byKey('log::syslogudphost'), config::byKey('log::syslogudpport'), 'user', self::getLogLevel($_log));
+                $configuration = ConfigurationFactory::build();
+				$handler = new SyslogUdpHandler($configuration->get('log::syslogudphost'), $configuration->get('log::syslogudpport'), 'user', self::getLogLevel($_log));
 				break;
 			case 'StreamHandler':
 			default:

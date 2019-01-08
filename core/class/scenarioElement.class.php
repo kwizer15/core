@@ -21,6 +21,7 @@
 use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
 use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
 use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -142,6 +143,8 @@ class scenarioElement {
 	}
 
 	public function execute(&$_scenario = null) {
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
 		if ($_scenario != null && !$_scenario->getDo()) {
 			return;
 		}
@@ -204,7 +207,7 @@ class scenarioElement {
 			if ($this->getSubElement('for')->getOptions('enable', 1) == 0) {
 				return true;
 			}
-			$limits = intval($this->getSubElement('for')->execute($_scenario));
+			$limits = (int) $this->getSubElement('for')->execute($_scenario);
 			if (!is_numeric($limits)) {
 				throw new Exception(__('La condition pour une boucle doit être numérique : ', __FILE__) . $limits);
 			}
@@ -229,23 +232,23 @@ class scenarioElement {
 				$_scenario->setLog(__('Tâche : ', __FILE__) . $this->getId() . __(' lancement immédiat ', __FILE__));
 				system::php($cmd);
 			} else {
-				$crons = cron::searchClassAndFunction('scenario', 'doIn', '"scenarioElement_id":' . $this->getId() . ',');
+				$crons = $scheduledTaskRepository->searchClassAndFunction('scenario', 'doIn', '"scenarioElement_id":' . $this->getId() . ',');
 				if (is_array($crons)) {
 					foreach ($crons as $cron) {
 						if ($cron->getState() != 'run') {
-							$cron->remove();
+                            $scheduledTaskRepository->remove($cron);
 						}
 					}
 				}
 				$cron = new cron();
 				$cron->setClass('scenario');
 				$cron->setFunction('doIn');
-				$cron->setOption(array('scenario_id' => intval($_scenario->getId()), 'scenarioElement_id' => intval($this->getId()), 'second' => date('s'), 'tags' => $_scenario->getTags()));
+				$cron->setOption(array('scenario_id' => (int) $_scenario->getId(), 'scenarioElement_id' => (int) $this->getId(), 'second' => date('s'), 'tags' => $_scenario->getTags()));
 				$cron->setLastRun(date('Y-m-d H:i:s'));
 				$cron->setOnce(1);
 				$next = strtotime('+ ' . $time . ' min');
 				$cron->setSchedule(cron::convertDateToCron($next));
-				$cron->save();
+				$scheduledTaskRepository->add($cron);
 				$_scenario->setLog(__('Tâche : ', __FILE__) . $this->getId() . __(' programmée à : ', __FILE__) . date('Y-m-d H:i:s', $next) . ' (+ ' . $time . ' min)');
 			}
 			return true;
@@ -268,22 +271,22 @@ class scenarioElement {
 			if ($next < strtotime('now')) {
 				throw new Exception(__('Bloc type A : ', __FILE__) . $this->getId() . __(', heure programmée invalide : ', __FILE__) . date('Y-m-d H:i:00', $next));
 			}
-			$crons = cron::searchClassAndFunction('scenario', 'doIn', '"scenarioElement_id":' . $this->getId() . ',');
+			$crons = $scheduledTaskRepository->searchClassAndFunction('scenario', 'doIn', '"scenarioElement_id":' . $this->getId() . ',');
 			if (is_array($crons)) {
 				foreach ($crons as $cron) {
 					if ($cron->getState() != 'run') {
-						$cron->remove();
+					    $scheduledTaskRepository->remove($cron);
 					}
 				}
 			}
 			$cron = new cron();
 			$cron->setClass('scenario');
 			$cron->setFunction('doIn');
-			$cron->setOption(array('scenario_id' => intval($_scenario->getId()), 'scenarioElement_id' => intval($this->getId()), 'second' => 0, 'tags' => $_scenario->getTags()));
+			$cron->setOption(array('scenario_id' => (int) $_scenario->getId(), 'scenarioElement_id' => (int) $this->getId(), 'second' => 0, 'tags' => $_scenario->getTags()));
 			$cron->setLastRun(date('Y-m-d H:i:s', strtotime('now')));
 			$cron->setOnce(1);
 			$cron->setSchedule(cron::convertDateToCron($next));
-			$cron->save();
+			$scheduledTaskRepository->add($cron);
 			$_scenario->setLog(__('Tâche : ', __FILE__) . $this->getId() . __(' programmée à : ', __FILE__) . date('Y-m-d H:i:00', $next));
 			return true;
 		}

@@ -16,6 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
+
 if (php_sapi_name() != 'cli' || isset($_SERVER['REQUEST_METHOD']) || !isset($_SERVER['argc'])) {
 	header("Statut: 404 Page non trouvée");
 	header('HTTP/1.0 404 Not Found');
@@ -52,10 +54,11 @@ try {
 		$_GET['backup'] = $BACKUP_FILE;
 	}
 	if (!isset($_GET['backup']) || $_GET['backup'] == '') {
-		if (substr(config::byKey('backup::path'), 0, 1) != '/') {
-			$backup_dir = __DIR__ . '/../' . config::byKey('backup::path');
+        $configuration = ConfigurationFactory::build();
+		if (substr($configuration->get('backup::path'), 0, 1) != '/') {
+			$backup_dir = __DIR__ . '/../' . $configuration->get('backup::path');
 		} else {
-			$backup_dir = config::byKey('backup::path');
+			$backup_dir = $configuration->get('backup::path');
 		}
 		if (!file_exists($backup_dir)) {
 			mkdir($backup_dir, 0770, true);
@@ -120,7 +123,7 @@ try {
 		'.git',
 		'.log',
 		'.env',
-		config::byKey('backup::path'),
+		$configuration->get('backup::path'),
 	);
 	$exclude = '';
 	foreach ($excludes as $folder) {
@@ -186,7 +189,7 @@ try {
 			echo "OK\n";
 		}
 	}
-	config::save('hardware_name', '');
+    $configuration->set('hardware_name', '');
 	$cache = cache::byKey('jeedom::isCapable::sudo');
 	$cache->remove();
 

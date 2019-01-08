@@ -1,5 +1,8 @@
 <?php
 
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 if (php_sapi_name() != 'cli' || isset($_SERVER['REQUEST_METHOD']) || !isset($_SERVER['argc'])) {
 	header("Statut: 404 Page non trouvée");
 	header('HTTP/1.0 404 Not Found');
@@ -102,7 +105,9 @@ if (config::byKey('enableScenario') == 0) {
 }
 echo "\n";
 echo "NAME | STATE | SCHEDULE | DEAMON | ONCE | LAST RUN\n";
-foreach (cron::all() as $cron) {
+/** @var ScheduledTaskRepository $schduledTaskRepository */
+$scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+foreach ($scheduledTaskRepository->all() as $cron) {
 	echo $cron->getName();
 	echo " | ";
 	echo $cron->getState();

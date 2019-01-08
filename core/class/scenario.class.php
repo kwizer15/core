@@ -22,6 +22,7 @@ use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
 use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
 use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -1009,7 +1010,7 @@ class scenario {
 	 * @return boolean
 	 */
 	public function running() {
-		if (intval($this->getPID()) > 0 && posix_getsid(intval($this->getPID())) && (!file_exists('/proc/' . $this->getPID() . '/cmdline') || strpos(file_get_contents('/proc/' . $this->getPID() . '/cmdline'), 'scenario_id=' . $this->getId()) !== false)) {
+		if ((int) $this->getPID() > 0 && posix_getsid(intval($this->getPID())) && (!file_exists('/proc/' . $this->getPID() . '/cmdline') || strpos(file_get_contents('/proc/' . $this->getPID() . '/cmdline'), 'scenario_id=' . $this->getId()) !== false)) {
 			return true;
 		}
 		if (count(system::ps('scenario_id=' . $this->getId() . ' ', array(getmypid()))) > 0) {
@@ -1023,13 +1024,15 @@ class scenario {
 	 * @throws Exception
 	 */
 	public function stop() {
-		$crons = cron::searchClassAndFunction('scenario', 'doIn', '"scenario_id":' . $this->getId());
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+		$crons = $scheduledTaskRepository->searchClassAndFunction('scenario', 'doIn', '"scenario_id":' . $this->getId());
 		if (is_array($crons)) {
 			foreach ($crons as $cron) {
 				if ($cron->getState() == 'run') {
 					try {
 						$cron->halt();
-						$cron->remove();
+						$scheduledTaskRepository->remove($cron);
 					} catch (Exception $e) {
 						log::add('scenario', 'info', __('Can not stop subtask : ') . print_r($cron->getOption(), true));
 					}
@@ -1075,10 +1078,10 @@ class scenario {
 		$return = array();
 		$elements = $this->getScenarioElement();
         /** @var ScenarioElementRepository $scenarioElementRepository */
-    $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
+        $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
 		if (is_array($elements)) {
 			foreach ($this->getScenarioElement() as $element_id) {
-				$element = $repository->get($element_id);
+				$element = $scenarioElementRepository->get($element_id);
 				if (is_object($element)) {
 					$return[] = $element;
 				}
@@ -1087,7 +1090,7 @@ class scenario {
 			return $return;
 		}
 		if ($elements != '') {
-			$element = $repository->get($element_id); // FIXME: variable sans valeur
+			$element = $scenarioElementRepository->get($element_id); // FIXME: variable sans valeur
 			if (is_object($element)) {
 				$return[] = $element;
 				$this->_elements = $return;

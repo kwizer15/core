@@ -21,6 +21,7 @@
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
 use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -954,7 +955,9 @@ class cmd {
 
 	public function checkReturnState($_value) {
 		if (is_numeric($this->getConfiguration('returnStateTime')) && $this->getConfiguration('returnStateTime') > 0 && $_value != $this->getConfiguration('returnStateValue') && trim($this->getConfiguration('returnStateValue')) != '') {
-			$cron = cron::byClassAndFunction('cmd', 'returnState', array('cmd_id' => intval($this->getId())));
+		    /** @var ScheduledTaskRepository $scheduledTaskRepository */
+		    $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+			$cron = $scheduledTaskRepository->findByClassAndFunction('cmd', 'returnState', array('cmd_id' => intval($this->getId())));
 			if (!is_object($cron)) {
 				$cron = new cron();
 			}
@@ -965,7 +968,7 @@ class cmd {
 			$next = strtotime('+ ' . ($this->getConfiguration('returnStateTime') + 1) . ' minutes ' . date('Y-m-d H:i:s'));
 			$cron->setSchedule(cron::convertDateToCron($next));
 			$cron->setLastRun(date('Y-m-d H:i:s'));
-			$cron->save();
+			$scheduledTaskRepository->add($cron);
 		}
 	}
 
@@ -974,13 +977,15 @@ class cmd {
 			return;
 		}
 		$check = jeedom::evaluateExpression($_value . $this->getConfiguration('jeedomCheckCmdOperator') . $this->getConfiguration('jeedomCheckCmdTest'));
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
 		if ($check == 1 || $check || $check == '1') {
 			if ($this->getConfiguration('jeedomCheckCmdTime', 0) == 0) {
 				$this->executeAlertCmdAction();
 				return;
 			}
 			$next = strtotime('+ ' . ($this->getConfiguration('jeedomCheckCmdTime') + 1) . ' minutes ' . date('Y-m-d H:i:s'));
-			$cron = cron::byClassAndFunction('cmd', 'cmdAlert', array('cmd_id' => intval($this->getId())));
+			$cron = $scheduledTaskRepository->findByClassAndFunction('cmd', 'cmdAlert', array('cmd_id' => intval($this->getId())));
 			if (!is_object($cron)) {
 				$cron = new cron();
 			} else {
@@ -995,11 +1000,11 @@ class cmd {
 			$cron->setOption(array('cmd_id' => intval($this->getId())));
 			$cron->setSchedule(cron::convertDateToCron($next));
 			$cron->setLastRun(date('Y-m-d H:i:s'));
-			$cron->save();
+			$scheduledTaskRepository->add($cron);
 		} else {
-			$cron = cron::byClassAndFunction('cmd', 'cmdAlert', array('cmd_id' => intval($this->getId())));
+			$cron = $scheduledTaskRepository->findByClassAndFunction('cmd', 'cmdAlert', array('cmd_id' => intval($this->getId())));
 			if (is_object($cron)) {
-				$cron->remove();
+			    $scheduledTaskRepository->remove($cron);
 			}
 		}
 	}
@@ -1028,6 +1033,8 @@ class cmd {
 		global $JEEDOM_INTERNAL_CONFIG;
 
 		$currentLevel = 'none';
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
 		foreach ($JEEDOM_INTERNAL_CONFIG['alerts'] as $level => $value) {
 			if (!$value['check']) {
 				continue;
@@ -1044,7 +1051,7 @@ class cmd {
 			return $currentLevel;
 		}
 		if ($_allowDuring && $this->getAlert($currentLevel . 'during') != '' && $this->getAlert($currentLevel . 'during') > 0) {
-			$cron = cron::byClassAndFunction('cmd', 'duringAlertLevel', array('cmd_id' => intval($this->getId())));
+			$cron = $scheduledTaskRepository->findByClassAndFunction('cmd', 'duringAlertLevel', array('cmd_id' => intval($this->getId())));
 			$next = strtotime('+ ' . $this->getAlert($currentLevel . 'during', 1) . ' minutes ' . date('Y-m-d H:i:s'));
 			if (!is_object($cron)) {
 				$cron = new cron();
@@ -1057,16 +1064,16 @@ class cmd {
 			$cron->setClass('cmd');
 			$cron->setFunction('duringAlertLevel');
 			$cron->setOnce(1);
-			$cron->setOption(array('cmd_id' => intval($this->getId())));
+			$cron->setOption(array('cmd_id' => (int) $this->getId()));
 			$cron->setSchedule(cron::convertDateToCron($next));
 			$cron->setLastRun(date('Y-m-d H:i:s'));
-			$cron->save();
+			$scheduledTaskRepository->add($cron);
 			return 'none';
 		}
 		if ($_allowDuring && $currentLevel == 'none') {
-			$cron = cron::byClassAndFunction('cmd', 'duringAlertLevel', array('cmd_id' => intval($this->getId())));
+			$cron = $scheduledTaskRepository->findByClassAndFunction('cmd', 'duringAlertLevel', array('cmd_id' => (int) $this->getId()));
 			if (is_object($cron)) {
-				$cron->remove(false);
+			    $scheduledTaskRepository->remove($cron, false);
 			}
 		}
 		return $currentLevel;

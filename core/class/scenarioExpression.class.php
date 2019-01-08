@@ -23,6 +23,7 @@ use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
 use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
 use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
 use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -1469,11 +1470,13 @@ $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepos
 						return;
 					}
 					$this->setLog($scenario, __('Suppression des blocs DANS et A programmés du scénario ', __FILE__));
-					$crons = cron::searchClassAndFunction('scenario', 'doIn', '"scenario_id":' . $scenario->getId() . ',');
+                    /** @var ScheduledTaskRepository $scheduledTaskRepository */
+                    $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+					$crons = $scheduledTaskRepository->searchClassAndFunction('scenario', 'doIn', '"scenario_id":' . $scenario->getId() . ',');
 					if (is_array($crons)) {
 						foreach ($crons as $cron) {
 							if ($cron->getState() != 'run') {
-								$cron->remove();
+                                $scheduledTaskRepository->remove($cron);
 							}
 						}
 					}

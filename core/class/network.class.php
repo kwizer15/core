@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -35,8 +36,9 @@ class network {
 		if (count($jeedom_ips) != 4) {
 			return 'external';
 		}
-		if (config::byKey('network::localip') != '') {
-			$localIps = explode(';', config::byKey('network::localip'));
+        $configuration = ConfigurationFactory::build();
+		if ($configuration->get('network::localip') != '') {
+			$localIps = explode(';', $configuration->get('network::localip'));
 			foreach ($localIps as $localIp) {
 				if (netMatch($localIp, $client_ip)) {
 					return 'internal';
@@ -61,56 +63,57 @@ class network {
 	}
 
 	public static function getNetworkAccess($_mode = 'auto', $_protocol = '', $_default = '', $_test = false) {
+	    $configuration = ConfigurationFactory::build();
 		if ($_mode == 'auto') {
 			$_mode = self::getUserLocation();
 		}
-		if ($_mode == 'internal' && config::byKey('internalAddr', 'core', '') == '') {
+		if ($_mode == 'internal' && $configuration->get('internalAddr', '') == '') {
 			self::checkConf($_mode);
 		}
-		if ($_mode == 'external' && config::byKey('market::allowDNS') != 1 && config::byKey('externalAddr', 'core', '') == '') {
+		if ($_mode == 'external' && $configuration->get('market::allowDNS') != 1 && $configuration->get('externalAddr', '') == '') {
 			self::checkConf($_mode);
 		}
 		if ($_test && !self::test($_mode)) {
 			self::checkConf($_mode);
 		}
 		if ($_mode == 'internal') {
-			if (strpos(config::byKey('internalAddr', 'core', $_default), 'http://') !== false || strpos(config::byKey('internalAddr', 'core', $_default), 'https://') !== false) {
-				config::save('internalAddr', str_replace(array('http://', 'https://'), '', config::byKey('internalAddr', 'core', $_default)));
+			if (strpos($configuration->get('internalAddr', $_default), 'http://') !== false || strpos($configuration->get('internalAddr', $_default), 'https://') !== false) {
+                $configuration->set('internalAddr', str_replace(array('http://', 'https://'), '', $configuration->get('internalAddr', $_default)));
 			}
 			if ($_protocol == 'ip' || $_protocol == 'dns') {
-				return config::byKey('internalAddr', 'core', $_default);
+                $configuration->get('internalAddr', $_default);
 			}
 			if ($_protocol == 'ip:port' || $_protocol == 'dns:port') {
-				return config::byKey('internalAddr') . ':' . config::byKey('internalPort', 'core', 80);
+                $configuration->get('internalAddr') . ':' . $configuration->get('internalPort', 80);
 			}
 			if ($_protocol == 'proto:ip' || $_protocol == 'proto:dns') {
-				return config::byKey('internalProtocol') . config::byKey('internalAddr');
+				return $configuration->get('internalProtocol') . $configuration->get('internalAddr');
 			}
 			if ($_protocol == 'proto:ip:port' || $_protocol == 'proto:dns:port') {
-				return config::byKey('internalProtocol') . config::byKey('internalAddr') . ':' . config::byKey('internalPort', 'core', 80);
+				return $configuration->get('internalProtocol') . $configuration->get('internalAddr') . ':' . $configuration->get('internalPort', 80);
 			}
 			if ($_protocol == 'proto:127.0.0.1:port:comp') {
-				return trim(config::byKey('internalProtocol') . '127.0.0.1:' . config::byKey('internalPort', 'core', 80) . '/' . trim(config::byKey('internalComplement'), '/'), '/');
+				return trim($configuration->get('internalProtocol') . '127.0.0.1:' . $configuration->get('internalPort', 80) . '/' . trim($configuration->get('internalComplement'), '/'), '/');
 			}
 			if ($_protocol == 'http:127.0.0.1:port:comp') {
-				return trim('http://127.0.0.1:' . config::byKey('internalPort', 'core', 80) . '/' . trim(config::byKey('internalComplement'), '/'), '/');
+				return trim('http://127.0.0.1:' . $configuration->get('internalPort', 80) . '/' . trim($configuration->get('internalComplement'), '/'), '/');
 			}
-			return trim(config::byKey('internalProtocol') . config::byKey('internalAddr') . ':' . config::byKey('internalPort', 'core', 80) . '/' . trim(config::byKey('internalComplement'), '/'), '/');
+			return trim($configuration->get('internalProtocol') . $configuration->get('internalAddr') . ':' . $configuration->get('internalPort', 80) . '/' . trim($configuration->get('internalComplement'), '/'), '/');
 
 		}
 		if ($_mode == 'dnsjeedom') {
-			return config::byKey('jeedom::url');
+			return $configuration->get('jeedom::url');
 		}
 		if ($_mode == 'external') {
 			if ($_protocol == 'ip') {
-				if (config::byKey('market::allowDNS') == 1 && config::byKey('jeedom::url') != '' && config::byKey('network::disableMangement') == 0) {
-					return getIpFromString(config::byKey('jeedom::url'));
+				if ($configuration->get('market::allowDNS') == 1 && $configuration->get('jeedom::url') != '' && $configuration->get('network::disableMangement') == 0) {
+					return getIpFromString($configuration->get('jeedom::url'));
 				}
-				return getIpFromString(config::byKey('externalAddr'));
+				return getIpFromString($configuration->get('externalAddr'));
 			}
 			if ($_protocol == 'ip:port') {
-				if (config::byKey('market::allowDNS') == 1 && config::byKey('jeedom::url') != '' && config::byKey('network::disableMangement') == 0) {
-					$url = parse_url(config::byKey('jeedom::url'));
+				if ($configuration->get('market::allowDNS') == 1 && $configuration->get('jeedom::url') != '' && $configuration->get('network::disableMangement') == 0) {
+					$url = parse_url($configuration->get('jeedom::url'));
 					if (isset($url['host'])) {
 						if (isset($url['port'])) {
 							return getIpFromString($url['host']) . ':' . $url['port'];
@@ -119,11 +122,11 @@ class network {
 						}
 					}
 				}
-				return config::byKey('externalAddr') . ':' . config::byKey('externalPort', 'core', 80);
+				return $configuration->get('externalAddr') . ':' . $configuration->get('externalPort', 80);
 			}
 			if ($_protocol == 'proto:dns:port' || $_protocol == 'proto:ip:port') {
-				if (config::byKey('market::allowDNS') == 1 && config::byKey('jeedom::url') != '' && config::byKey('network::disableMangement') == 0) {
-					$url = parse_url(config::byKey('jeedom::url'));
+				if ($configuration->get('market::allowDNS') == 1 && $configuration->get('jeedom::url') != '' && $configuration->get('network::disableMangement') == 0) {
+					$url = parse_url($configuration->get('jeedom::url'));
 					$return = '';
 					if (isset($url['scheme'])) {
 						$return = $url['scheme'] . '://';
@@ -136,11 +139,11 @@ class network {
 						}
 					}
 				}
-				return config::byKey('externalProtocol') . config::byKey('externalAddr') . ':' . config::byKey('externalPort', 'core', 80);
+				return $configuration->get('externalProtocol') . $configuration->get('externalAddr') . ':' . $configuration->get('externalPort', 80);
 			}
 			if ($_protocol == 'proto:dns' || $_protocol == 'proto:ip') {
-				if (config::byKey('market::allowDNS') == 1 && config::byKey('jeedom::url') != '' && config::byKey('network::disableMangement') == 0) {
-					$url = parse_url(config::byKey('jeedom::url'));
+				if ($configuration->get('market::allowDNS') == 1 && $configuration->get('jeedom::url') != '' && $configuration->get('network::disableMangement') == 0) {
+					$url = parse_url($configuration->get('jeedom::url'));
 					$return = '';
 					if (isset($url['scheme'])) {
 						$return = $url['scheme'] . '://';
@@ -153,11 +156,11 @@ class network {
 						}
 					}
 				}
-				return config::byKey('externalProtocol') . config::byKey('externalAddr');
+				return $configuration->get('externalProtocol') . $configuration->get('externalAddr');
 			}
 			if ($_protocol == 'dns:port') {
-				if (config::byKey('market::allowDNS') == 1 && config::byKey('jeedom::url') != '' && config::byKey('network::disableMangement') == 0) {
-					$url = parse_url(config::byKey('jeedom::url'));
+				if ($configuration->get('market::allowDNS') == 1 && $configuration->get('jeedom::url') != '' && $configuration->get('network::disableMangement') == 0) {
+					$url = parse_url($configuration->get('jeedom::url'));
 					if (isset($url['host'])) {
 						if (isset($url['port'])) {
 							return $url['host'] . ':' . $url['port'];
@@ -166,39 +169,40 @@ class network {
 						}
 					}
 				}
-				return config::byKey('externalAddr') . ':' . config::byKey('externalPort', 'core', 80);
+				return $configuration->get('externalAddr') . ':' . $configuration->get('externalPort', 80);
 			}
 			if ($_protocol == 'proto') {
-				if (config::byKey('market::allowDNS') == 1 && config::byKey('jeedom::url') != '' && config::byKey('network::disableMangement') == 0) {
-					$url = parse_url(config::byKey('jeedom::url'));
+				if ($configuration->get('market::allowDNS') == 1 && $configuration->get('jeedom::url') != '' && $configuration->get('network::disableMangement') == 0) {
+					$url = parse_url($configuration->get('jeedom::url'));
 					if (isset($url['scheme'])) {
 						return $url['scheme'] . '://';
 					}
 				}
-				return config::byKey('externalProtocol');
+				return $configuration->get('externalProtocol');
 			}
-			if (config::byKey('dns::token') != '' && config::byKey('market::allowDNS') == 1 && config::byKey('jeedom::url') != '' && config::byKey('network::disableMangement') == 0) {
-				return trim(config::byKey('jeedom::url') . '/' . trim(config::byKey('externalComplement', 'core', ''), '/'), '/');
+			if ($configuration->get('dns::token') != '' && $configuration->get('market::allowDNS') == 1 && $configuration->get('jeedom::url') != '' && $configuration->get('network::disableMangement') == 0) {
+				return trim($configuration->get('jeedom::url') . '/' . trim($configuration->get('externalComplement', ''), '/'), '/');
 			}
-			return trim(config::byKey('externalProtocol') . config::byKey('externalAddr') . ':' . config::byKey('externalPort', 'core', 80) . '/' . trim(config::byKey('externalComplement'), '/'), '/');
+			return trim($configuration->get('externalProtocol') . $configuration->get('externalAddr') . ':' . $configuration->get('externalPort', 80) . '/' . trim($configuration->get('externalComplement'), '/'), '/');
 		}
 	}
 
 	public static function checkConf($_mode = 'external') {
-		if (config::byKey($_mode . 'Protocol') == '') {
-			config::save($_mode . 'Protocol', 'http://');
+	    $configuration = ConfigurationFactory::build();
+		if ($configuration->get($_mode . 'Protocol') == '') {
+			$configuration->set($_mode . 'Protocol', 'http://');
 		}
-		if (config::byKey($_mode . 'Port') == '') {
-			config::save($_mode . 'Port', 80);
+		if ($configuration->get($_mode . 'Port') == '') {
+			$configuration->set($_mode . 'Port', 80);
 		}
-		if (config::byKey($_mode . 'Protocol') == 'https://' && config::byKey($_mode . 'Port') == 80) {
-			config::save($_mode . 'Port', 443);
+		if ($configuration->get($_mode . 'Protocol') == 'https://' && $configuration->get($_mode . 'Port') == 80) {
+			$configuration->set($_mode . 'Port', 443);
 		}
-		if (config::byKey($_mode . 'Protocol') == 'http://' && config::byKey($_mode . 'Port') == 443) {
-			config::save($_mode . 'Port', 80);
+		if ($configuration->get($_mode . 'Protocol') == 'http://' && $configuration->get($_mode . 'Port') == 443) {
+			$configuration->set($_mode . 'Port', 80);
 		}
-		if (trim(config::byKey($_mode . 'Complement')) == '/') {
-			config::save($_mode . 'Complement', '');
+		if (trim($configuration->get($_mode . 'Complement')) == '/') {
+			$configuration->set($_mode . 'Complement', '');
 		}
 		if ($_mode == 'internal') {
 			foreach (self::getInterfaces() as $interface) {
@@ -207,7 +211,7 @@ class network {
 				}
 				$ip = self::getInterfaceIp($interface);
 				if (!netMatch('127.0.*.*', $ip) && $ip != '' && filter_var($ip, FILTER_VALIDATE_IP)) {
-					config::save('internalAddr', $ip);
+					$configuration->set('internalAddr', $ip);
 					break;
 				}
 			}
@@ -215,7 +219,8 @@ class network {
 	}
 
 	public static function test($_mode = 'external', $_timeout = 5) {
-		if (config::byKey('network::disableMangement') == 1) {
+        $configuration = ConfigurationFactory::build();
+		if ($configuration->get('network::disableMangement') == 1) {
 			return true;
 		}
 		if ($_mode == 'internal' && netMatch('127.0.*.*', self::getNetworkAccess($_mode, 'ip', '', false))) {
@@ -249,7 +254,8 @@ class network {
 /*     * *********************DNS************************* */
 
 	public static function dns_create() {
-		if (config::byKey('dns::token') == '') {
+        $configuration = ConfigurationFactory::build();
+		if ($configuration->get('dns::token') == '') {
 			return;
 		}
 		try {
@@ -300,11 +306,11 @@ class network {
 		$openvpn->setEqType_name('openvpn');
 		$openvpn->setConfiguration('dev', 'tun');
 		$openvpn->setConfiguration('proto', 'udp');
-		$openvpn->setConfiguration('remote_host', 'vpn.dns' . config::byKey('dns::number', 'core', 1) . '.jeedom.com');
+		$openvpn->setConfiguration('remote_host', 'vpn.dns' . $configuration->get('dns::number', 'core', 1) . '.jeedom.com');
 		$openvpn->setConfiguration('username', jeedom::getHardwareKey());
-		$openvpn->setConfiguration('password', config::byKey('dns::token'));
+		$openvpn->setConfiguration('password', $configuration->get('dns::token'));
 		$openvpn->setConfiguration('compression', 'comp-lzo');
-		$openvpn->setConfiguration('remote_port', config::byKey('vpn::port', 'core', 1194));
+		$openvpn->setConfiguration('remote_port', $configuration->get('vpn::port', 'core', 1194));
 		$openvpn->setConfiguration('auth_mode', 'password');
 		$openvpn->save(true);
 		if (!file_exists(__DIR__ . '/../../plugins/openvpn/data')) {
@@ -322,10 +328,11 @@ class network {
 	}
 
 	public static function dns_start() {
-		if (config::byKey('dns::token') == '') {
+        $configuration = ConfigurationFactory::build();
+		if ($configuration->get('dns::token') == '') {
 			return;
 		}
-		if (config::byKey('market::allowDNS') != 1) {
+		if ($configuration->get('market::allowDNS') != 1) {
 			return;
 		}
 		$openvpn = self::dns_create();
@@ -337,8 +344,8 @@ class network {
 		$interface = $openvpn->getInterfaceName();
 		if ($interface !== null && $interface != '' && $interface !== false) {
 			shell_exec(system::getCmdSudo() . 'iptables -A INPUT -i ' . $interface . ' -p tcp  --destination-port 80 -j ACCEPT');
-			if (config::byKey('dns::openport') != '') {
-				foreach (explode(',', config::byKey('dns::openport')) as $port) {
+			if ($configuration->get('dns::openport') != '') {
+				foreach (explode(',', $configuration->get('dns::openport')) as $port) {
 					if (is_nan($port)) {
 						continue;
 					}
@@ -354,10 +361,11 @@ class network {
 	}
 
 	public static function dns_run() {
-		if (config::byKey('dns::token') == '') {
+        $configuration = ConfigurationFactory::build();
+		if ($configuration->get('dns::token') == '') {
 			return false;
 		}
-		if (config::byKey('market::allowDNS') != 1) {
+		if ($configuration->get('market::allowDNS') != 1) {
 			return false;
 		}
 		try {
@@ -373,7 +381,8 @@ class network {
 	}
 
 	public static function dns_stop() {
-		if (config::byKey('dns::token') == '') {
+        $configuration = ConfigurationFactory::build();
+		if ($configuration->get('dns::token') == '') {
 			return;
 		}
 		$openvpn = self::dns_create();
@@ -415,7 +424,8 @@ class network {
 	}
 
 	public static function cron5() {
-		if (config::byKey('network::disableMangement') == 1) {
+        $configuration = ConfigurationFactory::build();
+		if ($configuration->get('network::disableMangement') == 1) {
 			return;
 		}
 		if (!network::test('internal')) {

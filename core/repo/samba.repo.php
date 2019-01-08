@@ -18,6 +18,8 @@
 
 /* * ***************************Includes********************************* */
 
+use Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class repo_samba {
@@ -75,7 +77,7 @@ class repo_samba {
 			}
 			return;
 		}
-		$file = self::ls(config::byKey('samba::plugin::folder') . '/' . $_update->getConfiguration('path'), 'plugin');
+		$file = self::ls(ConfigurationFactory::build()->get('samba::plugin::folder') . '/' . $_update->getConfiguration('path'), 'plugin');
 		if (count($file) != 1) {
 			return;
 		}
@@ -108,11 +110,12 @@ class repo_samba {
 			throw new Exception(__('Impossible d\'écrire dans le répertoire : ', __FILE__) . $tmp . __('. Exécuter la commande suivante en SSH : sudo chmod 777 -R ', __FILE__) . $tmp_dir);
 		}
 		$cmd = 'cd ' . $tmp_dir . ';';
-		$cmd .= self::makeSambaCommand('cd ' . config::byKey('samba::plugin::folder') . ';get ' . $_update->getConfiguration('path'), 'plugin');
+		$configuration = ConfigurationFactory::build();
+		$cmd .= self::makeSambaCommand('cd ' . $configuration->get('samba::plugin::folder') . ';get ' . $_update->getConfiguration('path'), 'plugin');
 		com_shell::execute($cmd);
 		$pathinfo = pathinfo($_update->getConfiguration('path'));
 		com_shell::execute('mv ' . $tmp_dir . '/' . $pathinfo['basename'] . ' ' . $tmp);
-		$file = self::ls(config::byKey('samba::plugin::folder') . '/' . $_update->getConfiguration('path'), 'plugin');
+		$file = self::ls($configuration->get('samba::plugin::folder') . '/' . $_update->getConfiguration('path'), 'plugin');
 		if (count($file) != 1 || !isset($file[0]['datetime'])) {
 			return array('path' => $tmp, 'localVersion' => date('Y-m-d H:i:s'));
 		}
@@ -127,7 +130,8 @@ class repo_samba {
 	}
 
 	public static function makeSambaCommand($_cmd, $_type = 'backup') {
-		return system::getCmdSudo() . 'smbclient ' . config::byKey('samba::' . $_type . '::share') . ' -U "' . config::byKey('samba::' . $_type . '::username') . '%' . config::byKey('samba::' . $_type . '::password') . '" -I ' . config::byKey('samba::' . $_type . '::ip') . ' -c "' . $_cmd . '"';
+	    $configuration = ConfigurationFactory::build();
+		return system::getCmdSudo() . 'smbclient ' . $configuration->get('samba::' . $_type . '::share') . ' -U "' . $configuration->get('samba::' . $_type . '::username') . '%' . $configuration->get('samba::' . $_type . '::password') . '" -I ' . $configuration->get('samba::' . $_type . '::ip') . ' -c "' . $_cmd . '"';
 	}
 
 	public static function sortByDatetime($a, $b) {
@@ -160,10 +164,11 @@ class repo_samba {
 	}
 
 	public static function cleanBackupFolder() {
-		$timelimit = strtotime('-' . config::byKey('backup::keepDays') . ' days');
-		foreach (self::ls(config::byKey('samba::backup::folder')) as $file) {
+	    $configuration = ConfigurationFactory::build();
+		$timelimit = strtotime('-' . $configuration->get('backup::keepDays') . ' days');
+		foreach (self::ls($configuration->get('samba::backup::folder')) as $file) {
 			if ($timelimit > strtotime($file['datetime'])) {
-				$cmd = self::makeSambaCommand('cd ' . config::byKey('samba::backup::folder') . ';del ' . $file['filename']);
+				$cmd = self::makeSambaCommand('cd ' . $configuration->get('samba::backup::folder') . ';del ' . $file['filename']);
 				com_shell::execute($cmd);
 			}
 		}
@@ -172,14 +177,14 @@ class repo_samba {
 	public static function backup_send($_path) {
 		$pathinfo = pathinfo($_path);
 		$cmd = 'cd ' . $pathinfo['dirname'] . ';';
-		$cmd .= self::makeSambaCommand('cd ' . config::byKey('samba::backup::folder') . ';put ' . $pathinfo['basename']);
+		$cmd .= self::makeSambaCommand('cd ' . ConfigurationFactory::build()->get('samba::backup::folder') . ';put ' . $pathinfo['basename']);
 		com_shell::execute($cmd);
 		self::cleanBackupFolder();
 	}
 
 	public static function backup_list() {
 		$return = array();
-		foreach (self::ls(config::byKey('samba::backup::folder')) as $file) {
+		foreach (self::ls(ConfigurationFactory::build()->get('samba::backup::folder')) as $file) {
 			if ($file['filename'] == '.' || $file['filename'] == '..') {
 				continue;
 			}
@@ -189,9 +194,10 @@ class repo_samba {
 	}
 
 	public static function backup_restore($_backup) {
-		$backup_dir = calculPath(config::byKey('backup::path'));
+	    $configuration = ConfigurationFactory::build();
+		$backup_dir = calculPath($configuration->get('backup::path'));
 		$cmd = 'cd ' . $backup_dir . ';';
-		$cmd .= self::makeSambaCommand('cd ' . config::byKey('samba::backup::folder') . ';get ' . $_backup);
+		$cmd .= self::makeSambaCommand('cd ' . $configuration->get('samba::backup::folder') . ';get ' . $_backup);
 		com_shell::execute($cmd);
 		com_shell::execute(system::getCmdSudo() . 'chmod 777 -R ' . $backup_dir . '/*');
 		jeedom::restore('backup/' . $_backup, true);
@@ -200,7 +206,7 @@ class repo_samba {
 	public static function downloadCore($_path) {
 		$pathinfo = pathinfo($_path);
 		$cmd = 'cd ' . $pathinfo['dirname'] . ';';
-		$cmd .= self::makeSambaCommand('get ' . config::byKey('samba::core::path') . '/jeedom.zip', 'plugin');
+		$cmd .= self::makeSambaCommand('get ' . ConfigurationFactory::build()->get('samba::core::path') . '/jeedom.zip', 'plugin');
 		com_shell::execute($cmd);
 		com_shell::execute(system::getCmdSudo() . 'chmod 777 -R ' . $_path);
 		return;
@@ -212,7 +218,7 @@ class repo_samba {
 				com_shell::execute(system::getCmdSudo() . 'rm /tmp/jeedom_version');
 			}
 			$cmd = 'cd /tmp;';
-			$cmd .= self::makeSambaCommand('get ' . config::byKey('samba::core::path') . '/jeedom_version', 'plugin');
+			$cmd .= self::makeSambaCommand('get ' . ConfigurationFactory::build()->get('samba::core::path') . '/jeedom_version', 'plugin');
 			com_shell::execute($cmd);
 			if (!file_exists(jeedom::getTmpFolder('samba') . '/version')) {
 				return null;
