@@ -22,6 +22,7 @@ use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
 use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
 use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -127,7 +128,9 @@ $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepos
         /** @var CommandRepository $commandRepository */
         $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if ($_action['cmd'] == 'scenario') {
-			$scenario = scenario::byId($_action['options']['scenario_id']);
+            /** @var ScenarioRepository $scenarioRepository */
+            $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+			$scenario = $scenarioRepository->get($_action['options']['scenario_id']);
 			if (!is_object($scenario)) {
 				$name = 'scenario ' . $_action['options']['scenario_id'];
 			} else {
@@ -170,7 +173,9 @@ $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepos
 
 	public static function scenario($_scenario) {
 		$id = str_replace(array('scenario', '#'), '', trim($_scenario));
-		$scenario = scenario::byId($id);
+        /** @var ScenarioRepository $scenarioRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		$scenario = $scenarioRepository->get($id);
 		if (!is_object($scenario)) {
 			return -2;
 		}
@@ -696,7 +701,9 @@ $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepos
 	}
 
 	public static function lastScenarioExecution($_scenario_id) {
-		$scenario = scenario::byId(str_replace(array('#scenario', '#'), '', $_scenario_id));
+        /** @var ScenarioRepository $scenarioRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		$scenario = $scenarioRepository->get(str_replace(array('#scenario', '#'), '', $_scenario_id));
 		if (!is_object($scenario)) {
 			return 0;
 		}
@@ -1304,7 +1311,9 @@ $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepos
 					if ($scenario !== null && $this->getOptions('scenario_id') == $scenario->getId()) {
 						$actionScenario = &$scenario;
 					} else {
-						$actionScenario = scenario::byId($this->getOptions('scenario_id'));
+                        /** @var ScenarioRepository $scenarioRepository */
+                        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+						$actionScenario = $scenarioRepository->get($this->getOptions('scenario_id'));
 					}
 					if (!is_object($actionScenario)) {
 						throw new Exception(__('Action sur scénario impossible. Scénario introuvable - Vérifiez l\'id : ', __FILE__) . $this->getOptions('scenario_id'));
@@ -1652,7 +1661,9 @@ $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepos
 			} elseif ($this->getExpression() == 'stop') {
 				return '(stop) Arret du scenario';
 			} elseif ($this->getExpression() == 'scenario') {
-				$actionScenario = scenario::byId($this->getOptions('scenario_id'));
+                /** @var ScenarioRepository $scenarioRepository */
+                $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+				$actionScenario = $scenarioRepository->get($this->getOptions('scenario_id'));
 				if (is_object($actionScenario)) {
 					return '(scenario) ' . $this->getOptions('action') . ' de ' . $actionScenario->getHumanName();
 				}

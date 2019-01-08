@@ -20,6 +20,7 @@
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -166,7 +167,9 @@ class dataStore {
 		$return['cmd'] = $commandRepository->searchConfiguration(array('"cmd":"variable"%"name":"' . $this->getKey() . '"', 'variable(' . $this->getKey() . ')', '"name":"' . $this->getKey() . '"%"cmd":"variable"'));
 		$return['eqLogic'] = $equipmentLogicRepository->searchConfiguration(array('"cmd":"variable"%"name":"' . $this->getKey() . '"', 'variable(' . $this->getKey() . ')', '"name":"' . $this->getKey() . '"%"cmd":"variable"'));
 		$return['interactDef'] = interactDef::searchByUse(array('"cmd":"variable"%"name":"' . $this->getKey() . '"', 'variable(' . $this->getKey() . ')', '"name":"' . $this->getKey() . '"%"cmd":"variable"'));
-		$return['scenario'] = scenario::searchByUse(array(
+        /** @var ScenarioRepository $scenarioExpressionRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		$return['scenario'] = $scenarioRepository->searchByUse(array(
 			array('action' => 'variable(' . $this->getKey() . ')', 'option' => 'variable(' . $this->getKey() . ')'),
 			array('action' => 'variable', 'option' => $this->getKey(), 'and' => true),
 		));

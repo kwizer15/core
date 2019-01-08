@@ -21,6 +21,7 @@
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
 use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
@@ -119,7 +120,9 @@ class jeedom {
 			'comment' => ($state) ? '' : __('Erreur cron : les crons sont désactivés. Allez dans Administration -> Moteur de tâches pour les réactiver', __FILE__),
 		);
 
-		$state = (config::byKey('enableScenario') == 0 && count(scenario::all()) > 0) ? false : true;
+        /** @var ScenarioRepository $scenarioRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		$state = (config::byKey('enableScenario') == 0 && $scenarioRepository->count() > 0) ? false : true;
 		$return[] = array(
 			'name' => __('Scénario actif', __FILE__),
 			'state' => $state,
@@ -403,7 +406,9 @@ class jeedom {
 		if (!self::isDateOk()) {
 			return false;
 		}
-		if (config::byKey('enableScenario') == 0 && count(scenario::all()) > 0) {
+        /** @var ScenarioRepository $scenarioRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		if (config::byKey('enableScenario') == 0 && $scenarioRepository->count() > 0) {
 			return false;
 		}
 		if (!self::isCapable('sudo')) {
@@ -673,7 +678,9 @@ class jeedom {
 
 		echo "Disable all scenario";
 		config::save('enableScenario', 0);
-		foreach (scenario::all() as $scenario) {
+        /** @var ScenarioRepository $scenarioRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		foreach ($scenarioRepository->all() as $scenario) {
 			try {
 				$scenario->stop();
 				echo '.';
@@ -974,11 +981,13 @@ class jeedom {
         $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         /** @var ScenarioExpressionRepository $scenarioExpressionRepository */
         $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
+        /** @var ScenarioRepository $scenarioExpressionRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
 		foreach ($_replaces as $key => $value) {
 			$datas = array_merge($datas, $commandRepository->searchConfiguration($key));
-			$datas = array_merge($datas, $equipmentLogicRepostory->searchConfiguration($key));
+			$datas = array_merge($datas, $equipmentLogicRepository->searchConfiguration($key));
 			$datas = array_merge($datas, jeeObject::searchConfiguration($key));
-			$datas = array_merge($datas, scenario::searchByUse(array(array('action' => '#' . $key . '#'))));
+			$datas = array_merge($datas, $scenarioRepository->searchByUse(array(array('action' => '#' . $key . '#'))));
 			$datas = array_merge($datas, $scenarioExpressionRepository->searchExpression($key, $key, false));
 			$datas = array_merge($datas, $scenarioExpressionRepository->searchExpression('variable(' . str_replace('#', '', $key) . ')'));
 			$datas = array_merge($datas, $scenarioExpressionRepository->searchExpression('variable', str_replace('#', '', $key), true));
@@ -1069,12 +1078,14 @@ class jeedom {
 			}
 			$return['cmd'][$cmd_id] = $cmd;
 		}
+        /** @var ScenarioRepository $scenarioExpressionRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
 		preg_match_all('/"scenario_id":"([0-9]*)"/', $_string, $matches);
 		foreach ($matches[1] as $scenario_id) {
 			if (isset($return['scenario'][$scenario_id])) {
 				continue;
 			}
-			$scenario = scenario::byId($scenario_id);
+			$scenario = $scenarioRepository->get($scenario_id);
 			if (!is_object($scenario)) {
 				continue;
 			}
@@ -1085,7 +1096,7 @@ class jeedom {
 			if (isset($return['scenario'][$scenario_id])) {
 				continue;
 			}
-			$scenario = scenario::byId($scenario_id);
+			$scenario = $scenarioRepository->get($scenario_id);
 			if (!is_object($scenario)) {
 				continue;
 			}

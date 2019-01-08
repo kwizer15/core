@@ -20,6 +20,7 @@
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -170,7 +171,9 @@ class plan {
             $eqLogic = $equipmentLogicRepository->get($this->getLink_id());
 			return $eqLogic;
 		} else if ($this->getLink_type() == 'scenario') {
-			$scenario = scenario::byId($this->getLink_id());
+            /** @var ScenarioRepository $scenarioRepository */
+            $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+			$scenario = $scenarioRepository->get($this->getLink_id());
 			return $scenario;
 		} else if ($this->getLink_type() == 'cmd') {
             /** @var CommandRepository $commandRepository */

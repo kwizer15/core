@@ -20,6 +20,7 @@
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -561,7 +562,9 @@ class jeeObject {
 	}
 
 	public function getScenario($_onlyEnable = true, $_onlyVisible = false) {
-		return scenario::byObjectId($this->getId(), $_onlyEnable, $_onlyVisible);
+        /** @var ScenarioRepository $scenarioRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		return $scenarioRepository->findByObjectId($this->getId(), $_onlyEnable, $_onlyVisible);
 	}
 
 	public function preRemove() {

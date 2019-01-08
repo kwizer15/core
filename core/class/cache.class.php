@@ -19,6 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -314,7 +315,9 @@ class cache {
 				if (!is_numeric($matches[1][0])) {
 					continue;
 				}
-				$object = scenario::byId($matches[1][0]);
+                /** @var ScenarioRepository $scenarioRepository */
+                $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+				$object = $scenarioRepository->get($matches[1][0]);
 				if (!is_object($object)) {
 					cache::delete($key);
 				}

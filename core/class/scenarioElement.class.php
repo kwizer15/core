@@ -20,6 +20,7 @@
 
 use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
 use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -470,7 +471,9 @@ class scenarioElement {
 	}
 
 	public function getScenario() {
-		$scenario = scenario::byElement($this->getId());
+        /** @var ScenarioRepository $scenarioRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		$scenario = $scenarioRepository->findByElement($this->getId());
 		if (is_object($scenario)) {
 			return $scenario;
 		}

@@ -1,8 +1,14 @@
 <?php
+
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
-$scenario = scenario::byId(init('scenario_id'));
+/** @var ScenarioRepository $scenarioExpressionRepository */
+$scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+$scenario = $scenarioRepository->get(init('scenario_id'));
 if (!is_object($scenario)) {
 	throw new Exception('Scénario non trouvé : ' . init('scenario_id'));
 }

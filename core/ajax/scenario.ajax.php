@@ -16,7 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -28,8 +29,10 @@ try {
 
 	ajax::init();
 
+	/** @var ScenarioRepository $scenarioRepository */
+	$scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
 	if (init('action') == 'changeState') {
-		$scenario = scenario::byId(init('id'));
+		$scenario = $scenarioRepository->get(init('id'));
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario ID inconnu : ', __FILE__) . init('id'));
 		}
@@ -60,7 +63,7 @@ try {
 
 	if (init('action') == 'listScenarioHtml') {
 		$return = array();
-		foreach (scenario::all() as $scenario) {
+		foreach ($scenarioRepository->all() as $scenario) {
 			if ($scenario->getIsVisible() == 1) {
 				$return[] = $scenario->toHtml(init('version'));
 			}
@@ -85,7 +88,7 @@ try {
 	}
 
 	if (init('action') == 'convertToTemplate') {
-		$scenario = scenario::byId(init('id'));
+		$scenario = $scenarioRepository->get(init('id'));
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario ID inconnu : ', __FILE__) . init('id'));
 		}
@@ -157,7 +160,7 @@ try {
 		if (isset($scenario_ajax['group'])) {
 			unset($scenario_ajax['group']);
 		}
-		$scenario_db = scenario::byId(init('id'));
+		$scenario_db = $scenarioRepository->get(init('id'));
 		if (!is_object($scenario_db)) {
 			throw new Exception(__('Scénario ID inconnu : ', __FILE__) . init('id'));
 		}
@@ -180,7 +183,7 @@ try {
 	}
 
 	if (init('action') == 'all') {
-		$scenarios = scenario::all();
+		$scenarios = $scenarioRepository->all();
 		$return = array();
 		foreach ($scenarios as $scenario) {
 			$info_scenario = utils::o2a($scenario);
@@ -195,7 +198,7 @@ try {
 		$scenarios = json_decode(init('scenarios'), true);
 		if (is_array($scenarios)) {
 			foreach ($scenarios as $scenario_ajax) {
-				$scenario = scenario::byId($scenario_ajax['id']);
+				$scenario = $scenarioRepository->get($scenario_ajax['id']);
 				if (!is_object($scenario)) {
 					continue;
 				}
@@ -217,16 +220,18 @@ try {
 		ajax::success($return);
 	}
 
+	/** @var ScenarioRepository $scenarioRepository */
+	$scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
 	if (init('action') == 'toHtml') {
 		if (init('id') == 'all' || is_json(init('id'))) {
 			if (is_json(init('id'))) {
 				$scenario_ajax = json_decode(init('id'), true);
 				$scenarios = array();
 				foreach ($scenario_ajax as $id) {
-					$scenarios[] = scenario::byId($id);
+					$scenarios[] = $scenarioRepository->get($id);
 				}
 			} else {
-				$scenarios = scenario::all();
+				$scenarios = $scenarioRepository->all();
 			}
 			$return = array();
 			foreach ($scenarios as $scenario) {
@@ -236,7 +241,7 @@ try {
 			}
 			ajax::success($return);
 		} else {
-			$scenario = scenario::byId(init('id'));
+			$scenario = $scenarioRepository->get(init('id'));
 			if (is_object($scenario)) {
 				ajax::success($scenario->toHtml(init('version')));
 			}
@@ -249,7 +254,7 @@ try {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
-		$scenario = scenario::byId(init('id'));
+		$scenario = $scenarioRepository->byId(init('id'));
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario ID inconnu', __FILE__));
 		}
@@ -264,7 +269,7 @@ try {
 		if (!isConnect('admin')) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
-		$scenario = scenario::byId(init('id'));
+		$scenario = $scenarioRepository->get(init('id'));
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario ID inconnu', __FILE__));
 		}
@@ -282,7 +287,7 @@ try {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
-		$scenario = scenario::byId(init('id'));
+		$scenario = $scenarioRepository->get(init('id'));
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario ID inconnu', __FILE__));
 		}
@@ -290,7 +295,7 @@ try {
 	}
 
 	if (init('action') == 'get') {
-		$scenario = scenario::byId(init('id'));
+		$scenario = $scenarioRepository->get(init('id'));
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario ID inconnu', __FILE__));
 		}
@@ -331,7 +336,7 @@ try {
 
 		$scenario_ajax = json_decode(init('scenario'), true);
 		if (isset($scenario_ajax['id'])) {
-			$scenario_db = scenario::byId($scenario_ajax['id']);
+			$scenario_db = $scenarioRepository->get($scenario_ajax['id']);
 		}
 		if (!isset($scenario_db) || !is_object($scenario_db)) {
 			$scenario_db = new scenario();
@@ -414,4 +419,4 @@ try {
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());
 }
-?>
+

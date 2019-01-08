@@ -16,6 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 if (php_sapi_name() != 'cli' || isset($_SERVER['REQUEST_METHOD']) || !isset($_SERVER['argc'])) {
 	header("Statut: 404 Page non trouvée");
 	header('HTTP/1.0 404 Not Found');
@@ -36,7 +39,9 @@ if (isset($argv)) {
 if (init('scenarioElement_id') != '') {
 	scenario::doIn(array('scenario_id' => init('scenario_id'), 'scenarioElement_id' => init('scenarioElement_id'), 'second' => 0, 'tags' => json_decode(init('tags'), true)));
 } else {
-	$scenario = scenario::byId(init('scenario_id'));
+    /** @var ScenarioRepository $scenarioExpressionRepository */
+    $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+	$scenario = $scenarioRepository->get(init('scenario_id'));
 	if (!is_object($scenario)) {
 		log::add('scenario', 'info', __('Scénario non trouvé. Vérifiez ID : ', __FILE__) . init('scenario_id'));
 		die(__('Scénario non trouvé. Vérifiez ID : ', __FILE__) . init('scenario_id'));

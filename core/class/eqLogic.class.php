@@ -20,6 +20,7 @@
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -1362,11 +1363,13 @@ class eqLogic {
         $commandRepository = RepositoryFactory::build(CommandRepository::class);
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
         $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        /** @var ScenarioRepository $scenarioExpressionRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
 		$return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array(), 'plan' => array(), 'view' => array());
 		$return['cmd'] = $commandRepository->searchConfiguration('#eqLogic' . $this->getId() . '#');
 		$return['eqLogic'] = $equipmentLogicRepository->searchConfiguration(array('#eqLogic' . $this->getId() . '#', '"eqLogic":"' . $this->getId()));
 		$return['interactDef'] = interactDef::searchByUse(array('#eqLogic' . $this->getId() . '#', '"eqLogic":"' . $this->getId()));
-		$return['scenario'] = scenario::searchByUse(array(
+		$return['scenario'] = $scenarioRepository->searchByUse(array(
 			array('action' => 'equipment', 'option' => $this->getId(), 'and' => true),
 			array('action' => '#eqLogic' . $this->getId() . '#'),
 		));

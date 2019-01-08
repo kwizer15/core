@@ -1,4 +1,8 @@
 <?php
+
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 if (!isConnect()) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
@@ -164,7 +168,9 @@ if ($_SESSION['user']->getOptions('displayScenarioByDefault') == 1) {
 ?>
 <legend><i class="fas fa-history"></i> {{Scénarios}}</legend>
 <?php
-foreach (scenario::all() as $scenario) {
+/** @var ScenarioRepository $scenarioRepository */
+$scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+foreach ($scenarioRepository->all() as $scenario) {
 	if ($scenario->getIsVisible() == 0) {
 		continue;
 	}

@@ -1,14 +1,20 @@
 <?php
+
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 $scenarios = array();
-$totalScenario = scenario::all();
-$scenarios[-1] = scenario::all(null);
+/** @var ScenarioRepository $scenarioRepository */
+$scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+$totalScenario = $scenarioRepository->all();
+$scenarios[-1] = $scenarioRepository->all(null);
 $scenarioListGroup = scenario::listGroup();
 if (is_array($scenarioListGroup)) {
 	foreach ($scenarioListGroup as $group) {
-		$scenarios[$group['group']] = scenario::all($group['group']);
+		$scenarios[$group['group']] = $scenarioRepository->all($group['group']);
 	}
 }
 ?>

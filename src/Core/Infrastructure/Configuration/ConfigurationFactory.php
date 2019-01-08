@@ -15,6 +15,8 @@ class ConfigurationFactory
      */
     public static function build($plugin, EventDispatcherInterface $eventDispatcher)
     {
+        $persistence = 'test' === getenv('ENV') ? new InMemoryConfiguration($plugin) : new DBConfiguration($plugin);
+
         return new EventDispatcherConfiguration(
             $plugin,
             $eventDispatcher,

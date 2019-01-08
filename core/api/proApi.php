@@ -18,6 +18,7 @@
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . "/../php/core.inc.php";
@@ -34,6 +35,8 @@ if (isset($argv)) {
 try {
     /** @var CommandRepository $commandRepository */
     $commandRepository = RepositoryFactory::build(CommandRepository::class);
+    /** @var ScenarioRepository $scenarioExpressionRepository */
+    $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
 	$IP = getClientIp();
 	$request = init('request');
 	if ($request == '') {
@@ -113,7 +116,7 @@ try {
 			$defaut = 0;
 			$result = 'OK';
 			$advice = '';
-			if (config::byKey('enableScenario') == 0 && count(scenario::all()) > 0) {
+			if (config::byKey('enableScenario') == 0 && $scenarioRepository->count() > 0) {
 				$defaut = 1;
 				$result = 'NOK';
 				$advice = __('Erreur scénario : tous les scénarios sont désactivés. Allez dans Outils -> Scénarios pour les réactiver', __FILE__);
@@ -558,12 +561,12 @@ try {
 		}
 
 		/*             * ************************Scénario*************************** */
-		if ($jsonrpc->getMethod() == 'scenario::all') {
-			$jsonrpc->makeSuccess(utils::o2a(scenario::all()));
-		}
+        if ($jsonrpc->getMethod() == 'scenario::all') {
+            $jsonrpc->makeSuccess(utils::o2a($scenarioRepository->all()));
+        }
 
-		if ($jsonrpc->getMethod() == 'scenario::byId') {
-			$scenario = scenario::byId($params['id']);
+        if ($jsonrpc->getMethod() == 'scenario::byId') {
+			$scenario = $scenarioRepository->get($params['id']);
 			if (!is_object($scenario)) {
 				throw new Exception('Scénario introuvable : ' . secureXSS($params['id']), -32703);
 			}
@@ -571,7 +574,7 @@ try {
 		}
 
 		if ($jsonrpc->getMethod() == 'scenario::changeState') {
-			$scenario = scenario::byId($params['id']);
+			$scenario = $scenarioRepository->get($params['id']);
 			if (!is_object($scenario)) {
 				throw new Exception('Scénario introuvable : ' . secureXSS($params['id']), -32702);
 			}

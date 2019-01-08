@@ -16,6 +16,7 @@
  */
 
 use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
@@ -42,7 +43,9 @@ if (count($array) == 0) {
 $otherInfo = array();
 
 if ($class == 'cron' && $array['class'] == 'scenario' && $array['function'] == 'doIn') {
-	$scenario = scenario::byId($array['option']['scenario_id']);
+    /** @var ScenarioRepository $scenarioExpressionRepository */
+    $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+	$scenario = $scenarioRepository->get($array['option']['scenario_id']);
     /** @var ScenarioElementRepository $scenarioElementRepository */
     $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
 	$scenarioElement = $scenarioElementRepository->get($array['option']['scenarioElement_id']);

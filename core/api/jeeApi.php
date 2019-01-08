@@ -18,6 +18,7 @@
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 header('Access-Control-Allow-Origin: *');
@@ -149,7 +150,9 @@ if (init('type') != '') {
 		}
 		if ($type === 'scenario') {
 			log::add('api', 'debug', __('Demande API pour les scénarios', __FILE__));
-			$scenario = scenario::byId(init('id'));
+            /** @var ScenarioRepository $scenarioRepository */
+            $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+			$scenario = $scenarioRepository->get(init('id'));
 			if (!is_object($scenario)) {
 				throw new Exception(__('Aucun scénario correspondant à l\'ID : ', __FILE__) . secureXSS(init('id')));
 			}
@@ -760,12 +763,14 @@ try {
 	}
 
 	/*             * ************************Scénario*************************** */
-	if ($jsonrpc->getMethod() == 'scenario::all') {
-		$jsonrpc->makeSuccess(utils::o2a(scenario::all()));
+    /** @var ScenarioRepository $scenarioExpressionRepository */
+    $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+    if ($jsonrpc->getMethod() == 'scenario::all') {
+		$jsonrpc->makeSuccess(utils::o2a($scenarioRepository->all()));
 	}
 
 	if ($jsonrpc->getMethod() == 'scenario::byId') {
-		$scenario = scenario::byId($params['id']);
+		$scenario = $scenarioRepository->get($params['id']);
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario introuvable : ', __FILE__) . secureXSS($params['id']), -32703);
 		}
@@ -773,7 +778,7 @@ try {
 	}
 
 	if ($jsonrpc->getMethod() == 'scenario::changeState') {
-		$scenario = scenario::byId($params['id']);
+		$scenario = $scenarioRepository->get($params['id']);
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario introuvable : ', __FILE__) . secureXSS($params['id']), -32702);
 		}
@@ -795,7 +800,7 @@ try {
 	}
 
 	if ($jsonrpc->getMethod() == 'scenario::export') {
-		$scenario = scenario::byId($params['id']);
+		$scenario = $scenarioRepository->get($params['id']);
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario introuvable : ', __FILE__) . secureXSS($params['id']), -32702);
 		}
@@ -805,12 +810,12 @@ try {
 	if ($jsonrpc->getMethod() == 'scenario::import') {
 		unautorizedInDemo();
 		if (isset($params['id'])) {
-			$scenario = scenario::byId($params['id']);
+			$scenario = $scenarioRepository->get($params['id']);
 			if (!is_object($scenario)) {
 				throw new Exception(__('Scénario introuvable : ', __FILE__) . secureXSS($params['id']), -32702);
 			}
 		} else if (isset($params['humanName'])) {
-			$scenario = scenario::byString($params['humanName']);
+			$scenario = $scenarioRepository->findByString($params['humanName']);
 			if (!is_object($scenario)) {
 				throw new Exception(__('Scénario introuvable : ', __FILE__) . secureXSS($params['id']), -32702);
 			}

@@ -21,7 +21,7 @@
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
 use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
-use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -59,117 +59,49 @@ class scenario {
 	 * Renvoie un objet scenario
 	 * @param int  $_id id du scenario voulu
 	 * @return scenario object scenario
+     * @deprecated Use ScenarioRepository::get instead
 	 */
-	public static function byId($_id) {
-		$values = array(
-			'id' => $_id,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM scenario
-		WHERE id=:id';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+	public static function byId($_id)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioRepository::class.'::get instead', E_USER_DEPRECATED);
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+        return $scenarioRepository->get($_id);
 	}
 
-	public static function byString($_string) {
-		$scenario = self::byId(str_replace('#scenario', '', self::fromHumanReadable($_string)));
-		if (!is_object($scenario)) {
-			throw new Exception(__('La commande n\'a pas pu être trouvée : ', __FILE__) . $_string . __(' => ', __FILE__) . self::fromHumanReadable($_string));
-		}
-		return $scenario;
+    /**
+     * @deprecated Use ScenarioRepository::findOneByString instead
+     */
+	public static function byString($_string)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioRepository::class.'::findOneByString instead', E_USER_DEPRECATED);
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+        return $scenarioRepository->findOneByString($_string);
 	}
 
 	/**
 	 * Renvoie tous les objets scenario
 	 * @return [] scenario object scenario
+     * @deprecated Use ScenarioRepository::all instead
 	 */
-	public static function all($_group = '', $_type = null) {
-		$values = array();
-		if ($_group === '') {
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			INNER JOIN object ob ON s.object_id=ob.id';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' WHERE `type`=:type';
-			}
-			$sql .= ' ORDER BY ob.name,s.group, s.name';
-			$result1 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			if (!is_array($result1)) {
-				$result1 = array();
-			}
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			WHERE s.object_id IS NULL';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND `type`=:type';
-			}
-			$sql .= ' ORDER BY s.group, s.name';
-			$result2 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			return array_merge($result1, $result2);
-		} elseif ($_group === null) {
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			INNER JOIN object ob ON s.object_id=ob.id
-			WHERE (`group` IS NULL OR `group` = "")';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND `type`=:type';
-			}
-			$sql .= ' ORDER BY s.group, s.name';
-			$result1 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			if (!is_array($result1)) {
-				$result1 = array();
-			}
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			WHERE (`group` IS NULL OR `group` = "")
-			AND s.object_id IS NULL';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND `type`=:type';
-			}
-			$sql .= ' ORDER BY  s.name';
-			$result2 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			return array_merge($result1, $result2);
-		} else {
-			$values = array(
-				'group' => $_group,
-			);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			INNER JOIN object ob ON s.object_id=ob.id
-			WHERE `group`=:group';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND `type`=:type';
-			}
-			$sql .= ' ORDER BY ob.name,s.group, s.name';
-			$result1 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			WHERE `group`=:group
-			AND s.object_id IS NULL';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND `type`=:type';
-			}
-			$sql .= ' ORDER BY s.group, s.name';
-			$result2 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			return array_merge($result1, $result2);
-		}
+	public static function all($_group = '', $_type = null)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioRepository::class.'::all instead', E_USER_DEPRECATED);
+		$scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		return $scenarioRepository->all($_group, $_type);
 	}
+
 	/**
 	 *
 	 * @return type
+     * @deprecated Use ScenarioRepository::all schedule
 	 */
-	public static function schedule() {
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM scenario
-		WHERE `mode` != "provoke"
-		AND isActive=1';
-		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	public static function schedule()
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioRepository::class.'::schedule instead', E_USER_DEPRECATED);
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+        return $scenarioRepository->schedule();
 	}
+
 	/**
 	 *
 	 * @param type $_group
@@ -190,33 +122,23 @@ class scenario {
 	 *
 	 * @param type $_cmd_id
 	 * @return type
+     * @deprecated Use ScenarioRepository::findByTrigger schedule
 	 */
 	public static function byTrigger($_cmd_id, $_onlyEnable = true) {
-		$values = array(
-			'cmd_id' => '%#' . $_cmd_id . '#%',
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM scenario
-		WHERE mode != "schedule"';
-		if ($_onlyEnable) {
-			$sql .= ' AND isActive=1';
-		}
-		$sql .= ' AND `trigger` LIKE :cmd_id';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioRepository::class.'::findByTrigger instead', E_USER_DEPRECATED);
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+        return $scenarioRepository->findByTrigger($_cmd_id, $_onlyEnable);
 	}
 	/**
 	 *
 	 * @param type $_element_id
 	 * @return type
+     * @deprecated Use ScenarioRepository::findByElementId schedule
 	 */
 	public static function byElement($_element_id) {
-		$values = array(
-			'element_id' => '%"' . $_element_id . '"%',
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM scenario
-		WHERE `scenarioElement` LIKE :element_id';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioRepository::class.'::findByElementId instead', E_USER_DEPRECATED);
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+        return $scenarioRepository->findByElementId($_element_id);
 	}
 	/**
 	 *
@@ -224,24 +146,12 @@ class scenario {
 	 * @param type $_onlyEnable
 	 * @param type $_onlyVisible
 	 * @return type
+     * @deprecated Use ScenarioRepository::findByObjectId schedule
 	 */
 	public static function byObjectId($_object_id, $_onlyEnable = true, $_onlyVisible = false) {
-		$values = array();
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM scenario';
-		if ($_object_id === null) {
-			$sql .= ' WHERE object_id IS NULL';
-		} else {
-			$values['object_id'] = $_object_id;
-			$sql .= ' WHERE object_id=:object_id';
-		}
-		if ($_onlyEnable) {
-			$sql .= ' AND isActive = 1';
-		}
-		if ($_onlyVisible) {
-			$sql .= ' AND isVisible = 1';
-		}
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioRepository::class.'::findByObjectId instead', E_USER_DEPRECATED);
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+        return $scenarioRepository->findByObjectId($_object_id, $_onlyEnable, $_onlyVisible);
 	}
 	/**
 	 *
@@ -251,14 +161,16 @@ class scenario {
 	 */
 	public static function check($_event = null, $_forceSyncMode = false) {
 		$message = '';
+        /** @var ScenarioRepository $scenario */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
 		if ($_event !== null) {
 			$scenarios = array();
 			if (is_object($_event)) {
-				$scenarios1 = self::byTrigger($_event->getId());
+				$scenarios1 = $scenarioRepository->findByTrigger($_event->getId());
 				$trigger = '#' . $_event->getId() . '#';
 				$message = __('Scénario exécuté automatiquement sur événement venant de : ', __FILE__) . $_event->getHumanName();
 			} else {
-				$scenarios1 = self::byTrigger($_event);
+				$scenarios1 = $scenarioRepository->findByTrigger($_event);
 				$trigger = $_event;
 				$message = __('Scénario exécuté sur événement : #', __FILE__) . $_event . '#';
 			}
@@ -271,7 +183,7 @@ class scenario {
 			}
 		} else {
 			$message = __('Scénario exécuté automatiquement sur programmation', __FILE__);
-			$scenarios = scenario::schedule();
+			$scenarios = $scenarioRepository->schedule();
 			$trigger = 'schedule';
 			if (jeedom::isDateOk()) {
 				foreach ($scenarios as $key => &$scenario) {
@@ -294,7 +206,9 @@ class scenario {
 	}
 
 	public static function control() {
-		foreach (scenario::all() as $scenario) {
+        /** @var ScenarioRepository $scenario */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		foreach ($scenarioRepository->all() as $scenario) {
 			if ($scenario->getState() != 'in progress') {
 				continue;
 			}
@@ -317,7 +231,9 @@ class scenario {
 	 * @return type
 	 */
 	public static function doIn($_options) {
-		$scenario = self::byId($_options['scenario_id']);
+	    /** @var ScenarioRepository $scenario */
+	    $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		$scenario = $scenarioRepository->get($_options['scenario_id']);
 		if (!is_object($scenario)) {
 			return;
 		}
@@ -327,8 +243,8 @@ class scenario {
 			return;
 		}
 		/** @var ScenarioElementRepository $scenarioElementRepository */
-    $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
-		$scenarioElement = $repository->get($_options['scenarioElement_id']);
+        $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
+		$scenarioElement = $scenarioElementRepository->get($_options['scenarioElement_id']);
 		$scenario->setLog(__('************Lancement sous tâche**************', __FILE__));
 		if (isset($_options['tags']) && is_array($_options['tags']) && count($_options['tags']) > 0) {
 			$scenario->setTags($_options['tags']);
@@ -353,7 +269,9 @@ class scenario {
 			'subelement' => array(),
 			'expression' => array(),
 		);
-		foreach (scenario::all() as $scenario) {
+        /** @var ScenarioRepository $scenario */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		foreach ($scenarioRepository->all() as $scenario) {
 			foreach ($scenario->getElement() as $element) {
 				$result = $element->getAllId();
 				$ids['element'] = array_merge($ids['element'], $result['element']);
@@ -386,7 +304,9 @@ class scenario {
 
 	public static function consystencyCheck($_needsReturn = false) {
 		$return = array();
-		foreach (self::all() as $scenario) {
+        /** @var ScenarioRepository $scenario */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		foreach ($scenarioRepository->all() as $scenario) {
 			if ($scenario->getGroup() == '') {
 				$group = 'aucun';
 			} else {
@@ -438,47 +358,12 @@ class scenario {
 	 * @param type $_group_name
 	 * @param type $_scenario_name
 	 * @return type
+     * @deprecated Use ScenarioRepository::findByObjectNameGroupNameScenarioName schedule
 	 */
 	public static function byObjectNameGroupNameScenarioName($_object_name, $_group_name, $_scenario_name) {
-		$values = array(
-			'scenario_name' => html_entity_decode($_scenario_name),
-		);
-
-		if ($_object_name == __('Aucun', __FILE__)) {
-			if ($_group_name == __('Aucun', __FILE__)) {
-				$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-				FROM scenario s
-				WHERE s.name=:scenario_name
-				AND (`group` IS NULL OR `group`=""  OR `group`="Aucun" OR `group`="None")
-				AND s.object_id IS NULL';
-			} else {
-				$values['group_name'] = $_group_name;
-				$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-				FROM scenario s
-				WHERE s.name=:scenario_name
-				AND s.object_id IS NULL
-				AND `group`=:group_name';
-			}
-		} else {
-			$values['object_name'] = $_object_name;
-			if ($_group_name == __('Aucun', __FILE__)) {
-				$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-				FROM scenario s
-				INNER JOIN object ob ON s.object_id=ob.id
-				WHERE s.name=:scenario_name
-				AND ob.name=:object_name
-				AND (`group` IS NULL OR `group`=""  OR `group`="Aucun" OR `group`="None")';
-			} else {
-				$values['group_name'] = $_group_name;
-				$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-				FROM scenario s
-				INNER JOIN object ob ON s.object_id=ob.id
-				WHERE s.name=:scenario_name
-				AND ob.name=:object_name
-				AND `group`=:group_name';
-			}
-		}
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioRepository::class.'::findByObjectNameGroupNameScenarioName instead', E_USER_DEPRECATED);
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+        return $scenarioRepository->findByObjectNameGroupNameScenarioName($_object_name, $_group_name, $_scenario_name);
 	}
 
 	/**
@@ -511,9 +396,11 @@ class scenario {
 		}
 		$text = $_input;
 		preg_match_all("/#scenario([0-9]*)#/", $text, $matches);
+        /** @var ScenarioRepository $scenario */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
 		foreach ($matches[1] as $scenario_id) {
 			if (is_numeric($scenario_id)) {
-				$scenario = self::byId($scenario_id);
+				$scenario = $scenarioRepository->get($scenario_id);
 				if (is_object($scenario)) {
 					$text = str_replace('#scenario' . $scenario_id . '#', '#' . $scenario->getHumanName(true) . '#', $text);
 				}
@@ -560,11 +447,13 @@ class scenario {
 		$text = $_input;
 
 		preg_match_all("/#\[(.*?)\]\[(.*?)\]\[(.*?)\]#/", $text, $matches);
-		if (count($matches) == 4) {
+		if (count($matches) === 4) {
 			$countMatches = count($matches[0]);
+            /** @var ScenarioRepository $scenario */
+            $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
 			for ($i = 0; $i < $countMatches; $i++) {
 				if (isset($matches[1][$i]) && isset($matches[2][$i]) && isset($matches[3][$i])) {
-					$scenario = self::byObjectNameGroupNameScenarioName($matches[1][$i], $matches[2][$i], $matches[3][$i]);
+					$scenario = $scenarioRepository->findByObjectNameGroupNameScenarioName($matches[1][$i], $matches[2][$i], $matches[3][$i]);
 					if (is_object($scenario)) {
 						$text = str_replace($matches[0][$i], '#scenario' . $scenario->getId() . '#', $text);
 					}
@@ -578,46 +467,13 @@ class scenario {
 	 *
 	 * @param type $searchs
 	 * @return type
+     * @deprecated Use ScenarioRepository::searchByUse schedule
 	 */
-	public static function searchByUse($searchs) {
-		$return = array();
-		$expressions = array();
-		$scenarios = array();
-		foreach ($searchs as $search) {
-			$_cmd_id = str_replace('#', '', $search['action']);
-			$return = array_merge($return, self::byTrigger($_cmd_id, false));
-			if (!isset($search['and'])) {
-				$search['and'] = false;
-			}
-			if (!isset($search['option'])) {
-				$search['option'] = $search['action'];
-			}
-            /** @var ScenarioExpressionRepository $scenarioExpressionRepository */
-            $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
-			$expressions = array_merge($expressions, $scenarioExpressionRepository->searchExpression($search['action'], $search['option'], $search['and']));
-		}
-		if (is_array($expressions) && count($expressions) > 0) {
-			foreach ($expressions as $expression) {
-				$scenarios[] = $expression->getSubElement()->getElement()->getScenario();
-			}
-		}
-		if (is_array($scenarios) && count($scenarios) > 0) {
-			foreach ($scenarios as $scenario) {
-				if (is_object($scenario)) {
-					$find = false;
-					foreach ($return as $existScenario) {
-						if ($scenario->getId() == $existScenario->getId()) {
-							$find = true;
-							break;
-						}
-					}
-					if (!$find) {
-						$return[] = $scenario;
-					}
-				}
-			}
-		}
-		return $return;
+	public static function searchByUse($searchs)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioRepository::class.'::searchByUse instead', E_USER_DEPRECATED);
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+        return $scenarioRepository->searchByUse($searchs);
 	}
 	/**
 	 *
@@ -683,7 +539,9 @@ class scenario {
 		$return['date'] = $_event['datetime'];
 		$return['group'] = 'scenario';
 		$return['type'] = $_event['type'];
-		$scenario = scenario::byId($_event['id']);
+        /** @var ScenarioRepository $scenario */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+		$scenario = $scenarioRepository->get($_event['id']);
 		if (!is_object($scenario)) {
 			return null;
 		}
@@ -1515,11 +1373,13 @@ class scenario {
         $commandRepository = RepositoryFactory::build(CommandRepository::class);
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
         $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        /** @var ScenarioRepository $scenarioExpressionRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
         $return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array(), 'plan' => array(), 'view' => array());
 		$return['cmd'] = $commandRepository->searchConfiguration('#scenario' . $this->getId() . '#');
 		$return['eqLogic'] = $equipmentLogicRepository->searchConfiguration(array('#scenario' . $this->getId() . '#', '"scenario_id":"' . $this->getId()));
 		$return['interactDef'] = interactDef::searchByUse(array('#scenario' . $this->getId() . '#', '"scenario_id":"' . $this->getId()));
-		$return['scenario'] = scenario::searchByUse(array(
+		$return['scenario'] = $scenarioRepository->searchByUse(array(
 			array('action' => 'scenario', 'option' => $this->getId(), 'and' => true),
 			array('action' => '#scenario' . $this->getId() . '#'),
 		));

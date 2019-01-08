@@ -1,4 +1,8 @@
 <?php
+
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 if (!isConnect()) {
     throw new Exception('{{401 - Accès non autorisé}}');
 }
@@ -6,7 +10,9 @@ if (!isConnect()) {
 <center>
     <select id="mod_insertScenariocValue_value" class="form-control">
         <?php
-        foreach (scenario::all() as $scenario) {
+        /** @var ScenarioRepository $scenarioExpressionRepository */
+        $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+        foreach ($scenarioRepository->all() as $scenario) {
             echo '<option value="#' . $scenario->getHumanName(true) . '#" data-scenario_id="' . $scenario->getId() . '">' . $scenario->getHumanName(true) . '</option>';
         }
         ?>

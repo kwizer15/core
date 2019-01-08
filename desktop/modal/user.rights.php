@@ -1,6 +1,7 @@
 <?php
 
 use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 if (!isConnect('admin')) {
@@ -64,7 +65,9 @@ foreach ($eqLogics as $eqLogic) {
 			</thead>
 			<tbody>
 				<?php
-foreach (scenario::all() as $scenario) {
+                /** @var ScenarioRepository $scenarioExpressionRepository */
+                $scenarioRepository = RepositoryFactory::build(ScenarioRepository::class);
+foreach ($scenarioRepository->all() as $scenario) {
 	echo '<tr>';
 	echo '<td>' . $scenario->getHumanName(true, true, true) . '</td>';
 	echo '<td>';
