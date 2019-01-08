@@ -18,7 +18,8 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -154,13 +155,14 @@ class interactDef {
 	}
 
 	public static function deadCmd() {
-		$return = array();
-		foreach (interactDef::all() as $interact) {
-			if (is_string($interact->getActions('cmd')) && $interact->getActions('cmd') != '') {
-				preg_match_all("/#([0-9]*)#/", $interact->getActions('cmd'), $matches);
-				foreach ($matches[1] as $cmd_id) {
-					if (is_numeric($cmd_id)) {
-                        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
+        $return = array();
+        foreach (interactDef::all() as $interact) {
+            if (is_string($interact->getActions('cmd')) && $interact->getActions('cmd') != '') {
+                preg_match_all("/#([0-9]*)#/", $interact->getActions('cmd'), $matches);
+                foreach ($matches[1] as $cmd_id) {
+                    if (is_numeric($cmd_id)) {
 						if (!$commandRepository->get(str_replace('#', '', $cmd_id))) {
 							$return[] = array('detail' => 'Interaction ' . $interact->getName() . ' du groupe ' . $interact->getGroup(), 'help' => 'Action', 'who' => '#' . $cmd_id . '#');
 						}
@@ -171,7 +173,6 @@ class interactDef {
 				preg_match_all("/#([0-9]*)#/", $interact->getReply(), $matches);
 				foreach ($matches[1] as $cmd_id) {
 					if (is_numeric($cmd_id)) {
-                        $commandRepository = new DBCommandRepository();
 						if (!$commandRepository->get(str_replace('#', '', $cmd_id))) {
 							$return[] = array('detail' => 'Interaction ' . $interact->getName() . ' du groupe ' . $interact->getGroup(), 'help' => 'Réponse', 'who' => '#' . $cmd_id . '#');
 						}

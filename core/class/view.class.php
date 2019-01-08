@@ -18,7 +18,8 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -193,7 +194,8 @@ class view {
 								$replace = array();
 								preg_match_all("/#([0-9]*)#/", $viewData['configuration'][$i][$j], $matches);
 								foreach ($matches[1] as $cmd_id) {
-                                    $commandRepository = new DBCommandRepository();
+                                    /** @var CommandRepository $commandRepository */
+                                    $commandRepository = RepositoryFactory::build(CommandRepository::class);
 									$cmd = $commandRepository->get($cmd_id);
 									if (!is_object($cmd)) {
 										continue;

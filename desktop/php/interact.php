@@ -1,6 +1,7 @@
 <?php
 
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
@@ -287,7 +288,8 @@ foreach (array('object' => 'Objets', 'eqlogic' => 'Equipements', 'cmd' => 'Comma
     <select class='interactAttr form-control' data-l1key='filtres' data-l2key='eqLogic_id' >
       <option value="all">{{Tous}}</option>
       <?php
-      $equipmentLogicRepository = new DBEquipmentLogicRepository();
+      /** @var EquipmentLogicRepository $equipmentLogicRepository */
+      $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 foreach ($equipmentLogicRepository->all() as $eqLogic) {
 	echo '<option value="' . $eqLogic->getId() . '" >' . $eqLogic->getHumanName() . '</option>';
 }

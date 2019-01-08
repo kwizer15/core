@@ -16,8 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . "/../php/core.inc.php";
 
@@ -31,7 +32,8 @@ if (isset($argv)) {
 }
 
 try {
-    $commandRepository = new DBCommandRepository();
+    /** @var CommandRepository $commandRepository */
+    $commandRepository = RepositoryFactory::build(CommandRepository::class);
 	$IP = getClientIp();
 	$request = init('request');
 	if ($request == '') {
@@ -367,7 +369,8 @@ try {
 		}
 
 		/*             * ************************Equipement*************************** */
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		if ($jsonrpc->getMethod() == 'eqLogic::all') {
 			$jsonrpc->makeSuccess(utils::o2a($equipmentLogicRepository->all()));
 		}

@@ -16,8 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 header('Access-Control-Allow-Origin: *');
 require_once __DIR__ . "/../php/core.inc.php";
@@ -39,6 +40,10 @@ if (isset($argv)) {
 }
 GLOBAL $_USER_GLOBAL;
 $_USER_GLOBAL = null;
+
+/** @var CommandRepository $commandRepository */
+$commandRepository = RepositoryFactory::build(CommandRepository::class);
+
 if (init('type') != '') {
 	try {
 		$type = init('type');
@@ -61,9 +66,8 @@ if (init('type') != '') {
 			sleep(5);
 			throw new Exception(__('Vous n\'êtes pas autorisé à effectuer cette action (HTTP API désactivé), IP : ', __FILE__) . getClientIp());
 		}
-		if ($type == 'ask') {
-            $commandRepository = new DBCommandRepository();
-			$cmd = $commandRepository->get(init('cmd_id'));
+        if ($type == 'ask') {
+            $cmd = $commandRepository->get(init('cmd_id'));
 			if (!is_object($cmd)) {
 				throw new Exception(__('Commande inconnue : ', __FILE__) . init('cmd_id'));
 			}
@@ -77,8 +81,7 @@ if (init('type') != '') {
 			$cmd->askResponse(init('response'));
 		}
 
-		if ($type == 'cmd') {
-            $commandRepository = new DBCommandRepository();
+        if ($type == 'cmd') {
 			if (is_json(init('id'))) {
 				$ids = json_decode(init('id'), true);
 				$result = array();
@@ -134,7 +137,6 @@ if (init('type') != '') {
 				$param['profile'] = init('profile');
 			}
 			if (init('reply_cmd') != '') {
-                $commandRepository = new DBCommandRepository();
 				$reply_cmd = $commandRepository->get(init('reply_cmd'));
 				if (is_object($reply_cmd)) {
 					$param['reply_cmd'] = $reply_cmd;
@@ -207,13 +209,13 @@ if (init('type') != '') {
 		if ($type === 'eqLogic') {
 			log::add('api', 'debug', __('Demande API pour les équipements', __FILE__));
 			header('Content-Type: application/json');
-            $equipmentLogicRepository = new DBEquipmentLogicRepository();
+            /** @var EquipmentLogicRepository $equipmentLogicRepository */
+            $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 			echo json_encode(utils::o2a($equipmentLogicRepository->findByObjectId(init('object_id'))), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE, 1024);
 			die();
 		}
 		if ($type === 'command') {
 			log::add('api', 'debug', __('Demande API pour les commandes', __FILE__));
-            $commandRepository = new DBCommandRepository();
 			header('Content-Type: application/json');
 			echo json_encode(utils::o2a($commandRepository->findByEqLogicId(init('eqLogic_id'))), JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP | JSON_UNESCAPED_UNICODE, 1024);
 			die();
@@ -523,7 +525,6 @@ try {
 	}
 
 	/*             * ************************Equipement*************************** */
-    $commandRepository = new DBCommandRepository();
 	if ($jsonrpc->getMethod() == 'eqLogic::all') {
 		$jsonrpc->makeSuccess(utils::o2a($equipmentLogicRepository->all()));
 	}
@@ -633,7 +634,6 @@ try {
 	}
 
 	/*             * ************************Commande*************************** */
-    $commandRepository = new DBCommandRepository();
     if ($jsonrpc->getMethod() == 'cmd::all') {
         $return = array();
 		foreach ($commandRepository->all() as $cmd) {
@@ -651,7 +651,6 @@ try {
 	}
 
 	if ($jsonrpc->getMethod() == 'cmd::byId') {
-        $commandRepository = new DBCommandRepository();
 		$cmd = $commandRepository->get($params['id']);
 		if (!is_object($cmd)) {
 			throw new Exception(__('Cmd introuvable : ', __FILE__) . secureXSS($params['id']), -32701);
@@ -876,7 +875,6 @@ try {
 	/*             * ************************Interact*************************** */
 	if ($jsonrpc->getMethod() == 'interact::tryToReply') {
 		if (isset($params['reply_cmd'])) {
-            $commandRepository = new DBCommandRepository();
 			$reply_cmd = $commandRepository->get($params['reply_cmd']);
 			if (is_object($reply_cmd)) {
 				$params['reply_cmd'] = $reply_cmd;

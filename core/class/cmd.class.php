@@ -19,8 +19,7 @@
 /* * ***************************Includes********************************* */
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -80,7 +79,7 @@ class cmd {
 		if (count($matches[1]) == 0) {
 			return $_input;
 		}
-		$commandRepository = new DBCommandRepository();
+		$commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmds = $commandRepository->findByIds($matches[1]);
 		foreach ($cmds as $cmd) {
 			if (isset($replace['#' . $cmd->getId() . '#'])) {
@@ -282,7 +281,7 @@ class cmd {
 	}
 
 	public static function returnState($_options) {
-        $commandRepository = new DBCommandRepository();
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get($_options['cmd_id']);
 		if (is_object($cmd)) {
 			$cmd->event($cmd->getConfiguration('returnStateValue', 0));
@@ -291,7 +290,7 @@ class cmd {
 
 	public static function deadCmd() {
 		$return = array();
-        $commandRepository = new DBCommandRepository();
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		foreach ($commandRepository->all() as $cmd) {
 			if (is_array($cmd->getConfiguration('actionCheckCmd', ''))) {
 				foreach ($cmd->getConfiguration('actionCheckCmd', '') as $actionCmd) {
@@ -325,7 +324,7 @@ class cmd {
 	}
 
 	public static function cmdAlert($_options) {
-        $commandRepository = new DBCommandRepository();
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get($_options['cmd_id']);
 		if (!is_object($cmd)) {
 			return;
@@ -342,7 +341,7 @@ class cmd {
 		$return['date'] = $_event['datetime'];
 		$return['type'] = $_event['type'];
 		$return['group'] = $_event['subtype'];
-        $commandRepository = new DBCommandRepository();
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get($_event['id']);
 		if (!is_object($cmd)) {
 			return null;
@@ -646,7 +645,7 @@ class cmd {
 			}
 		}
 		if ($this->getConfiguration('updateCmdId') != '') {
-            $commandRepository = new DBCommandRepository();
+            $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get($this->getConfiguration('updateCmdId'));
 			if (is_object($cmd)) {
 				$value = $this->getConfiguration('updateCmdToValue');
@@ -1109,7 +1108,7 @@ class cmd {
 	}
 
 	public static function duringAlertLevel($_options) {
-        $commandRepository = new DBCommandRepository();
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get($_options['cmd_id']);
 		if (!is_object($cmd)) {
 			return;
@@ -1150,7 +1149,7 @@ class cmd {
 			$cmds = explode(('&&'), config::byKey('alert::' . $_level . 'Cmd'));
 			if (count($cmds) > 0 && trim(config::byKey('alert::' . $_level . 'Cmd')) != '') {
 				foreach ($cmds as $id) {
-                    $commandRepository = new DBCommandRepository();
+                    $commandRepository = RepositoryFactory::build(CommandRepository::class);
 					$cmd = $commandRepository->get(str_replace('#', '', $id));
 					if (is_object($cmd)) {
 						$cmd->execCmd(array(
@@ -1454,8 +1453,10 @@ class cmd {
 	}
 
 	public function getUsedBy($_array = false) {
-	    $commandRepository = new DBCommandRepository();
-	    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+	    /** @var CommandRepository $commandRepository */
+	    $commandRepository = RepositoryFactory::build(CommandRepository::class);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		$return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array(), 'plan' => array(), 'view' => array());
 		$return['cmd'] = $commandRepository->searchConfiguration('#' . $this->getId() . '#');
 		$return['eqLogic'] = $equipmentLogicRepository->searchConfiguration('#' . $this->getId() . '#');
@@ -1528,7 +1529,8 @@ class cmd {
 	}
 
 	public function getEqLogic() {
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		if ($this->_eqLogic === null) {
 			$this->setEqLogic($equipmentLogicRepository->get($this->eqLogic_id));
 		}
@@ -1736,182 +1738,182 @@ class cmd {
     /********************************* DEPRECATED METHODS ********************************/
 
     /**
-     * @deprecated Use DBCommandRepository::get instead
+     * @deprecated Use CommandRepository::get instead
      */
     public static function byId($_id)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::get instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::get instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->get($_id);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByIds instead
+     * @deprecated Use CommandRepository::findByIds instead
      */
     public static function byIds($_ids)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByIds instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByIds instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByIds($_ids);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::all instead
+     * @deprecated Use CommandRepository::all instead
      */
     public static function all()
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::all instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::all instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->all();
     }
 
     /**
-     * @deprecated Use DBCommandRepository::allHistoryCmd instead
+     * @deprecated Use CommandRepository::allHistoryCmd instead
      */
     public static function allHistoryCmd()
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::allHistoryCmd instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::allHistoryCmd instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->allHistoryCmd();
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByEqLogicId instead
+     * @deprecated Use CommandRepository::findByEqLogicId instead
      */
     public static function byEqLogicId($_eqLogic_id, $_type = null, $_visible = null, $_eqLogic = null, $_has_generic_type = null)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByEqLogicId instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByEqLogicId instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByEqLogicId($_eqLogic_id, $_type, $_visible, $_eqLogic, $_has_generic_type);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByLogicalId instead
+     * @deprecated Use CommandRepository::findByLogicalId instead
      */
     public static function byLogicalId($_logical_id, $_type = null)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByLogicalId instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByLogicalId instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByLogicalId($_logical_id, $_type);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByGenericType instead
+     * @deprecated Use CommandRepository::findByGenericType instead
      */
     public static function byGenericType($_generic_type, $_eqLogic_id = null, $_one = false)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByGenericType instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByGenericType instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByGenericType($_generic_type, $_eqLogic_id, $_one);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::searchConfiguration instead
+     * @deprecated Use CommandRepository::searchConfiguration instead
      */
     public static function searchConfiguration($_configuration, $_eqType = null)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::searchConfiguration instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::searchConfiguration instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->searchConfiguration($_configuration, $_eqType);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::searchConfigurationEqLogic instead
+     * @deprecated Use CommandRepository::searchConfigurationEqLogic instead
      */
     public static function searchConfigurationEqLogic($_eqLogic_id, $_configuration, $_type = null)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::searchConfigurationEqLogic instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::searchConfigurationEqLogic instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->searchConfigurationEqLogic($_eqLogic_id, $_configuration, $_type);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::searchTemplate instead
+     * @deprecated Use CommandRepository::searchTemplate instead
      */
     public static function searchTemplate($_template, $_eqType = null, $_type = null, $_subtype = null)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::searchTemplate instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::searchTemplate instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->searchTemplate($_template, $_eqType, $_type, $_subtype);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByEqLogicIdAndLogicalId instead
+     * @deprecated Use CommandRepository::findByEqLogicIdAndLogicalId instead
      */
     public static function byEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_multiple = false, $_type = null)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByEqLogicIdAndLogicalId instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByEqLogicIdAndLogicalId instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_multiple, $_type);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByEqLogicIdAndGenericType instead
+     * @deprecated Use CommandRepository::findByEqLogicIdAndGenericType instead
      */
     public static function byEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_multiple = false, $_type = null)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByEqLogicIdAndGenericType instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByEqLogicIdAndGenericType instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_multiple, $_type);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByValue instead
+     * @deprecated Use CommandRepository::findByValue instead
      */
     public static function byValue($_value, $_type = null, $_onlyEnable = false)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByValue instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByValue instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByValue($_value, $_type, $_onlyEnable);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByTypeEqLogicNameCmdName instead
+     * @deprecated Use CommandRepository::findByTypeEqLogicNameCmdName instead
      */
     public static function byTypeEqLogicNameCmdName($_eqType_name, $_eqLogic_name, $_cmd_name)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByTypeEqLogicNameCmdName instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByTypeEqLogicNameCmdName instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByTypeEqLogicNameCmdName($_eqType_name, $_eqLogic_name, $_cmd_name);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByEqLogicIdCmdName instead
+     * @deprecated Use CommandRepository::findByEqLogicIdCmdName instead
      */
     public static function byEqLogicIdCmdName($_eqLogic_id, $_cmd_name)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByEqLogicIdCmdName instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByEqLogicIdCmdName instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByEqLogicIdCmdName($_eqLogic_id, $_cmd_name);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByObjectNameEqLogicNameCmdName instead
+     * @deprecated Use CommandRepository::findByObjectNameEqLogicNameCmdName instead
      */
     public static function byObjectNameEqLogicNameCmdName($_object_name, $_eqLogic_name, $_cmd_name)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByObjectNameEqLogicNameCmdName instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByObjectNameEqLogicNameCmdName instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByObjectNameEqLogicNameCmdName($_object_name, $_eqLogic_name, $_cmd_name);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByObjectNameCmdName instead
+     * @deprecated Use CommandRepository::findByObjectNameCmdName instead
      */
     public static function byObjectNameCmdName($_object_name, $_cmd_name)
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByObjectNameCmdName instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByObjectNameCmdName instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByObjectNameCmdName($_object_name, $_cmd_name);
     }
 
     /**
-     * @deprecated Use DBCommandRepository::findByTypeSubType instead
+     * @deprecated Use CommandRepository::findByTypeSubType instead
      */
     public static function byTypeSubType($_type, $_subType = '')
     {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBCommandRepository::class.'::findByTypeSubType instead', E_USER_DEPRECATED);
-        $commandRepository = new DBCommandRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByTypeSubType instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByTypeSubType($_type, $_subType);
     }
 }

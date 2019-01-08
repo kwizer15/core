@@ -18,8 +18,9 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -246,7 +247,8 @@ class interactQuery {
 			if ($_data !== null && is_object($_data['object'])) {
 				$objects = $_data['object']->getEqLogic();
 			} else {
-			    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+                /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 				$objects = $equipmentLogicRepository->all(true);
 			}
 		} elseif ($_type == 'cmd') {
@@ -263,7 +265,8 @@ class interactQuery {
 					}
 				}
 			} else {
-			    $commandRepository = new DBCommandRepository();
+                /** @var CommandRepository $commandRepository */
+                $commandRepository = RepositoryFactory::build(CommandRepository::class);
 				$objects = $commandRepository->all();
 			}
 		} elseif ($_type == 'summary') {
@@ -485,7 +488,8 @@ class interactQuery {
 		$result = jeedom::evaluateExpression(str_replace('#value#', $_options['value'], $_options['test']));
 		if ($result) {
 			listener::byId($_options['listener_id'])->remove();
-            $commandRepository = new DBCommandRepository();
+            /** @var CommandRepository $commandRepository */
+            $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get(str_replace('#', '', $warnMeCmd));
 			if (!is_object($cmd)) {
 				return;
@@ -622,7 +626,8 @@ class interactQuery {
 			$lastCmd = $_lastCmd;
 		}
 		$current = array();
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$current['cmd'] = $commandRepository->get($lastCmd);
 		if (is_object($current['cmd'])) {
 			$current['eqLogic'] = $current['cmd']->getEqLogic();
@@ -842,7 +847,8 @@ class interactQuery {
 							$options['color'] = $colors[strtolower($options['color'])];
 						}
 					}
-                    $commandRepository = new DBCommandRepository();
+                    /** @var CommandRepository $commandRepository */
+                    $commandRepository = RepositoryFactory::build(CommandRepository::class);
 					$cmd = $commandRepository->get(str_replace('#', '', $action['cmd']));
 					if (is_object($cmd)) {
 						$replace['#unite#'] = $cmd->getUnite();

@@ -1,6 +1,7 @@
 <?php
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 if (!isConnect()) {
 	throw new Exception('{{401 - Accès non autorisé}}');
@@ -54,9 +55,9 @@ foreach ($allObject as $object) {
 			continue;
 		}
 		foreach ($object->getConfiguration('summary')[$key] as $summary) {
-            $commandRepository = new DBCommandRepository();
+            /** @var CommandRepository $commandRepository */
+            $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			if ($commandRepository->get(str_replace('#', '', $summary['cmd']))) {
-                $commandRepository = new DBCommandRepository();
 				$title .= '&#10;' . $commandRepository->get(str_replace('#', '', $summary['cmd']))->getHumanName();
 			} else {
 				$title .= '&#10;' . $summary['cmd'];

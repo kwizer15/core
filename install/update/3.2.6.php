@@ -1,10 +1,12 @@
 <?php
 
-use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
+use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
-$scenarioExpressionRepository = new DBScenarioExpressionRepository();
+/** @var ScenarioExpressionRepository $scenarioExpressionRepository */
+$scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
 foreach ($scenarioExpressionRepository->all() as $scenarioExpression) {
 	if ($scenarioExpression->getExpression() == 'equipment') {
 		try {

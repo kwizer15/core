@@ -18,8 +18,9 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -164,14 +165,16 @@ class plan {
 
 	public function getLink() {
         if ($this->getLink_type() == 'eqLogic') {
-            $equipmentLogicRepository = new DBEquipmentLogicRepository();
+            /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
             $eqLogic = $equipmentLogicRepository->get($this->getLink_id());
 			return $eqLogic;
 		} else if ($this->getLink_type() == 'scenario') {
 			$scenario = scenario::byId($this->getLink_id());
 			return $scenario;
 		} else if ($this->getLink_type() == 'cmd') {
-            $commandRepository = new DBCommandRepository();
+            /** @var CommandRepository $commandRepository */
+            $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get($this->getLink_id());
 			return $cmd;
 		} else if ($this->getLink_type() == 'summary') {
@@ -200,7 +203,8 @@ class plan {
 	public function doAction($_action) {
 		foreach ($this->getConfiguration('action_' . $_action) as $action) {
 			try {
-                $commandRepository = new DBCommandRepository();
+                /** @var CommandRepository $commandRepository */
+                $commandRepository = RepositoryFactory::build(CommandRepository::class);
 				$cmd = $commandRepository->get(str_replace('#', '', $action['cmd']));
 				if (is_object($cmd) && $this->getId() == $cmd->getEqLogic_id()) {
 					continue;
@@ -277,7 +281,8 @@ class plan {
 			if ($this->getConfiguration('display_mode', 'image') == 'image') {
 				$html .= '<img style="width:100%;height:100%" src="' . $this->getDisplay('path', 'core/img/no_image.gif') . '"/>';
 			} else {
-                $equipmentLogicRepository = new DBEquipmentLogicRepository();
+                /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 				$camera = $equipmentLogicRepository->get(str_replace(array('#', 'eqLogic'), array('', ''), $this->getConfiguration('camera')));
 				if (is_object($camera)) {
 					$html .= $camera->toHtml($_version, true);

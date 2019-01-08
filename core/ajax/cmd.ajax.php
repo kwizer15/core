@@ -16,7 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -27,7 +28,8 @@ try {
 	}
 
 	ajax::init();
-    $commandRepository = new DBCommandRepository();
+    /** @var CommandRepository $commandRepository */
+    $commandRepository = RepositoryFactory::build(CommandRepository::class);
 
     if (init('action') == 'toHtml') {
         if (init('ids') != '') {

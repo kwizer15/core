@@ -18,7 +18,8 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -148,7 +149,8 @@ class listener {
 	}
 
 	public static function backgroundCalculDependencyCmd($_event) {
-	    $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if (\count($commandRepository->findByValue($_event, 'info')) === 0) {
 			return;
 		}

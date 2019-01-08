@@ -15,7 +15,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
 use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 if (!isConnect('admin')) {
 	throw new Exception('401 Unauthorized');
@@ -41,7 +43,8 @@ $otherInfo = array();
 
 if ($class == 'cron' && $array['class'] == 'scenario' && $array['function'] == 'doIn') {
 	$scenario = scenario::byId($array['option']['scenario_id']);
-	$scenarioElementRepository = new DBScenarioElementRepository();
+    /** @var ScenarioElementRepository $scenarioElementRepository */
+    $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
 	$scenarioElement = $scenarioElementRepository->get($array['option']['scenarioElement_id']);
 	if (is_object($scenarioElement) && is_object($scenario)) {
 		$otherInfo['doIn'] = __('Scénario : ', __FILE__) . $scenario->getName() . "\n" . str_replace(array('"'), array("'"), $scenarioElement->export());

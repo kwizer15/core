@@ -17,8 +17,8 @@
  */
 date_default_timezone_set('Europe/Brussels');
 require_once __DIR__ . '/../../vendor/autoload.php';
-require_once __DIR__ . '/../class/DB.class.php';    // TODO: Remplacer par Jeedom\Core\Infrastructure\Database\Connection
-require_once __DIR__ . '/../class/config.class.php';
+require_once __DIR__ . '/../class/DB.class.php';      // TODO: Remplacer par Jeedom\Core\Infrastructure\Database\Connection
+require_once __DIR__ . '/../class/config.class.php';  // TODO: Remplacer par Jeedom\Core\Infrastructure\Configuration\ConfigurationFactory::build
 require_once __DIR__ . '/../class/jeedom.class.php';
 require_once __DIR__ . '/../class/plugin.class.php';
 require_once __DIR__ . '/../class/translate.class.php';

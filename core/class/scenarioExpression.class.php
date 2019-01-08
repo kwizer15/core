@@ -18,10 +18,11 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
-use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
-use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
+use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -39,47 +40,52 @@ class scenarioExpression {
 	/*     * ***********************Méthodes statiques*************************** */
 
     /**
-     * @deprecated Use DBScenarioExpression::get instead
+     * @deprecated Use ScenarioExpression::get instead
      */
     public static function byId($_id) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioExpressionRepository::class.'::get instead', E_USER_DEPRECATED);
-	    $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioExpressionRepository::class.'::get instead', E_USER_DEPRECATED);
+	    /** @var ScenarioExpressionRepository $scenarioExpressionRepository */
+        $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
 	    return $scenarioExpressionRepository->get($_id);
 	}
 
     /**
-     * @deprecated Use DBScenarioExpression::all instead
+     * @deprecated Use ScenarioExpression::all instead
      */
 	public static function all() {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioExpressionRepository::class.'::all instead', E_USER_DEPRECATED);
-        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioExpressionRepository::class.'::all instead', E_USER_DEPRECATED);
+        /** @var ScenarioExpressionRepository $scenarioExpressionRepository */
+$scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
         return $scenarioExpressionRepository->all();
 	}
 
     /**
-     * @deprecated Use DBScenarioExpression::findByScenarioSubElementId instead
+     * @deprecated Use ScenarioExpression::findByScenarioSubElementId instead
      */
 	public static function byscenarioSubElementId($_scenarioSubElementId) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioExpressionRepository::class.'::findByScenarioSubElementId instead', E_USER_DEPRECATED);
-        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioExpressionRepository::class.'::findByScenarioSubElementId instead', E_USER_DEPRECATED);
+        /** @var ScenarioExpressionRepository $scenarioExpressionRepository */
+$scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
         return $scenarioExpressionRepository->findByScenarioSubElementId($_scenarioSubElementId);
 	}
 
     /**
-     * @deprecated Use DBScenarioExpression::searchExpression instead
+     * @deprecated Use ScenarioExpression::searchExpression instead
      */
 	public static function searchExpression($_expression, $_options = null, $_and = true) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioExpressionRepository::class.'::searchExpression instead', E_USER_DEPRECATED);
-        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioExpressionRepository::class.'::searchExpression instead', E_USER_DEPRECATED);
+        /** @var ScenarioExpressionRepository $scenarioExpressionRepository */
+$scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
         return $scenarioExpressionRepository->searchExpression($_expression, $_options , $_and);
 	}
 
     /**
-     * @deprecated Use DBScenarioExpression::findByElement instead
+     * @deprecated Use ScenarioExpression::findByElement instead
      */
 	public static function byElement($_element_id) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioExpressionRepository::class.'::findByElement instead', E_USER_DEPRECATED);
-        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioExpressionRepository::class.'::findByElement instead', E_USER_DEPRECATED);
+        /** @var ScenarioExpressionRepository $scenarioExpressionRepository */
+$scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
         return $scenarioExpressionRepository->findByElement($_element_id);
 	}
 
@@ -88,7 +94,8 @@ class scenarioExpression {
 			'#uid#' => 'exp' . mt_rand(),
 		);
 		$return = array('html' => '');
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(str_replace('#', '', cmd::humanReadableToCmd($_expression)));
 		if (is_object($cmd)) {
 			$return['html'] = trim($cmd->toHtml('scenario', $_options));
@@ -117,7 +124,8 @@ class scenarioExpression {
 
 	public static function humanAction($_action) {
 		$return = '';
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if ($_action['cmd'] == 'scenario') {
 			$scenario = scenario::byId($_action['options']['scenario_id']);
 			if (!is_object($scenario)) {
@@ -181,7 +189,8 @@ class scenarioExpression {
 
 	public static function eqEnable($_eqLogic_id) {
 		$id = str_replace(array('eqLogic', '#'), '', trim($_eqLogic_id));
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		$eqLogic = $equipmentLogicRepository->get($id);
 		if (!is_object($eqLogic)) {
 			return -2;
@@ -213,7 +222,8 @@ class scenarioExpression {
 			}
 			return array_sum($values) / count($values);
 		} else {
-            $commandRepository = new DBCommandRepository();
+            /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 			if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 				return '';
@@ -235,7 +245,8 @@ class scenarioExpression {
 	}
 
 	public static function averageBetween($_cmd_id, $_startDate, $_endDate) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
@@ -273,7 +284,8 @@ class scenarioExpression {
 			}
 			return max($values);
 		} else {
-            $commandRepository = new DBCommandRepository();
+            /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 			if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 				return '';
@@ -295,7 +307,8 @@ class scenarioExpression {
 	}
 
 	public static function maxBetween($_cmd_id, $_startDate, $_endDate) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
@@ -351,7 +364,8 @@ class scenarioExpression {
 			}
 			return min($values);
 		} else {
-            $commandRepository = new DBCommandRepository();
+            /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 			if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 				return '';
@@ -373,7 +387,8 @@ class scenarioExpression {
 	}
 
 	public static function minBetween($_cmd_id, $_startDate, $_endDate) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
@@ -419,7 +434,8 @@ class scenarioExpression {
 	}
 
 	public static function tendance($_cmd_id, $_period = '1 hour', $_threshold = '') {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd)) {
 			return '';
@@ -458,7 +474,8 @@ class scenarioExpression {
 	}
 
 	public static function stateChanges($_cmd_id, $_value = null, $_period = '1 hour') {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if (!is_numeric(str_replace('#', '', $_cmd_id))) {
 			$cmd = $commandRepository->get(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
 		} else { $cmd = $commandRepository->get(str_replace('#', '', $_cmd_id));}
@@ -480,7 +497,8 @@ class scenarioExpression {
 	}
 
 	public static function stateChangesBetween($_cmd_id, $_value, $_startDate, $_endDate = null) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if (!is_numeric(str_replace('#', '', $_cmd_id))) {
 			$cmd = $commandRepository->get(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
 		} else { $cmd = $commandRepository->get(str_replace('#', '', $_cmd_id));}
@@ -502,7 +520,8 @@ class scenarioExpression {
 	}
 
 	public static function duration($_cmd_id, $_value, $_period = '1 hour') {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd_id = str_replace('#', '', $_cmd_id);
 		if (!is_numeric($cmd_id)) {
 			$cmd_id = $commandRepository->get(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
@@ -559,7 +578,8 @@ class scenarioExpression {
 	}
 
 	public static function durationBetween($_cmd_id, $_value, $_startDate, $_endDate) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if (!is_numeric(str_replace('#', '', $_cmd_id))) {
 			$cmd = $commandRepository->get(str_replace('#', '', cmd::humanReadableToCmd($_cmd_id)));
 		} else { $cmd = $commandRepository->get(str_replace('#', '', $_cmd_id));}
@@ -603,7 +623,8 @@ class scenarioExpression {
 	}
 
 	public static function lastBetween($_cmd_id, $_startDate, $_endDate) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
@@ -615,7 +636,8 @@ class scenarioExpression {
 	}
 
 	public static function statistics($_cmd_id, $_calc, $_period = '1 hour') {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd =$commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
@@ -637,7 +659,8 @@ class scenarioExpression {
 	}
 
 	public static function statisticsBetween($_cmd_id, $_calc, $_startDate, $_endDate) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(trim(str_replace('#', '', $_cmd_id)));
 		if (!is_object($cmd) || $cmd->getIsHistorized() == 0) {
 			return '';
@@ -681,7 +704,8 @@ class scenarioExpression {
 	}
 
 	public static function collectDate($_cmd_id, $_format = 'Y-m-d H:i:s') {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
 		if (!is_object($cmd)) {
 			return -1;
@@ -694,7 +718,8 @@ class scenarioExpression {
 	}
 
 	public static function valueDate($_cmd_id, $_format = 'Y-m-d H:i:s') {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
 		if (!is_object($cmd)) {
 			return '';
@@ -704,7 +729,8 @@ class scenarioExpression {
 	}
 
 	public static function value($_cmd_id) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
 		if (!is_object($cmd)) {
 			return '';
@@ -752,7 +778,8 @@ class scenarioExpression {
 
 	public static function triggerValue(&$_scenario = null) {
 		if ($_scenario !== null) {
-            $commandRepository = new DBCommandRepository();
+            /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get(str_replace('#', '', $_scenario->getRealTrigger()));
 			if (is_object($cmd)) {
 				return $cmd->execCmd();
@@ -873,7 +900,8 @@ class scenarioExpression {
 	}
 
 	public static function name($_type, $_cmd_id) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(str_replace('#', '', $_cmd_id));
 		if (!is_object($cmd)) {
 			$cmd = $commandRepository->get(trim(str_replace('#', '', cmd::humanReadableToCmd('#' . str_replace('#', '', $_cmd_id) . '#'))));
@@ -994,7 +1022,8 @@ class scenarioExpression {
 		}
 
 		if (is_object($_scenario)) {
-            $commandRepository = new DBCommandRepository();
+            /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get(str_replace('#', '', $_scenario->getRealTrigger()));
 			if (is_object($cmd)) {
 				$replace1['#trigger#'] = $cmd->getHumanName();
@@ -1104,7 +1133,8 @@ class scenarioExpression {
 	}
 
 	public function execute(&$scenario = null) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if ($scenario !== null && !$scenario->getDo()) {
 			return;
 		}
@@ -1127,7 +1157,8 @@ class scenarioExpression {
 		$message = '';
 		try {
 			if ($this->getType() == 'element') {
-			    $scenarioElementRepository = new DBScenarioElementRepository();
+			    /** @var ScenarioElementRepository $scenarioElementRepository */
+        $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
 				$element = $scenarioElementRepository->get($this->getExpression());
 				if (is_object($element)) {
 					$this->setLog($scenario, __('Exécution d\'un bloc élément : ', __FILE__) . $this->getExpression());
@@ -1214,7 +1245,8 @@ class scenarioExpression {
 					}
 					return;
 				} elseif ($this->getExpression() == 'event') {
-                    $commandRepository = new DBCommandRepository();
+                    /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 					$cmd = $commandRepository->get(trim(str_replace('#', '', $options['cmd'])));
 					if (!is_object($cmd)) {
 						throw new Exception(__('Commande introuvable : ', __FILE__) . $options['cmd']);
@@ -1235,7 +1267,8 @@ class scenarioExpression {
 					$this->setLog($scenario, __('Affichage du popup : ', __FILE__) . $options['message']);
 					return;
 				} elseif ($this->getExpression() == 'equipment' || $this->getExpression() == 'equipement') {
-                    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+                    /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                    $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 					$eqLogic = $equipmentLogicRepository->get(str_replace(array('#eqLogic', '#'), '', $this->getOptions('eqLogic')));
 					if (!is_object($eqLogic)) {
 						throw new Exception(__('Action sur l\'équipement impossible. Equipement introuvable - Vérifiez l\'id : ', __FILE__) . $this->getOptions('eqLogic'));
@@ -1368,7 +1401,9 @@ class scenarioExpression {
 					$dataStore->save();
 					$limit = (isset($options['timeout'])) ? $options['timeout'] : 300;
 					$options_cmd = array('title' => $options['question'], 'message' => $options['question'], 'answer' => explode(';', $options['answer']), 'timeout' => $limit, 'variable' => $this->getOptions('variable'));
-                    $commandRepository = new DBCommandRepository();
+
+					/** @var CommandRepository $commandRepository */
+                    $commandRepository = RepositoryFactory::build(CommandRepository::class);
 					$cmd = $commandRepository->get(str_replace('#', '', $this->getOptions('cmd')));
 					if (!is_object($cmd)) {
 						throw new Exception(__('Commande introuvable - Vérifiez l\'id : ', __FILE__) . $this->getOptions('cmd'));
@@ -1548,7 +1583,8 @@ class scenarioExpression {
 			'expression' => array(),
 		);
 		if ($this->getType() == 'element') {
-		    $scenarioElementRepository = new DBScenarioElementRepository();
+		    /** @var ScenarioElementRepository $scenarioElementRepository */
+            $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
 			$element = $scenarioElementRepository->get($this->getExpression());
 			if (is_object($element)) {
 				$result = $element->getAllId();
@@ -1566,7 +1602,8 @@ class scenarioExpression {
 		$expressionCopy->setScenarioSubElement_id($_scenarioSubElement_id);
 		$expressionCopy->save();
 		if ($expressionCopy->getType() == 'element') {
-		    $scenarioElementRepository = new DBScenarioElementRepository();
+		    /** @var ScenarioElementRepository $scenarioElementRepository */
+            $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
 			$element = $scenarioElementRepository->get($expressionCopy->getExpression());
 			if (is_object($element)) {
 				$expressionCopy->setExpression($element->copy());
@@ -1584,7 +1621,8 @@ class scenarioExpression {
 		if ($this->getType() != 'element') {
 			return;
 		}
-		$scenarioElementRepository = new DBScenarioElementRepository();
+		/** @var ScenarioElementRepository $scenarioElementRepository */
+        $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
 		$element = $scenarioElementRepository->get($this->getExpression());
 		if (is_object($element)) {
 			$element->resetRepeatIfStatus();
@@ -1594,7 +1632,8 @@ class scenarioExpression {
 	public function export() {
 		$return = '';
 		if ($this->getType() == 'element') {
-		    $scenarioElementRepository = new DBScenarioElementRepository();
+		    /** @var ScenarioElementRepository $scenarioElementRepository */
+            $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
             $element = $scenarioElementRepository->get($this->getExpression());
 			if (is_object($element)) {
 				$exports = explode("\n", $element->export());

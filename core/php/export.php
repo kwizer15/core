@@ -16,7 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 include_file('core', 'authentification', 'php');
@@ -27,7 +29,8 @@ $type = init('type');
 
 switch ($type) {
 	case 'cmdHistory':
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(init('id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande introuvable : ', __FILE__) . init('id'));
@@ -43,7 +46,8 @@ switch ($type) {
 		}
 		break;
 	case 'eqLogic':
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		$eqLogic = $equipmentLogicRepository->get(init('id'));
 		if (!is_object($eqLogic)) {
 			throw new Exception(__('Commande introuvable : ', __FILE__) . init('id'));

@@ -18,8 +18,9 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
-use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
+use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
+use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -44,15 +45,17 @@ class scenarioElement {
      * @deprecated Use ScenarioElementRepository::get instead
      */
 	public static function byId($_id) {
-	    trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.DBScenarioElementRepository::class.'::get instead', E_USER_DEPRECATED);
-        $repository = new DBScenarioElementRepository();
+	    trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.ScenarioElementRepository::class.'::get instead', E_USER_DEPRECATED);
+        /** @var ScenarioElementRepository $scenarioElementRepository */
+        $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
 
-        return $repository->get($_id);
+        return $scenarioElementRepository->get($_id);
 	}
 
 	public static function saveAjaxElement($element_ajax) {
 		if (isset($element_ajax['id']) && $element_ajax['id'] != '') {
-		    $scenarioElementRepository = new DBScenarioElementRepository();
+            /** @var ScenarioElementRepository $scenarioElementRepository */
+            $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
 			$element_db = $scenarioElementRepository->get($element_ajax['id']);
 		} else {
 			$element_db = new self();
@@ -89,8 +92,9 @@ class scenarioElement {
 					$expression_ajax['id'] = '';
 				}
 				if (isset($expression_ajax['id']) && $expression_ajax['id'] != '') {
-				    $scenarioExepressionRepository = new DBScenarioExpressionRepository();
-					$expression_db = $scenarioExepressionRepository->get($expression_ajax['id']);
+                    /** @var ScenarioExpressionRepository $scenarioExpressionRepository */
+                    $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
+					$expression_db = $scenarioExpressionRepository->get($expression_ajax['id']);
 				} else {
 					$expression_db = new scenarioExpression();
 				}
@@ -470,7 +474,8 @@ class scenarioElement {
 		if (is_object($scenario)) {
 			return $scenario;
 		}
-        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+        /** @var ScenarioExpressionRepository $scenarioExpressionRepository */
+        $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
 		$expression = $scenarioExpressionRepository->findByElement($this->getId());
 		if (is_object($expression)) {
 			return $expression->getSubElement()->getElement()->getScenario();

@@ -18,7 +18,8 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -375,7 +376,8 @@ class update {
 							} catch (Error $e) {
 
 							}
-                            $equipmentLogicRepository = new DBEquipmentLogicRepository();
+                            /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                            $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 							foreach ($equipmentLogicRepository->findByType($this->getLogicalId()) as $eqLogic) {
 								try {
 									$eqLogic->remove();

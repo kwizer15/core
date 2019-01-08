@@ -1,13 +1,15 @@
-    <?php
+<?php
 
-    use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
-    if (!isConnect('admin')) {
+if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
 $count = array('history' => 0, 'timeline' => 0);
 $list_cmd = array();
-$commandRepository = new DBCommandRepository();
+    /** @var CommandRepository $commandRepository */
+    $commandRepository = RepositoryFactory::build(CommandRepository::class);
 foreach ($commandRepository->all() as $cmd) {
 	$info_cmd = utils::o2a($cmd);
 	$info_cmd['humanName'] = $cmd->getHumanName(true);

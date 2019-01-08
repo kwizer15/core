@@ -18,8 +18,9 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -70,83 +71,92 @@ class eqLogic {
 	}
 
     /**
-     * @deprecated Use DBEquipmentLogicRepository::get instead
+     * @deprecated Use EquipmentLogicRepository::get instead
      */
 	public static function byId($_id) {
-		trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::get instead', E_USER_DEPRECATED);
-		$equipmentLogicRepository = new DBEquipmentLogicRepository();
+		trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::get instead', E_USER_DEPRECATED);
+		/** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		return $equipmentLogicRepository->get($_id);
 	}
 
     /**
-     * @deprecated Use DBEquipmentLogicRepository::all instead
+     * @deprecated Use EquipmentLogicRepository::all instead
      */
 	public static function all($_onlyEnable = false) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::all instead', E_USER_DEPRECATED);
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::all instead', E_USER_DEPRECATED);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->all($_onlyEnable);
 	}
 
     /**
-     * @deprecated Use DBEquipmentLogicRepository::findByEqRealId instead
+     * @deprecated Use EquipmentLogicRepository::findByEqRealId instead
      */
 	public static function byEqRealId($_eqReal_id) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByEqRealId instead', E_USER_DEPRECATED);
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByEqRealId instead', E_USER_DEPRECATED);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByEqRealId($_eqReal_id);
 	}
 
     /**
-     * @deprecated Use DBEquipmentLogicRepository::findByObjectId instead
+     * @deprecated Use EquipmentLogicRepository::findByObjectId instead
      */
 	public static function byObjectId($_object_id, $_onlyEnable = true, $_onlyVisible = false, $_eqType_name = null, $_logicalId = null, $_orderByName = false) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByObjectId instead', E_USER_DEPRECATED);
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByObjectId instead', E_USER_DEPRECATED);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByObjectId($_object_id, $_onlyEnable, $_onlyVisible, $_eqType_name, $_logicalId, $_orderByName);
 	}
 
     /**
-     * @deprecated Use DBEquipmentLogicRepository::findByLogicalId instead
+     * @deprecated Use EquipmentLogicRepository::findByLogicalId instead
      */
 	public static function byLogicalId($_logicalId, $_eqType_name, $_multiple = false) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByLogicalId instead', E_USER_DEPRECATED);
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByLogicalId instead', E_USER_DEPRECATED);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByLogicalId($_logicalId, $_eqType_name, $_multiple);
 	}
 
     /**
-     * @deprecated Use DBEquipmentLogicRepository::findByType instead
+     * @deprecated Use EquipmentLogicRepository::findByType instead
      */
 	public static function byType($_eqType_name, $_onlyEnable = false) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByType instead', E_USER_DEPRECATED);
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByType instead', E_USER_DEPRECATED);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByType($_eqType_name, $_onlyEnable);
 	}
 
     /**
-     * @deprecated Use DBEquipmentLogicRepository::findByCategory instead
+     * @deprecated Use EquipmentLogicRepository::findByCategory instead
      */
 	public static function byCategorie($_category) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByCategory instead', E_USER_DEPRECATED);
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByCategory instead', E_USER_DEPRECATED);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByCategory($_category);
 	}
 
     /**
-     * @deprecated Use DBEquipmentLogicRepository::findByTypeAndSearchConfiguration instead
+     * @deprecated Use EquipmentLogicRepository::findByTypeAndSearchConfiguration instead
      */
 	public static function byTypeAndSearhConfiguration($_eqType_name, $_configuration) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByTypeAndSearchConfiguration instead', E_USER_DEPRECATED);
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByTypeAndSearchConfiguration instead', E_USER_DEPRECATED);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByTypeAndSearchConfiguration($_eqType_name, $_configuration);
 	}
 
     /**
-     * @deprecated Use DBEquipmentLogicRepository::searchConfiguration instead
+     * @deprecated Use EquipmentLogicRepository::searchConfiguration instead
      */
 	public static function searchConfiguration($_configuration, $_type = null) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::searchConfiguration instead', E_USER_DEPRECATED);
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::searchConfiguration instead', E_USER_DEPRECATED);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->searchConfiguration($_configuration, $_type);
 	}
 
@@ -211,7 +221,8 @@ class eqLogic {
 	}
 
 	public static function checkAlive() {
-	    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+	    /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		foreach ($equipmentLogicRepository->findByTimeout(1, true) as $eqLogic) {
 			$sendReport = false;
 			$cmds = $eqLogic->getCmd();
@@ -232,7 +243,8 @@ class eqLogic {
 						$cmds = explode(('&&'), config::byKey('alert::timeoutCmd'));
 						if (count($cmds) > 0 && trim(config::byKey('alert::timeoutCmd')) != '') {
 							foreach ($cmds as $id) {
-                                $commandRepository = new DBCommandRepository();
+                                /** @var CommandRepository $commandRepository */
+                                $commandRepository = RepositoryFactory::build(CommandRepository::class);
 								$cmd = $commandRepository->get(str_replace('#', '', $id));
 								if (is_object($cmd)) {
 									$cmd->execCmd(array(
@@ -256,20 +268,22 @@ class eqLogic {
 	}
 
     /**
-     * @deprecated Use DBEquipmentLogicRepository::findByTimeout instead
+     * @deprecated Use EquipmentLogicRepository::findByTimeout instead
      */
 	public static function byTimeout($_timeout = 0, $_onlyEnable = false) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByTimeout instead', E_USER_DEPRECATED);
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByTimeout instead', E_USER_DEPRECATED);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByTimeout($_timeout, $_onlyEnable);
 	}
 
     /**
-     * @deprecated Use DBEquipmentLogicRepository::findByObjectNameEqLogicName instead
+     * @deprecated Use EquipmentLogicRepository::findByObjectNameEqLogicName instead
      */
 	public static function byObjectNameEqLogicName($_object_name, $_eqLogic_name) {
-        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. DBEquipmentLogicRepository::class.'::findByObjectNameEqLogicName instead', E_USER_DEPRECATED);
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByObjectNameEqLogicName instead', E_USER_DEPRECATED);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByObjectNameEqLogicName($_object_name, $_eqLogic_name);
 	}
 
@@ -300,7 +314,8 @@ class eqLogic {
 		preg_match_all("/#eqLogic([0-9]*)#/", $text, $matches);
 		foreach ($matches[1] as $eqLogic_id) {
 			if (is_numeric($eqLogic_id)) {
-			    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+			    /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 				$eqLogic = $equipmentLogicRepository->get($eqLogic_id);
 				if (is_object($eqLogic)) {
 					$text = str_replace('#eqLogic' . $eqLogic_id . '#', '#' . $eqLogic->getHumanName() . '#', $text);
@@ -347,7 +362,8 @@ class eqLogic {
 			$countMatches = count($matches[0]);
 			for ($i = 0; $i < $countMatches; $i++) {
 				if (isset($matches[1][$i]) && isset($matches[2][$i])) {
-                    $equipmentLogicRepository = new DBEquipmentLogicRepository();
+                    /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 					$eqLogic = $equipmentLogicRepository->findByObjectNameEqLogicName($matches[1][$i], $matches[2][$i]);
 					if (isset($eqLogic[0]) && is_object($eqLogic[0])) {
 						$text = str_replace($matches[0][$i], '#eqLogic' . $eqLogic[0]->getId() . '#', $text);
@@ -359,7 +375,8 @@ class eqLogic {
 	}
 
 	public static function clearCacheWidget() {
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		foreach ($equipmentLogicRepository->all() as $eqLogic) {
 			$eqLogic->emptyCacheWidget();
 		}
@@ -1013,7 +1030,8 @@ class eqLogic {
 				$cmds = explode(('&&'), config::byKey('alert::batterydangerCmd'));
 				if (count($cmds) > 0 && trim(config::byKey('alert::batterydangerCmd')) != '') {
 					foreach ($cmds as $id) {
-                        $commandRepository = new DBCommandRepository();
+                        /** @var CommandRepository $commandRepository */
+                        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 						$cmd = $commandRepository->get(str_replace('#', '', $id));
 						if (is_object($cmd)) {
 							$cmd->execCmd(array(
@@ -1040,7 +1058,8 @@ class eqLogic {
 				$cmds = explode(('&&'), config::byKey('alert::batterywarningCmd'));
 				if (count($cmds) > 0 && trim(config::byKey('alert::batterywarningCmd')) != '') {
 					foreach ($cmds as $id) {
-                        $commandRepository = new DBCommandRepository();
+                        /** @var CommandRepository $commandRepository */
+                        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 						$cmd = $commandRepository->get(str_replace('#', '', $id));
 						if (is_object($cmd)) {
 							$cmd->execCmd(array(
@@ -1168,7 +1187,8 @@ class eqLogic {
 			foreach ($this->getCmd() as $eqLogic_cmd) {
 				foreach ($link_cmds as $cmd_id => $link_cmd) {
 					if ($link_cmd == $eqLogic_cmd->getName()) {
-                        $commandRepository = new DBCommandRepository();
+                        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 						$cmd = $commandRepository->get($cmd_id);
 						if (is_object($cmd)) {
 							$cmd->setValue($eqLogic_cmd->getId());
@@ -1182,7 +1202,8 @@ class eqLogic {
 			foreach ($this->getCmd() as $eqLogic_cmd) {
 				foreach ($link_actions as $cmd_id => $link_action) {
 					if ($link_action == $eqLogic_cmd->getName()) {
-                        $commandRepository = new DBCommandRepository();
+                        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 						$cmd = $commandRepository->get($cmd_id);
 						if (is_object($cmd)) {
 							$cmd->setConfiguration('updateCmdId', $eqLogic_cmd->getId());
@@ -1337,8 +1358,10 @@ class eqLogic {
 	}
 
 	public function getUsedBy($_array = false) {
-        $commandRepository = new DBCommandRepository();
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		$return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array(), 'plan' => array(), 'view' => array());
 		$return['cmd'] = $commandRepository->searchConfiguration('#eqLogic' . $this->getId() . '#');
 		$return['eqLogic'] = $equipmentLogicRepository->searchConfiguration(array('#eqLogic' . $this->getId() . '#', '"eqLogic":"' . $this->getId()));
@@ -1406,7 +1429,8 @@ class eqLogic {
 	}
 
 	public function getCmd($_type = null, $_logicalId = null, $_visible = null, $_multiple = false) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if ($_logicalId !== null) {
 			if (isset($this->_cmds[$_logicalId . '.' . $_multiple . '.' . $_type])) {
 				return $this->_cmds[$_logicalId . '.' . $_multiple . '.' . $_type];
@@ -1429,7 +1453,8 @@ class eqLogic {
 	}
 
 	public function getCmdByGenericType($_type = null, $_generic_type = null, $_visible = null, $_multiple = false) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if ($_generic_type !== null) {
 			if (isset($this->_cmds[$_generic_type . '.' . $_multiple . '.' . $_type])) {
 				return $this->_cmds[$_generic_type . '.' . $_multiple . '.' . $_type];
@@ -1452,7 +1477,8 @@ class eqLogic {
 	}
 
 	public function searchCmdByConfiguration($_configuration, $_type = null) {
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		return $commandRepository->searchConfigurationEqLogic($this->id, $_configuration, $_type);
 	}
 

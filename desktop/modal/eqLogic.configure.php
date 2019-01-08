@@ -1,11 +1,13 @@
 <?php
 
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
-$equipmentLogicRepository = new DBEquipmentLogicRepository();
+/** @var EquipmentLogicRepository $equipmentLogicRepository */
+$equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 $eqLogic = $equipmentLogicRepository->get(init('eqLogic_id'));
 if (!is_object($eqLogic)) {
 	throw new Exception('EqLogic non trouvé : ' . init('eqLogic_id'));

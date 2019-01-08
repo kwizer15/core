@@ -1,6 +1,7 @@
 <?php
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 if (!isConnect()) {
 	throw new Exception('{{401 - Accès non autorisé}}');
@@ -21,7 +22,8 @@ if (!isConnect()) {
     </thead>
     <tbody>
         <?php
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 foreach ($commandRepository->all() as $cmd) {
 	$eqLogic = $cmd->getEqLogic();
 	if (!is_object($eqLogic)) {

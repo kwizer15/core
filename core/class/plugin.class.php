@@ -18,7 +18,8 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -247,7 +248,8 @@ class plugin {
 				if ($heartbeat == 0 || is_nan($heartbeat)) {
 					continue;
 				}
-                $equipmentLogicRepository = new DBEquipmentLogicRepository();
+                /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 				$eqLogics = $equipmentLogicRepository->findByType($plugin->getId(), true);
 				if (count($eqLogics) == 0) {
 					continue;
@@ -747,7 +749,8 @@ class plugin {
 		}
 		$deamonAutoState = config::byKey('deamonAutoMode', $this->getId(), 1);
 		config::save('deamonAutoMode', 0, $this->getId());
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         if ($_state == 0) {
 			$eqLogics = $equipmentLogicRepository->findByType($this->getId());
 			if (is_array($eqLogics)) {

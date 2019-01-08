@@ -18,8 +18,9 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -145,7 +146,8 @@ class jeeObject {
 		foreach (jeeObject::all() as $object) {
 			foreach ($object->getConfiguration('summary', '') as $key => $summary) {
 				foreach ($summary as $cmdInfo) {
-                    $commandRepository = new DBCommandRepository();
+                    /** @var CommandRepository $commandRepository */
+                    $commandRepository = RepositoryFactory::build(CommandRepository::class);
 					if (!$commandRepository->get(str_replace('#', '', $cmdInfo['cmd']))) {
 						$return[] = array('detail' => 'Résumé ' . $object->getName(), 'help' => config::byKey('object:summary')[$key]['name'], 'who' => $cmdInfo['cmd']);
 					}
@@ -185,7 +187,8 @@ class jeeObject {
 			}
 			$events[] = $event;
 		}
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		if (count($toRefreshCmd) > 0) {
 			foreach ($toRefreshCmd as $value) {
 				try {
@@ -364,7 +367,8 @@ class jeeObject {
 			throw new Exception(__('Le plugin virtuel doit être actif', __FILE__));
 		}
 
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		$virtual = $equipmentLogicRepository->findByLogicalId('summaryglobal', 'virtual');
 		if (!is_object($virtual)) {
 			$virtual = new virtual();
@@ -393,7 +397,6 @@ class jeeObject {
 		$cmd->setUnite($def[$_key]['unit']);
 		$cmd->save();
 
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
 		foreach (jeeObject::all() as $object) {
 			$summaries = $object->getConfiguration('summary');
 			if (!is_array($summaries)) {
@@ -505,7 +508,8 @@ class jeeObject {
 	}
 
 	public function getEqLogic($_onlyEnable = true, $_onlyVisible = false, $_eqType_name = null, $_logicalId = null, $_searchOnchild = false) {
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		$eqLogics = $equipmentLogicRepository->findByObjectId($this->getId(), $_onlyEnable, $_onlyVisible, $_eqType_name, $_logicalId);
 		if (is_array($eqLogics)) {
 			foreach ($eqLogics as &$eqLogic) {
@@ -532,11 +536,13 @@ class jeeObject {
 		if (!isset($summaries[$_summary])) {
 			return array();
 		}
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		$eqLogics = $equipmentLogicRepository->findByObjectId($this->getId(), $_onlyEnable, $_onlyVisible, $_eqType_name, $_logicalId);
 		$eqLogics_id = array();
 		foreach ($summaries[$_summary] as $infos) {
-            $commandRepository = new DBCommandRepository();
+            /** @var CommandRepository $commandRepository */
+            $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get(str_replace('#', '', $infos['cmd']));
 			if (is_object($cmd)) {
 				$eqLogics_id[$cmd->getEqLogic_id()] = $cmd->getEqLogic_id();

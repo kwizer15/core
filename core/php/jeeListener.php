@@ -16,7 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 if (php_sapi_name() != 'cli' || isset($_SERVER['REQUEST_METHOD']) || !isset($_SERVER['argc'])) {
 	header("Statut: 404 Page non trouvée");
@@ -43,7 +44,8 @@ if (config::byKey('maxExecTimeScript', 60) != '') {
 }
 set_time_limit($timelimit);
 if (init('listener_id') == '') {
-    $commandRepository = new DBCommandRepository();
+    /** @var CommandRepository $commandRepository */
+    $commandRepository = RepositoryFactory::build(CommandRepository::class);
 	foreach ($commandRepository->findByValue(init('event_id'), 'info') as $cmd) {
 		$cmd->event($cmd->execute(), null, 2);
 	}

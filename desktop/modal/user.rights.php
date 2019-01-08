@@ -1,6 +1,7 @@
 <?php
 
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
@@ -34,7 +35,8 @@ if ($user->getProfils() != 'restrict') {
 			</thead>
 			<tbody>
 				<?php
-                $equipmentLogicRepository = new DBEquipmentLogicRepository();
+                /** @var EquipmentLogicRepository $equipmentLogicRepository */
+                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
                 $eqLogics = $equipmentLogicRepository->all();
 foreach ($eqLogics as $eqLogic) {
 	echo '<tr>';

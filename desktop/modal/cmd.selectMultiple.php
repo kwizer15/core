@@ -1,11 +1,13 @@
 <?php
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
 }
-$commandRepository = new DBCommandRepository();
+/** @var CommandRepository $commandRepository */
+$commandRepository = RepositoryFactory::build(CommandRepository::class);
 $cmd = $commandRepository->get(init('cmd_id'));
 if (!is_object($cmd)) {
 	throw new Exception('Commande non trouvée : ' . init('cmd_id'));

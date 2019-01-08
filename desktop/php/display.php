@@ -1,6 +1,7 @@
 <?php
 
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 if (!isConnect('admin')) {
 	throw new Exception('{{401 - Accès non autorisé}}');
@@ -10,7 +11,8 @@ $nbCmd = 0;
 $objects = jeeObject::all();
 $eqLogics = array();
 $cmds = array();
-$equipmentLogicRepository = new DBEquipmentLogicRepository();
+/** @var EquipmentLogicRepository $equipmentLogicRepository */
+$equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 $eqLogics[-1] = $equipmentLogicRepository->findByObjectId(null, false);
 foreach ($eqLogics[-1] as $eqLogic) {
 	$cmds[$eqLogic->getId()] = $eqLogic->getCmd();

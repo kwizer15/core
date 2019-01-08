@@ -18,8 +18,9 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -183,14 +184,16 @@ class plan3d {
 
 	public function getLink() {
 		if ($this->getLink_type() == 'eqLogic') {
-            $equipmentLogicRepository = new DBEquipmentLogicRepository();
+            /** @var EquipmentLogicRepository $equipmentLogicRepository */
+            $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 			$eqLogic = $equipmentLogicRepository->get(str_replace(array('#', 'eqLogic'), '', $this->getLink_id()));
 			return $eqLogic;
 		} else if ($this->getLink_type() == 'scenario') {
 			$scenario = scenario::byId($this->getLink_id());
 			return $scenario;
 		} else if ($this->getLink_type() == 'cmd') {
-            $commandRepository = new DBCommandRepository();
+            /** @var CommandRepository $commandRepository */
+            $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get($this->getLink_id());
 			return $cmd;
 		} else if ($this->getLink_type() == 'summary') {
@@ -216,7 +219,8 @@ class plan3d {
 	public function additionalData() {
 		$return = array();
 		$return['cmd_id'] = str_replace('#', '', $this->getConfiguration('cmd::state'));
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get($return['cmd_id']);
 		if (is_object($cmd) && $cmd->getType() == 'info') {
 			$return['state'] = $cmd->execCmd();
@@ -233,7 +237,6 @@ class plan3d {
 			if ($this->getConfiguration('3d::widget') == 'door') {
 				$return['cmds'] = array(str_replace('#', '', $this->getConfiguration('3d::widget::door::window')), str_replace('#', '', $this->getConfiguration('3d::widget::door::shutter')));
 				$return['state'] = 0;
-                $commandRepository = new DBCommandRepository();
 				$cmd = $commandRepository->get(str_replace('#', '', $this->getConfiguration('3d::widget::door::window')));
 				if (is_object($cmd) && $cmd->getType() == 'info') {
 					$cmd_value = $cmd->execCmd();
@@ -243,7 +246,6 @@ class plan3d {
 					$return['state'] = $cmd_value;
 				}
 				if ($return['state'] > 0) {
-                    $commandRepository = new DBCommandRepository();
 					$cmd = $commandRepository->get(str_replace('#', '', $this->getConfiguration('3d::widget::door::shutter')));
 					if (is_object($cmd) && $cmd->getType() == 'info') {
 						if ($cmd->execCmd()) {

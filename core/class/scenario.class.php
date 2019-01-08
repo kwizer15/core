@@ -18,10 +18,11 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
-use Jeedom\Core\Infrastructure\Repository\DBScenarioElementRepository;
-use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
+use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -325,7 +326,8 @@ class scenario {
 			$scenario->persistLog();
 			return;
 		}
-		$repository = new DBScenarioElementRepository();
+		/** @var ScenarioElementRepository $scenarioElementRepository */
+    $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
 		$scenarioElement = $repository->get($_options['scenarioElement_id']);
 		$scenario->setLog(__('************Lancement sous tâche**************', __FILE__));
 		if (isset($_options['tags']) && is_array($_options['tags']) && count($_options['tags']) > 0) {
@@ -590,7 +592,8 @@ class scenario {
 			if (!isset($search['option'])) {
 				$search['option'] = $search['action'];
 			}
-            $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+            /** @var ScenarioExpressionRepository $scenarioExpressionRepository */
+            $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
 			$expressions = array_merge($expressions, $scenarioExpressionRepository->searchExpression($search['action'], $search['option'], $search['and']));
 		}
 		if (is_array($expressions) && count($expressions) > 0) {
@@ -760,7 +763,8 @@ class scenario {
 			return;
 		}
 
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = $commandRepository->get(str_replace('#', '', $_trigger));
 		if (is_object($cmd)) {
 			log::add('event', 'info', __('Exécution du scénario ', __FILE__) . $this->getHumanName() . __(' déclenché par : ', __FILE__) . $cmd->getHumanName());
@@ -1212,7 +1216,8 @@ class scenario {
 		}
 		$return = array();
 		$elements = $this->getScenarioElement();
-        $repository = new DBScenarioElementRepository();
+        /** @var ScenarioElementRepository $scenarioElementRepository */
+    $scenarioElementRepository = RepositoryFactory::build(ScenarioElementRepository::class);
 		if (is_array($elements)) {
 			foreach ($this->getScenarioElement() as $element_id) {
 				$element = $repository->get($element_id);
@@ -1506,8 +1511,10 @@ class scenario {
 	 * @return type
 	 */
 	public function getUsedBy($_array = false) {
-        $commandRepository = new DBCommandRepository();
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         $return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array(), 'plan' => array(), 'view' => array());
 		$return['cmd'] = $commandRepository->searchConfiguration('#scenario' . $this->getId() . '#');
 		$return['eqLogic'] = $equipmentLogicRepository->searchConfiguration(array('#scenario' . $this->getId() . '#', '"scenario_id":"' . $this->getId()));

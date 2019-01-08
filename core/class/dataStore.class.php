@@ -18,8 +18,9 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -109,7 +110,8 @@ class dataStore {
 
 	public function postSave() {
 		scenario::check('variable(' . $this->getKey() . ')');
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$value_cmd = $commandRepository->findByValue('variable(' . $this->getKey() . ')', null, true);
 		if (is_array($value_cmd)) {
 			foreach ($value_cmd as $cmd) {
@@ -157,8 +159,9 @@ class dataStore {
 	}
 
 	public function getUsedBy($_array = false) {
-        $commandRepository = new DBCommandRepository();
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		$return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array());
 		$return['cmd'] = $commandRepository->searchConfiguration(array('"cmd":"variable"%"name":"' . $this->getKey() . '"', 'variable(' . $this->getKey() . ')', '"name":"' . $this->getKey() . '"%"cmd":"variable"'));
 		$return['eqLogic'] = $equipmentLogicRepository->searchConfiguration(array('"cmd":"variable"%"name":"' . $this->getKey() . '"', 'variable(' . $this->getKey() . ')', '"name":"' . $this->getKey() . '"%"cmd":"variable"'));

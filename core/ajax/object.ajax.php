@@ -16,7 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -110,7 +111,8 @@ try {
 			}
 			$return = array();
 			$i = 0;
-            $equipmentLogicRepository = new DBEquipmentLogicRepository();
+            /** @var EquipmentLogicRepository $equipmentLogicRepository */
+            $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 			foreach ($objects as $id) {
 				$html = '';
 				if (init('summary') == '') {

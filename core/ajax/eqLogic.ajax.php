@@ -16,7 +16,8 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
@@ -49,8 +50,9 @@ try {
 		ajax::success($return);
 	}
 
-	if (init('action') == 'byId') {
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+    /** @var EquipmentLogicRepository $equipmentLogicRepository */
+    $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+    if (init('action') == 'byId') {
 		$eqLogic = $equipmentLogicRepository->get(init('id'));
 		if (!is_object($eqLogic)) {
 			throw new Exception(__('EqLogic inconnu. Vérifiez l\'ID', __FILE__));
@@ -58,7 +60,6 @@ try {
 		ajax::success(utils::o2a($eqLogic));
 	}
 
-    $equipmentLogicRepository = new DBEquipmentLogicRepository();
     if (init('action') == 'toHtml') {
 		if (init('ids') != '') {
 			$return = array();

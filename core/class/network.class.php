@@ -18,7 +18,8 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -287,7 +288,8 @@ class network {
 		if (!$plugin->isActive()) {
 			throw new Exception(__('Le plugin OpenVPN doit être actif', __FILE__));
 		}
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		$openvpn = $equipmentLogicRepository->findByLogicalId('dnsjeedom', 'openvpn');
 		if (!is_object($openvpn)) {
 			$openvpn = new openvpn();

@@ -18,12 +18,14 @@
 
 /* * ***************************Includes********************************* */
 
-use Jeedom\Core\Infrastructure\Repository\DBCommandRepository;
-use Jeedom\Core\Infrastructure\Repository\DBEquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
+use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
 use Jeedom\Core\Infrastructure\Repository\DBScenarioExpressionRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
-global $JEEDOM_INTERNAL_CONFIG;
+global $JEEDOM_INTERNAL_CONFIG;  // TODO: Faut dégager ça
 class jeedom {
 	/*     * *************************Attributs****************************** */
 
@@ -73,7 +75,8 @@ class jeedom {
 		global $JEEDOM_INTERNAL_CONFIG;
 		$return = array();
         $cmd = config::byKey('interact::warnme::defaultreturncmd', 'core', '');
-        $commandRepository = new DBCommandRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         if ($cmd != '') {
 			if (!$commandRepository->get(str_replace('#', '', $cmd))) {
 				$return[] = array('detail' => 'Administration', 'help' => __('Commande retour interactions', __FILE__), 'who' => $cmd);
@@ -310,7 +313,7 @@ class jeedom {
 			if (!class_exists($class) || !method_exists($class, 'health')) {
 				continue;
 			}
-			$return += array_merge($return, $class::health());
+			$return += array_merge($return, $class::health()); // FIXME: WTF!!!!
 		}
 
 		return $return;
@@ -965,9 +968,12 @@ class jeedom {
 
 	public static function replaceTag(array $_replaces) {
 		$datas = array();
-        $commandRepository = new DBCommandRepository();
-        $equipmentLogicRepostory = new DBEquipmentLogicRepository();
-        $scenarioExpressionRepository = new DBScenarioExpressionRepository();
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        /** @var ScenarioExpressionRepository $scenarioExpressionRepository */
+        $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepository::class);
 		foreach ($_replaces as $key => $value) {
 			$datas = array_merge($datas, $commandRepository->searchConfiguration($key));
 			$datas = array_merge($datas, $equipmentLogicRepostory->searchConfiguration($key));
@@ -1055,7 +1061,8 @@ class jeedom {
 			if (isset($return['cmd'][$cmd_id])) {
 				continue;
 			}
-            $commandRepository = new DBCommandRepository();
+            /** @var CommandRepository $commandRepository */
+            $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get($cmd_id);
 			if (!is_object($cmd)) {
 				continue;
@@ -1085,7 +1092,8 @@ class jeedom {
 			$return['scenario'][$scenario_id] = $scenario;
 		}
 		preg_match_all("/#eqLogic([0-9]*)#/", $_string, $matches);
-        $equipmentLogicRepository = new DBEquipmentLogicRepository();
+        /** @var EquipmentLogicRepository $equipmentLogicRepository */
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		foreach ($matches[1] as $eqLogic_id) {
 			if (isset($return['eqLogic'][$eqLogic_id])) {
 				continue;
