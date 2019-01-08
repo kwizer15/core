@@ -323,6 +323,8 @@ class jeeObject {
 	}
 
 	public static function createSummaryToVirtual($_key = '') {
+	    /** @var CommandRepository $commandRepository */
+	    $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if ($_key == '') {
 			return;
 		}
@@ -369,7 +371,7 @@ class jeeObject {
 		}
 
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
-                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		$virtual = $equipmentLogicRepository->findByLogicalId('summaryglobal', 'virtual');
 		if (!is_object($virtual)) {
 			$virtual = new virtual();
@@ -396,7 +398,7 @@ class jeeObject {
 			$cmd->setSubtype('numeric');
 		}
 		$cmd->setUnite($def[$_key]['unit']);
-		$cmd->save();
+        $commandRepository->add($cmd);
 
 		foreach (jeeObject::all() as $object) {
 			$summaries = $object->getConfiguration('summary');
@@ -435,7 +437,7 @@ class jeeObject {
 				$cmd->setSubtype('numeric');
 			}
 			$cmd->setUnite($def[$_key]['unit']);
-			$cmd->save();
+            $commandRepository->add($cmd);
 		}
 	}
 

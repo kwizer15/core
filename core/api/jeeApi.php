@@ -597,7 +597,7 @@ try {
 				$cmd->setEqLogic_id($eqLogic->getId());
 				$cmd->setOrder($cmd_order);
 				utils::a2o($cmd, jeedom::fromHumanReadable($cmd_info));
-				$cmd->save();
+				$commandRepository->add($cmd);
 				$cmd_order++;
 				$enableList[$cmd->getId()] = true;
 			}
@@ -758,7 +758,7 @@ try {
 			$cmd = new cmd();
 		}
 		utils::a2o($cmd, jeedom::fromHumanReadable($params));
-		$cmd->save();
+        $commandRepository->add($cmd);
 		$jsonrpc->makeSuccess(utils::o2a($cmd));
 	}
 

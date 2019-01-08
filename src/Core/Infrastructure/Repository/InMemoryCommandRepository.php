@@ -3,9 +3,7 @@
 namespace Jeedom\Core\Infrastructure\Repository;
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
-use Jeedom\Core\Infrastructure\Database\Connection;
 
-// TODO: à impléméenter
 class InMemoryCommandRepository implements CommandRepository
 {
     /**
@@ -325,12 +323,44 @@ class InMemoryCommandRepository implements CommandRepository
     /**
      * @param \cmd $command
      *
-     * @return void
+     * @return CommandRepository
      */
-    public function save(\cmd $command)
+    public function add(\cmd $command)
     {
         echo __CLASS__.'::'.__METHOD__.'('
             .var_export($command).')'.PHP_EOL
         ;
+
+        return $this;
+    }
+
+    /**
+     * @param $id
+     *
+     * @return CommandRepository
+     */
+    public function remove($id)
+    {
+        echo __CLASS__.'::'.__METHOD__.'('
+            .var_export($id).')'.PHP_EOL
+        ;
+
+        return $this;
+    }
+
+    /**
+     * Destinée à disparaitre
+     *
+     * @param \cmd $command
+     *
+     * @return mixed
+     */
+    public function refresh(\cmd $command)
+    {
+        echo __CLASS__.'::'.__METHOD__.'('
+            .var_export($command).')'.PHP_EOL
+        ;
+
+        return $this;
     }
 }

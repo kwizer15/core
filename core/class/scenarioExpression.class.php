@@ -1030,7 +1030,7 @@ $scenarioExpressionRepository = RepositoryFactory::build(ScenarioExpressionRepos
 
 		if (is_object($_scenario)) {
             /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
+            $commandRepository = RepositoryFactory::build(CommandRepository::class);
 			$cmd = $commandRepository->get(str_replace('#', '', $_scenario->getRealTrigger()));
 			if (is_object($cmd)) {
 				$replace1['#trigger#'] = $cmd->getHumanName();

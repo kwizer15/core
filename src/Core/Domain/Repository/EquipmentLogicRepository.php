@@ -8,6 +8,11 @@ interface EquipmentLogicRepository extends Repository
 {
     public function get($id);
 
+    /**
+     * @param bool $onlyEnable
+     *
+     * @return \eqLogic[]
+     */
     public function all($onlyEnable = false);
 
     public function findByEqRealId($eqReal_id);

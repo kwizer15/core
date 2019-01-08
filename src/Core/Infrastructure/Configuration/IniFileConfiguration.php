@@ -51,7 +51,7 @@ class IniFileConfiguration implements Configuration
 
     public function multiGet(array $keys, $default = null)
     {
-        return array_intersect_key($this->configuration, $keys);
+        return array_intersect_key($this->configuration, array_flip($keys));
     }
 
     public function remove($key)

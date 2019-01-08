@@ -369,7 +369,7 @@ try {
 			$change = true;
 		}
 		if ($change) {
-			$cmd->save();
+            $commandRepository->add($cmd);
 		}
 	}
 

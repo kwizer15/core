@@ -22,7 +22,7 @@ class ConfigurationFactory
             $eventDispatcher,
             new InMemoryCacheConfiguration(
                 new ChainConfiguration([
-                    new DBConfiguration($plugin),
+                    $persistence,
                     new IniFileConfiguration($plugin),
                 ])
             )

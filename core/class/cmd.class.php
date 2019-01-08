@@ -57,21 +57,8 @@ class cmd {
 
 	public static function cmdToHumanReadable($_input) {
 		if (is_object($_input)) {
-			$reflections = array();
-			$uuid = spl_object_hash($_input);
-			if (!isset($reflections[$uuid])) {
-				$reflections[$uuid] = new ReflectionClass($_input);
-			}
-			$reflection = $reflections[$uuid];
-			$properties = $reflection->getProperties();
-			foreach ($properties as $property) {
-				$property->setAccessible(true);
-				$value = $property->getValue($_input);
-				$property->setValue($_input, self::cmdToHumanReadable($value));
-				$property->setAccessible(false);
-			}
-			return $_input;
-		}
+            return self::populate($_input, [self::class, 'cmdToHumanReadable']);
+        }
 		if (is_array($_input)) {
 			return json_decode(self::cmdToHumanReadable(json_encode($_input)), true);
 		}
@@ -98,20 +85,7 @@ class cmd {
 			$_input = json_decode($_input, true);
 		}
 		if (is_object($_input)) {
-			$reflections = array();
-			$uuid = spl_object_hash($_input);
-			if (!isset($reflections[$uuid])) {
-				$reflections[$uuid] = new ReflectionClass($_input);
-			}
-			$reflection = $reflections[$uuid];
-			$properties = $reflection->getProperties();
-			foreach ($properties as $property) {
-				$property->setAccessible(true);
-				$value = $property->getValue($_input);
-				$property->setValue($_input, self::humanReadableToCmd($value));
-				$property->setAccessible(false);
-			}
-			return $_input;
+		    return self::populate($_input, [self::class, 'humanReadableToCmd']);
 		}
 		if (is_array($_input)) {
 			foreach ($_input as $key => $value) {
@@ -151,22 +125,34 @@ class cmd {
 		return $cmd;
 	}
 
-	public static function cmdToValue($_input, $_quote = false) {
+    /**
+     * @param $_input
+     *
+     * @return mixed
+     * @throws ReflectionException
+     */
+    private static function populate($_input, callable $transformer)
+    {
+        $reflections = [];
+        $uuid = spl_object_hash($_input);
+        if (!isset($reflections[$uuid])) {
+            $reflections[$uuid] = new ReflectionClass($_input);
+        }
+        $reflection = $reflections[$uuid];
+        $properties = $reflection->getProperties();
+        foreach ($properties as $property) {
+            $property->setAccessible(true);
+            $value = $property->getValue($_input);
+            $property->setValue($_input, $transformer($value));
+            $property->setAccessible(false);
+        }
+
+        return $_input;
+    }
+
+    public static function cmdToValue($_input, $_quote = false) {
 		if (is_object($_input)) {
-			$reflections = array();
-			$uuid = spl_object_hash($_input);
-			if (!isset($reflections[$uuid])) {
-				$reflections[$uuid] = new ReflectionClass($_input);
-			}
-			$reflection = $reflections[$uuid];
-			$properties = $reflection->getProperties();
-			foreach ($properties as $property) {
-				$property->setAccessible(true);
-				$value = $property->getValue($_input);
-				$property->setValue($_input, self::cmdToValue($value, $_quote));
-				$property->setAccessible(false);
-			}
-			return $_input;
+		    return self::populate($_input, [self::class, 'cmdToValue']);
 		}
 		if (is_array($_input)) {
 			foreach ($_input as $key => $value) {
@@ -387,133 +373,110 @@ class cmd {
 		if ($this->getType() == 'info') {
 			switch ($this->getSubType()) {
 				case 'string':
-				if ($_quote) {
-					return '"' . $_value . '"';
-				}
-				return $_value;
+                    if ($_quote) {
+                        return '"' . $_value . '"';
+                    }
+				    return $_value;
 				case 'other':
-				if ($_quote) {
-					return '"' . $_value . '"';
-				}
-				return $_value;
+                    if ($_quote) {
+                        return '"' . $_value . '"';
+                    }
+				    return $_value;
 				case 'binary':
-				if ($this->getConfiguration('calculValueOffset') != '') {
-					try {
-						if (preg_match("/[a-zA-Z#]/", $_value)) {
-							$_value = jeedom::evaluateExpression(str_replace('#value#', '"' . $_value . '"', str_replace('\'#value#\'', '#value#', str_replace('"#value#"', '#value#', $this->getConfiguration('calculValueOffset')))));
-						} else {
-							$_value = jeedom::evaluateExpression(str_replace('#value#', $_value, $this->getConfiguration('calculValueOffset')));
-						}
-					} catch (Exception $ex) {
+                    if ($this->getConfiguration('calculValueOffset') != '') {
+                        try {
+                            if (preg_match("/[a-zA-Z#]/", $_value)) {
+                                $_value = jeedom::evaluateExpression(str_replace('#value#', '"' . $_value . '"', str_replace('\'#value#\'', '#value#', str_replace('"#value#"', '#value#', $this->getConfiguration('calculValueOffset')))));
+                            } else {
+                                $_value = jeedom::evaluateExpression(str_replace('#value#', $_value, $this->getConfiguration('calculValueOffset')));
+                            }
+                        } catch (Exception $ex) {
 
-					} catch (Error $ex) {
-
-					}
-				}
-				$value = strtolower($_value);
-				if ($value == 'on' || $value == 'high' || $value == 'true' || $value === true) {
-					return 1;
-				}
-				if ($value == 'off' || $value == 'low' || $value == 'false' || $value === false) {
-					return 0;
-				}
-				if ((is_numeric(intval($_value)) && intval($_value) > 1) || $_value === true || $_value == 1) {
-					return 1;
-				}
-				return 0;
+                        }
+                    }
+                    $value = strtolower($_value);
+                    if ($value == 'on' || $value == 'high' || $value == 'true' || $value === true) {
+                        return 1;
+                    }
+                    if ($value == 'off' || $value == 'low' || $value == 'false' || $value === false) {
+                        return 0;
+                    }
+                    if ((is_numeric((int) $_value) && (int) $_value > 1) || $_value === true || $_value == 1) {
+                        return 1;
+                    }
+                    return 0;
 				case 'numeric':
-				$_value = floatval(str_replace(',', '.', $_value));
-				if ($this->getConfiguration('calculValueOffset') != '') {
-					try {
-						if (preg_match("/[a-zA-Z#]/", $_value)) {
-							$_value = jeedom::evaluateExpression(str_replace('#value#', '"' . $_value . '"', str_replace('\'#value#\'', '#value#', str_replace('"#value#"', '#value#', $this->getConfiguration('calculValueOffset')))));
-						} else {
-							$_value = jeedom::evaluateExpression(str_replace('#value#', $_value, $this->getConfiguration('calculValueOffset')));
-						}
-					} catch (Exception $ex) {
+                    $_value = (float) str_replace(',', '.', $_value);
+                    if ($this->getConfiguration('calculValueOffset') != '') {
+                        try {
+                            if (preg_match("/[a-zA-Z#]/", $_value)) {
+                                $_value = jeedom::evaluateExpression(str_replace('#value#', '"' . $_value . '"', str_replace('\'#value#\'', '#value#', str_replace('"#value#"', '#value#', $this->getConfiguration('calculValueOffset')))));
+                            } else {
+                                $_value = jeedom::evaluateExpression(str_replace('#value#', $_value, $this->getConfiguration('calculValueOffset')));
+                            }
+                        } catch (Exception $ex) {
 
-					} catch (Error $ex) {
+                        }
+                    }
+                    if ($this->getConfiguration('historizeRound') !== '' && is_numeric($this->getConfiguration('historizeRound')) && $this->getConfiguration('historizeRound') >= 0) {
+                        $_value = round($_value, $this->getConfiguration('historizeRound'));
+                    }
+                    if ($_value > $this->getConfiguration('maxValue', $_value) && $this->getConfiguration('maxValueReplace') == 1) {
+                        $_value = $this->getConfiguration('maxValue', $_value);
+                    }
+                    if ($_value < $this->getConfiguration('minValue', $_value) && $this->getConfiguration('minValueReplace') == 1) {
+                        $_value = $this->getConfiguration('minValue', $_value);
+                    }
 
-					}
-				}
-				if ($this->getConfiguration('historizeRound') !== '' && is_numeric($this->getConfiguration('historizeRound')) && $this->getConfiguration('historizeRound') >= 0) {
-					$_value = round($_value, $this->getConfiguration('historizeRound'));
-				}
-				if ($_value > $this->getConfiguration('maxValue', $_value) && $this->getConfiguration('maxValueReplace') == 1) {
-					$_value = $this->getConfiguration('maxValue', $_value);
-				}
-				if ($_value < $this->getConfiguration('minValue', $_value) && $this->getConfiguration('minValueReplace') == 1) {
-					$_value = $this->getConfiguration('minValue', $_value);
-				}
-				return floatval($_value);
+                    return (float) $_value;
 			}
 		}
 		return $_value;
 	}
 
-	public function getLastValue() {
+	public function getLastValue()
+    {
 		return $this->getConfiguration('lastCmdValue', null);
 	}
 
-	public function dontRemoveCmd() {
+	public function dontRemoveCmd()
+    {
 		return false;
 	}
 
-	public function getTableName() {
+	public function getTableName()
+    {
 		return 'cmd';
 	}
 
+    /**
+     * @deprecated Use CommandRepository::add instead
+     */
 	public function save() {
-		if ($this->getName() == '') {
-			throw new Exception(__('Le nom de la commande ne peut pas être vide :', __FILE__) . print_r($this, true));
-		}
-		if ($this->getType() == '') {
-			throw new Exception($this->getHumanName() . ' ' . __('Le type de la commande ne peut pas être vide :', __FILE__) . print_r($this, true));
-		}
-		if ($this->getSubType() == '') {
-			throw new Exception($this->getHumanName() . ' ' . __('Le sous-type de la commande ne peut pas être vide :', __FILE__) . print_r($this, true));
-		}
-		if ($this->getEqLogic_id() == '') {
-			throw new Exception($this->getHumanName() . ' ' . __('Vous ne pouvez pas créer une commande sans la rattacher à un équipement', __FILE__));
-		}
-		if ($this->getConfiguration('maxValue') != '' && $this->getConfiguration('minValue') != '' && $this->getConfiguration('minValue') > $this->getConfiguration('maxValue')) {
-			throw new Exception($this->getHumanName() . ' ' . __('La valeur minimum de la commande ne peut etre supérieure à la valeur maximum', __FILE__));
-		}
-		if ($this->getEqType() == '') {
-			$this->setEqType($this->getEqLogic()->getEqType_name());
-		}
-		if ($this->getDisplay('generic_type') !== '' && $this->getGeneric_type() == '') {
-			$this->setGeneric_type($this->getDisplay('generic_type'));
-			$this->setDisplay('generic_type', '');
-		}
-		DB::save($this);
-		if ($this->_needRefreshWidget) {
-			$this->_needRefreshWidget = false;
-			$this->getEqLogic()->refreshWidget();
-		}
-		if ($this->_needRefreshAlert && $this->getType() == 'info') {
-			$value = $this->execCmd();
-			$level = $this->checkAlertLevel($value);
-			if ($level != $this->getCache('alertLevel')) {
-				$this->actionAlertLevel($level, $value);
-			}
-		}
-		return true;
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::add instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
+        return $commandRepository->add($this);
 	}
 
-	public function refresh() {
-		DB::refresh($this);
+    /**
+     * @deprecated Use CommandRepository::refresh instead
+     */
+	public function refresh()
+    {
+        // FIXME: Uniquement pour supprimer la dépendence à la BDD, cette méthode doit disparaitre, on la garde dans un soucis de compatibilité
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::refresh instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
+        return $commandRepository->refresh($this);
 	}
 
-	public function remove() {
-		viewData::removeByTypeLinkId('cmd', $this->getId());
-		dataStore::removeByTypeLinkId('cmd', $this->getId());
-		$this->getEqLogic()->emptyCacheWidget();
-		$this->emptyHistory();
-		cache::delete('cmdCacheAttr' . $this->getId());
-		cache::delete('cmd' . $this->getId());
-		jeedom::addRemoveHistory(array('id' => $this->getId(), 'name' => $this->getHumanName(), 'date' => date('Y-m-d H:i:s'), 'type' => 'cmd'));
-		return DB::remove($this);
+    /**
+     * @deprecated Use CommandRepository::remove instead
+     */
+	public function remove()
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::remove instead', E_USER_DEPRECATED);
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
+        return $commandRepository->remove($this->getId());
 	}
 
 	public function execute($_options = array()) {
@@ -581,6 +544,7 @@ class cmd {
 	* @throws Exception
 	*/
 	public function execCmd($_options = null, $_sendNodeJsEvent = false, $_quote = false) {
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if ($this->getType() == 'info') {
 			$state = $this->getCache(array('collectDate', 'valueDate', 'value'));
 			$this->setCollectDate($state['collectDate']);
@@ -638,11 +602,11 @@ class cmd {
 		if ($options !== null && $this->getValue() == '') {
 			if (isset($options['slider'])) {
 				$this->setConfiguration('lastCmdValue', $options['slider']);
-				$this->save();
+				$commandRepository->add($this);
 			}
 			if (isset($options['color'])) {
 				$this->setConfiguration('lastCmdValue', $options['color']);
-				$this->save();
+                $commandRepository->add($this);
 			}
 		}
 		if ($this->getConfiguration('updateCmdId') != '') {
@@ -1393,12 +1357,13 @@ class cmd {
 	}
 
 	public function checkAccessCode($_code) {
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if ($this->getType() != 'action' || trim($this->getConfiguration('actionCodeAccess')) == '') {
 			return true;
 		}
 		if (sha1($_code) == $this->getConfiguration('actionCodeAccess')) {
 			$this->setConfiguration('actionCodeAccess', sha512($_code));
-			$this->save();
+            $commandRepository->add($this);
 			return true;
 		}
 		if (sha512($_code) == $this->getConfiguration('actionCodeAccess')) {
@@ -1918,5 +1883,25 @@ class cmd {
         trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '.CommandRepository::class.'::findByTypeSubType instead', E_USER_DEPRECATED);
         $commandRepository = RepositoryFactory::build(CommandRepository::class);
         return $commandRepository->findByTypeSubType($_type, $_subType);
+    }
+
+    public function needsRefreshAlert()
+    {
+        return $this->_needRefreshAlert;
+    }
+
+    public function needsRefreshWidget()
+    {
+        return $this->_needRefreshWidget;
+    }
+
+    public function disableRefreshWidget()
+    {
+        $this->_needRefreshWidget = false;
+    }
+
+    public function isTypeInfo()
+    {
+        return 'info' === $this->type;
     }
 }

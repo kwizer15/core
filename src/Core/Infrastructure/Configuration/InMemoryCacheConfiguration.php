@@ -11,7 +11,7 @@ class InMemoryCacheConfiguration implements Configuration
      */
     private $decoratedConfiguration;
 
-    private $cache;
+    private $cache = [];
 
     public function __construct(Configuration $decoratedConfiguration)
     {
@@ -46,7 +46,7 @@ class InMemoryCacheConfiguration implements Configuration
             $this->cache = array_merge($this->cache, $uncachedValues);
         }
 
-        return array_intersect($this->cache, $keys);
+        return array_intersect_key($this->cache, array_flip($keys));
     }
 
     public function remove($key)

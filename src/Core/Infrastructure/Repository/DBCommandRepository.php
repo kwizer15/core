@@ -503,11 +503,50 @@ class DBCommandRepository implements CommandRepository
     /**
      * @param \cmd $command
      *
-     * @return void
+     * @return bool
+     * @throws \Exception
      */
-    public function save(\cmd $command)
+    public function add(\cmd $command)
     {
-        // TODO: Implement save() method.
+        if ($command->getName() == '') {
+            throw new Exception(__('Le nom de la commande ne peut pas être vide :', __FILE__) . print_r($command, true));
+        }
+        if ($command->getType() == '') {
+            throw new Exception($command->getHumanName() . ' ' . __('Le type de la commande ne peut pas être vide :', __FILE__) . print_r($command, true));
+        }
+        if ($command->getSubType() == '') {
+            throw new Exception($command->getHumanName() . ' ' . __('Le sous-type de la commande ne peut pas être vide :', __FILE__) . print_r($command, true));
+        }
+        if ($command->getEqLogic_id() == '') {
+            throw new Exception($command->getHumanName() . ' ' . __('Vous ne pouvez pas créer une commande sans la rattacher à un équipement', __FILE__));
+        }
+        if ($command->getConfiguration('maxValue') != ''
+            && $command->getConfiguration('minValue') != ''
+            && $command->getConfiguration('minValue') > $command->getConfiguration('maxValue')
+        ) {
+            throw new Exception($command->getHumanName() . ' ' . __('La valeur minimum de la commande ne peut etre supérieure à la valeur maximum', __FILE__));
+        }
+        if ($command->getEqType() == '') {
+            $command->setEqType($command->getEqLogic()->getEqType_name());
+        }
+        if ($command->getDisplay('generic_type') !== '' && $command->getGeneric_type() == '') {
+            $command->setGeneric_type($command->getDisplay('generic_type'));
+            $command->setDisplay('generic_type', '');
+        }
+        // FIXME: La partie validation se fait normalement à la construction de l'objet, en l'état on laisse tel que.
+        Connection::save($command);
+        if ($command->needsRefreshWidget()) {
+            $command->disableRefreshWidget();
+            $command->getEqLogic()->refreshWidget();
+        }
+        if ($command->needsRefreshAlert() && $command->isTypeInfo()) {
+            $value = $command->execCmd();
+            $level = $command->checkAlertLevel($value);
+            if ($level != $command->getCache('alertLevel')) {
+                $command->actionAlertLevel($level, $value);
+            }
+        }
+        return $this;
     }
 
     private static function cast($inputs, $eqLogic = null)
@@ -529,5 +568,41 @@ class DBCommandRepository implements CommandRepository
             return $return;
         }
         return $inputs;
+    }
+
+    /**
+     * @param $id
+     *
+     * @return CommandRepository
+     * @throws \ReflectionException
+     */
+    public function remove($id)
+    {
+        $command = $this->get($id);
+        \viewData::removeByTypeLinkId('cmd', $id);
+        \dataStore::removeByTypeLinkId('cmd', $id);
+        $command->getEqLogic()->emptyCacheWidget();
+        $command->emptyHistory();
+        \cache::delete('cmdCacheAttr' . $id);
+        \cache::delete('cmd' . $id);
+        \jeedom::addRemoveHistory(array('id' => $id, 'name' => $command->getHumanName(), 'date' => date('Y-m-d H:i:s'), 'type' => 'cmd'));
+        Connection::remove($this);
+
+        return $this;
+    }
+
+    /**
+     * Destinée à disparaitre
+     *
+     * @param \cmd $command
+     *
+     * @return mixed
+     * @throws \Exception
+     */
+    public function refresh(\cmd $command)
+    {
+        Connection::refresh($command);
+
+        return $this;
     }
 }

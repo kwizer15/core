@@ -7,6 +7,7 @@ use Jeedom\Core\Domain\Repository\EquipmentLogicRepository;
 use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
 use Jeedom\Core\Domain\Repository\ScenarioExpressionRepository;
 use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Domain\Repository\ScheduledTaskRepository;
 
 class RepositoryFactory
 {
@@ -25,6 +26,7 @@ class RepositoryFactory
             ScenarioRepository::class           => function() { return new InMemoryScenarioRepository();           },
             ScenarioElementRepository::class    => function() { return new InMemoryScenarioElementRepository();    },
             ScenarioExpressionRepository::class => function() { return new InMemoryScenarioExpressionRepository(); },
+            ScheduledTaskRepository::class      => function() { return new InMemoryScheduledTaskRepository();      },
         ];
 
         return $map[$repositoryClass];
@@ -35,9 +37,10 @@ class RepositoryFactory
         $map = [
             CommandRepository::class            => function() { return new DBCommandRepository();            },
             EquipmentLogicRepository::class     => function() { return new DBEquipmentLogicRepository();     },
-            ScenarioRepository::class           => function() { return new DBScenarioRepository();    },
+            ScenarioRepository::class           => function() { return new DBScenarioRepository();           },
             ScenarioElementRepository::class    => function() { return new DBScenarioElementRepository();    },
             ScenarioExpressionRepository::class => function() { return new DBScenarioExpressionRepository(); },
+            ScheduledTaskRepository::class      => function() { return new DBScheduledTaskRepository();      },
         ];
 
         return $map[$repositoryClass];

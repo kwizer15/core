@@ -6,15 +6,6 @@ use PHPUnit\Framework\TestCase;
 
 class scenarioExpressionTest extends TestCase
 {
-	protected function setUp()
-	{
-		if (!extension_loaded('curl')) {
-			$this->markTestSkipped(
-					'L\'extension CURL n\'est pas disponible.'
-			);
-		}
-	}
-
 	public function provideExpressions()
 	{
 		return [

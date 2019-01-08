@@ -170,10 +170,4 @@ class utils {
 		}
 		return (isset($_attr[$_key]) && $_attr[$_key] !== '') ? $_attr[$_key] : $_default;
 	}
-
-	/*     * *********************Methode d'instance************************* */
-
-	/*     * **********************Getteur Setteur*************************** */
 }
-
-?>

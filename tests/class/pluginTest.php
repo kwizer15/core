@@ -2,6 +2,8 @@
 
 namespace Tests;
 
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 use PHPUnit\Framework\TestCase;
 
 // TODO: Faire un MockPlugin dans un dossier Fixtures plutôt que d'en charger un en "réèl".
@@ -95,6 +97,7 @@ class pluginTest extends TestCase
 	 */
 	public function testCreateCmdVirtualBinary($virtual)
     {
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = new \virtualCmd();
 		$cmd->setName('test_calcul_binary');
 		$cmd->setType('info');
@@ -102,7 +105,7 @@ class pluginTest extends TestCase
 		$cmd->setLogicalId('virtual_test_1');
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('calcul', 1);
-		$cmd->save();
+        $commandRepository->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 
@@ -111,6 +114,7 @@ class pluginTest extends TestCase
 	 */
 	public function testCreateCmdVirtualNumeric($virtual)
     {
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = new \virtualCmd();
 		$cmd->setName('test_calcul_numeric');
 		$cmd->setType('info');
@@ -118,7 +122,7 @@ class pluginTest extends TestCase
 		$cmd->setLogicalId('virtual_test_2');
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('calcul', '1+1');
-		$cmd->save();
+        $commandRepository->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 
@@ -136,6 +140,7 @@ class pluginTest extends TestCase
 	 */
 	public function testCreateCmdVirtualString($virtual)
     {
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = new \virtualCmd();
 		$cmd->setName('test_calcul_string');
 		$cmd->setType('info');
@@ -143,7 +148,7 @@ class pluginTest extends TestCase
 		$cmd->setLogicalId('virtual_test_3');
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('calcul', 'toto');
-		$cmd->save();
+		$commandRepository->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 
@@ -163,6 +168,7 @@ class pluginTest extends TestCase
 	 */
 	public function testCreateCmdVirtualActionOther($virtual)
     {
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = new \virtualCmd();
 		$cmd->setName('test_action_other_on');
 		$cmd->setType('action');
@@ -171,7 +177,7 @@ class pluginTest extends TestCase
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_other_info');
 		$cmd->setConfiguration('value', 1);
-		$cmd->save();
+		$commandRepository->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 
 		$virtual = \virtual::byLogicalId('virtual_test', 'virtual');
@@ -183,7 +189,7 @@ class pluginTest extends TestCase
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_other_info');
 		$cmd->setConfiguration('value', 0);
-		$cmd->save();
+		$commandRepository->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 
 		$virtual = \virtual::byLogicalId('virtual_test', 'virtual');
@@ -195,7 +201,7 @@ class pluginTest extends TestCase
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_other_info');
 		$cmd->setConfiguration('value', 'plop');
-		$cmd->save();
+        $commandRepository->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 
 		$info = \virtualCmd::byEqLogicIdCmdName($virtual->getId(), 'test_action_other_info');
@@ -208,7 +214,7 @@ class pluginTest extends TestCase
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_other_info');
 		$cmd->setConfiguration('value', 'not(#' . $info->getId() . '#)');
-		$cmd->save();
+        $commandRepository->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 
@@ -240,6 +246,7 @@ class pluginTest extends TestCase
 	 */
 	public function testCreateCmdVirtualActionNumeric($virtual)
     {
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = new \virtualCmd();
 		$cmd->setName('test_action_slider');
 		$cmd->setType('action');
@@ -247,7 +254,7 @@ class pluginTest extends TestCase
 		$cmd->setLogicalId('virtual_test_8');
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_slider_info');
-		$cmd->save();
+        $commandRepository->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 
@@ -268,6 +275,7 @@ class pluginTest extends TestCase
 	 */
 	public function testCreateCmdVirtualActionColor($virtual)
     {
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmd = new \virtualCmd();
 		$cmd->setName('test_action_color');
 		$cmd->setType('action');
@@ -275,7 +283,7 @@ class pluginTest extends TestCase
 		$cmd->setLogicalId('virtual_test_9');
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_color_info');
-		$cmd->save();
+        $commandRepository->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 

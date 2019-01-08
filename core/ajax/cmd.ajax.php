@@ -193,7 +193,7 @@ try {
 			$cmd = new cmd();
 		}
 		utils::a2o($cmd, $cmd_ajax);
-		$cmd->save();
+        $commandRepository->add($cmd);
 		ajax::success(utils::o2a($cmd));
 	}
 
@@ -209,7 +209,7 @@ try {
 				continue;
 			}
 			utils::a2o($cmd, $cmd_ajax);
-			$cmd->save();
+            $commandRepository->add($cmd);
 		}
 		ajax::success();
 	}
@@ -382,7 +382,7 @@ try {
 				continue;
 			}
 			$cmd->setOrder($cmd_json['order']);
-			$cmd->save(true);
+            $commandRepository->add($cmd);
 			if (isset($cmd_json['line']) && isset($cmd_json['column'])) {
 				$eqLogic = $cmd->getEqLogic();
 				if ($eqLogic->getDisplay('layout::' . init('version', 'dashboard') . '::table::cmd::' . $cmd->getId() . '::line') != $cmd_json['line'] || $eqLogic->getDisplay('layout::' . init('version', 'dashboard') . '::table::cmd::' . $cmd->getId() . '::column') != $cmd_json['column']) {

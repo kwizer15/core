@@ -11,5 +11,5 @@ foreach ($commandRepository->all() as $cmd) {
 		continue;
 	}
 	$cmd->setGeneric_type($cmd->getDisplay('generic_type'));
-	$cmd->save();
+    $commandRepository->add($cmd);
 }

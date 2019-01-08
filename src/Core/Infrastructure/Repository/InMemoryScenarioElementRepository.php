@@ -3,9 +3,7 @@
 namespace Jeedom\Core\Infrastructure\Repository;
 
 use Jeedom\Core\Domain\Repository\ScenarioElementRepository;
-use Jeedom\Core\Infrastructure\Database\Connection;
 
-// TODO: à impléméenter
 class InMemoryScenarioElementRepository implements ScenarioElementRepository
 {
     /**
@@ -16,24 +14,24 @@ class InMemoryScenarioElementRepository implements ScenarioElementRepository
      */
     public function get($id)
     {
-        $values = array(
-            'id' => $id,
-        );
-        $sql = 'SELECT ' . Connection::buildField(\scenarioElement::class)
-            . ' FROM ' . \scenarioElement::class
-            . ' WHERE id=:id'
+        echo __CLASS__.'::'.__METHOD__.'('
+            .var_export($id).')'.PHP_EOL
         ;
 
-        return Connection::Prepare($sql, $values, Connection::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \scenarioElement::class);
+        return [];
     }
 
     /**
      * @param \scenarioElement $scenarioElement
      *
-     * @return void
+     * @return ScenarioElementRepository
      */
-    public function save(\scenarioElement $scenarioElement)
+    public function add(\scenarioElement $scenarioElement)
     {
-        // TODO: Implement save() method.
+        echo __CLASS__.'::'.__METHOD__.'('
+            .var_export($scenarioElement).')'.PHP_EOL
+        ;
+
+        return $this;
     }
 }

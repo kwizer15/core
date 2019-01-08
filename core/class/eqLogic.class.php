@@ -77,7 +77,7 @@ class eqLogic {
 	public static function byId($_id) {
 		trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::get instead', E_USER_DEPRECATED);
 		/** @var EquipmentLogicRepository $equipmentLogicRepository */
-                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+		$equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		return $equipmentLogicRepository->get($_id);
 	}
 
@@ -87,7 +87,7 @@ class eqLogic {
 	public static function all($_onlyEnable = false) {
         trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::all instead', E_USER_DEPRECATED);
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
-                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->all($_onlyEnable);
 	}
 
@@ -97,7 +97,7 @@ class eqLogic {
 	public static function byEqRealId($_eqReal_id) {
         trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByEqRealId instead', E_USER_DEPRECATED);
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
-                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByEqRealId($_eqReal_id);
 	}
 
@@ -107,7 +107,7 @@ class eqLogic {
 	public static function byObjectId($_object_id, $_onlyEnable = true, $_onlyVisible = false, $_eqType_name = null, $_logicalId = null, $_orderByName = false) {
         trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByObjectId instead', E_USER_DEPRECATED);
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
-                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByObjectId($_object_id, $_onlyEnable, $_onlyVisible, $_eqType_name, $_logicalId, $_orderByName);
 	}
 
@@ -117,7 +117,7 @@ class eqLogic {
 	public static function byLogicalId($_logicalId, $_eqType_name, $_multiple = false) {
         trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByLogicalId instead', E_USER_DEPRECATED);
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
-                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByLogicalId($_logicalId, $_eqType_name, $_multiple);
 	}
 
@@ -127,7 +127,7 @@ class eqLogic {
 	public static function byType($_eqType_name, $_onlyEnable = false) {
         trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByType instead', E_USER_DEPRECATED);
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
-                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByType($_eqType_name, $_onlyEnable);
 	}
 
@@ -137,7 +137,7 @@ class eqLogic {
 	public static function byCategorie($_category) {
         trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByCategory instead', E_USER_DEPRECATED);
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
-                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByCategory($_category);
 	}
 
@@ -147,7 +147,7 @@ class eqLogic {
 	public static function byTypeAndSearhConfiguration($_eqType_name, $_configuration) {
         trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::findByTypeAndSearchConfiguration instead', E_USER_DEPRECATED);
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
-                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->findByTypeAndSearchConfiguration($_eqType_name, $_configuration);
 	}
 
@@ -157,7 +157,7 @@ class eqLogic {
 	public static function searchConfiguration($_configuration, $_type = null) {
         trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. EquipmentLogicRepository::class.'::searchConfiguration instead', E_USER_DEPRECATED);
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
-                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
         return $equipmentLogicRepository->searchConfiguration($_configuration, $_type);
 	}
 
@@ -377,7 +377,7 @@ class eqLogic {
 
 	public static function clearCacheWidget() {
         /** @var EquipmentLogicRepository $equipmentLogicRepository */
-                $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
+        $equipmentLogicRepository = RepositoryFactory::build(EquipmentLogicRepository::class);
 		foreach ($equipmentLogicRepository->all() as $eqLogic) {
 			$eqLogic->emptyCacheWidget();
 		}
@@ -513,19 +513,20 @@ class eqLogic {
 	}
 
 	public function copy($_name) {
+	    $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$eqLogicCopy = clone $this;
 		$eqLogicCopy->setName($_name);
 		$eqLogicCopy->setId('');
 		$eqLogicCopy->save();
 		foreach ($eqLogicCopy->getCmd() as $cmd) {
-			$cmd->remove();
+            $commandRepository->remove($cmd);
 		}
 		$cmd_link = array();
 		foreach ($this->getCmd() as $cmd) {
 			$cmdCopy = clone $cmd;
 			$cmdCopy->setId('');
 			$cmdCopy->setEqLogic_id($eqLogicCopy->getId());
-			$cmdCopy->save();
+            $commandRepository->add($cmdCopy);
 			$cmd_link[$cmd->getId()] = $cmdCopy;
 		}
 		foreach ($this->getCmd() as $cmd) {
@@ -534,7 +535,7 @@ class eqLogic {
 			}
 			if ($cmd->getValue() != '' && isset($cmd_link[$cmd->getValue()])) {
 				$cmd_link[$cmd->getId()]->setValue($cmd_link[$cmd->getValue()]->getId());
-				$cmd_link[$cmd->getId()]->save();
+				$commandRepository->add($cmd_link[$cmd->getId()]);
 			}
 		}
 		return $eqLogicCopy;
@@ -828,8 +829,9 @@ class eqLogic {
 	}
 
 	public function remove() {
-		foreach ($this->getCmd() as $cmd) {
-			$cmd->remove();
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
+        foreach ($this->getCmd() as $cmd) {
+            $commandRepository->remove($cmd);
 		}
 		viewData::removeByTypeLinkId('eqLogic', $this->getId());
 		dataStore::removeByTypeLinkId('eqLogic', $this->getId());
@@ -1001,6 +1003,8 @@ class eqLogic {
 	}
 
 	public function batteryStatus($_pourcent = '', $_datetime = '') {
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		if ($this->getConfiguration('noBatterieCheck', 0) == 1) {
 			return;
 		}
@@ -1031,8 +1035,6 @@ class eqLogic {
 				$cmds = explode(('&&'), config::byKey('alert::batterydangerCmd'));
 				if (count($cmds) > 0 && trim(config::byKey('alert::batterydangerCmd')) != '') {
 					foreach ($cmds as $id) {
-                        /** @var CommandRepository $commandRepository */
-                        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 						$cmd = $commandRepository->get(str_replace('#', '', $id));
 						if (is_object($cmd)) {
 							$cmd->execCmd(array(
@@ -1059,8 +1061,6 @@ class eqLogic {
 				$cmds = explode(('&&'), config::byKey('alert::batterywarningCmd'));
 				if (count($cmds) > 0 && trim(config::byKey('alert::batterywarningCmd')) != '') {
 					foreach ($cmds as $id) {
-                        /** @var CommandRepository $commandRepository */
-                        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 						$cmd = $commandRepository->get(str_replace('#', '', $id));
 						if (is_object($cmd)) {
 							$cmd->execCmd(array(
@@ -1114,6 +1114,8 @@ class eqLogic {
 	}
 
 	public function import($_configuration) {
+        /** @var CommandRepository $commandRepository */
+        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 		$cmdClass = $this->getEqType_name() . 'Cmd';
 		if (isset($_configuration['configuration'])) {
 			foreach ($_configuration['configuration'] as $key => $value) {
@@ -1170,7 +1172,7 @@ class eqLogic {
 					}
 					utils::a2o($cmd, $command);
 					$cmd->setConfiguration('logicalId', $cmd->getLogicalId());
-					$cmd->save();
+                    $commandRepository->add($cmd);
 					if (isset($command['value'])) {
 						$link_cmds[$cmd->getId()] = $command['value'];
 					}
@@ -1188,12 +1190,10 @@ class eqLogic {
 			foreach ($this->getCmd() as $eqLogic_cmd) {
 				foreach ($link_cmds as $cmd_id => $link_cmd) {
 					if ($link_cmd == $eqLogic_cmd->getName()) {
-                        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 						$cmd = $commandRepository->get($cmd_id);
 						if (is_object($cmd)) {
 							$cmd->setValue($eqLogic_cmd->getId());
-							$cmd->save();
+                            $commandRepository->add($cmd);
 						}
 					}
 				}
@@ -1203,12 +1203,10 @@ class eqLogic {
 			foreach ($this->getCmd() as $eqLogic_cmd) {
 				foreach ($link_actions as $cmd_id => $link_action) {
 					if ($link_action == $eqLogic_cmd->getName()) {
-                        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 						$cmd = $commandRepository->get($cmd_id);
 						if (is_object($cmd)) {
 							$cmd->setConfiguration('updateCmdId', $eqLogic_cmd->getId());
-							$cmd->save();
+                            $commandRepository->add($cmd);
 						}
 					}
 				}

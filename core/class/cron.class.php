@@ -17,6 +17,9 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class cron {
@@ -36,81 +39,53 @@ class cron {
 	/*     * ***********************Méthodes statiques*************************** */
 
 	/**
-	 * Return an array of all cron object
-	 * @return array
+     * @deprecated Use ScheduledTaskRepository::all instead
 	 */
-	public static function all($_order = false) {
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM cron';
-		if ($_order) {
-			$sql .= ' ORDER BY deamon DESC';
-		}
-		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	public static function all($_order = false)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. ScheduledTaskRepository::class.'::all instead', E_USER_DEPRECATED);
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+        return $scheduledTaskRepository->all();
 	}
 
-	/**
-	 * Get cron object associate to id
-	 * @param int $_id
-	 * @return object
-	 */
-	public static function byId($_id) {
-		$value = array(
-			'id' => $_id,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM cron
-        WHERE id=:id';
-		return DB::Prepare($sql, $value, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+    /**
+     * @deprecated Use ScheduledTaskRepository::get instead
+     */
+	public static function byId($_id)
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. ScheduledTaskRepository::class.'::get instead', E_USER_DEPRECATED);
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+        return $scheduledTaskRepository->get($_id);
 	}
 
-	/**
-	 * Return cron object corresponding to parameters
-	 * @param string $_class
-	 * @param string $_function
-	 * @param string $_option
-	 * @return object
-	 */
-	public static function byClassAndFunction($_class, $_function, $_option = '') {
-		$value = array(
-			'class' => $_class,
-			'function' => $_function,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM cron
-        WHERE class=:class
-        AND function=:function';
-		if ($_option != '') {
-			$_option = json_encode($_option, JSON_UNESCAPED_UNICODE);
-			$value['option'] = $_option;
-			$sql .= ' AND `option`=:option';
-		}
-		return DB::Prepare($sql, $value, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+    /**
+     * @deprecated Use ScheduledTaskRepository::findByClassAndFunction instead
+     */
+	public static function byClassAndFunction($_class, $_function, $_option = '')
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. ScheduledTaskRepository::class.'::findByClassAndFunction instead', E_USER_DEPRECATED);
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+        return $scheduledTaskRepository->findByClassAndFunction($_class, $_function, $_option);
 	}
-	/**
-	 *
-	 * @param type $_class
-	 * @param type $_function
-	 * @param type $_option
-	 * @return type
-	 */
-	public static function searchClassAndFunction($_class, $_function, $_option = '') {
-		$value = array(
-			'class' => $_class,
-			'function' => $_function,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-        FROM cron
-        WHERE class=:class
-        AND function=:function';
-		if ($_option != '') {
-			$value['option'] = '%' . $_option . '%';
-			$sql .= ' AND `option` LIKE :option';
-		}
-		return DB::Prepare($sql, $value, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+
+    /**
+     * @deprecated Use ScheduledTaskRepository::searchClassAndFunction instead
+     */
+	public static function searchClassAndFunction($_class, $_function, $_option = '')
+    {
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. ScheduledTaskRepository::class.'::searchClassAndFunction instead', E_USER_DEPRECATED);
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+        return $scheduledTaskRepository->searchClassAndFunction($_class, $_function, $_option);
 	}
 
 	public static function clean() {
-		$crons = self::all();
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+		$crons = $scheduledTaskRepository->all();
 		foreach ($crons as $cron) {
 			$c = new Cron\CronExpression($cron->getSchedule(), new Cron\FieldFactory);
 			try {
@@ -118,9 +93,7 @@ class cron {
 					$c->getNextRunDate();
 				}
 			} catch (Exception $ex) {
-				$cron->remove();
-			} catch (Error $ex) {
-				$cron->remove();
+                $scheduledTaskRepository->remove($cron);
 			}
 		}
 	}
@@ -213,24 +186,26 @@ class cron {
 		$this->setPID();
 	}
 
-	/**
-	 * Save cron object
-	 * @return boolean
-	 */
+    /**
+     * @deprecated Use ScheduledTaskRepository::add instead
+     */
 	public function save() {
-		return DB::save($this, false, true);
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. ScheduledTaskRepository::class.'::add instead', E_USER_DEPRECATED);
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+        $scheduledTaskRepository->add($this);
+        return true;
 	}
 
-	/**
-	 * Remove cron object
-	 * @return boolean
-	 */
+    /**
+     * @deprecated Use ScheduledTaskRepository::remove instead
+     */
 	public function remove($halt_before = true) {
-		if ($halt_before && $this->running()) {
-			$this->halt();
-		}
-		cache::delete('cronCacheAttr' . $this->getId());
-		return DB::remove($this);
+        trigger_error(__CLASS__.'::'.__METHOD__.' is deprecated. Use '. ScheduledTaskRepository::class.'::remove instead', E_USER_DEPRECATED);
+        /** @var ScheduledTaskRepository $scheduledTaskRepository */
+        $scheduledTaskRepository = RepositoryFactory::build(ScheduledTaskRepository::class);
+        $scheduledTaskRepository->remove($this, $halt_before);
+        return true;
 	}
 
 	/**

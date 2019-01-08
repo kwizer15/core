@@ -6,17 +6,6 @@ use PHPUnit\Framework\TestCase;
 
 class cacheTest extends TestCase
 {
-    protected function setUp()
-    {
-        try {
-            \DB::getConnection();
-        } catch (\PDOException $e) {
-            $this->markTestSkipped(
-                "Connection à la base de donnée non disponible. [{$e->getMessage()}]"
-            );
-        }
-    }
-
 	public function testSave()
     {
         $this->assertNull('toto', \cache::byKey('toto')->getValue());

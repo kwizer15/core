@@ -18,5 +18,5 @@ interface ScenarioElementRepository extends Repository
      *
      * @return void
      */
-    public function save(\scenarioElement $scenarioElement);
+    public function add(\scenarioElement $scenarioElement);
 }

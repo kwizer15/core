@@ -40,4 +40,26 @@ interface CommandRepository extends Repository
     public function findByTypeEqLogicNameCmdName($eqTypeName, $eqLogicName, $cmdName);
 
     public function findByEqLogicIdCmdName($eqLogicId, $cmdName);
+
+    /**
+     * @param \cmd $command
+     *
+     * @return CommandRepository
+     */
+    public function add(\cmd $command);
+
+    /**
+     * @param $id
+     *
+     * @return CommandRepository
+     */
+    public function remove($id);
+
+    /**
+     * Destinée à disparaitre
+     * @param \cmd $command
+     *
+     * @return mixed
+     */
+    public function refresh(\cmd $command);
 }

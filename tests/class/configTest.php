@@ -6,18 +6,6 @@ use PHPUnit\Framework\TestCase;
 
 class configTest extends TestCase
 {
-    protected function setUp()
-    {
-        // TODO: Mocker la dépendence à la base de donnée
-        try {
-            \DB::getConnection();
-        } catch (\PDOException $e) {
-            $this->markTestSkipped(
-                "Connection à la base de donnée non disponible. [{$e->getMessage()}]"
-            );
-        }
-    }
-
 	public function testSave()
     {
         $this->assertEquals('plop', \config::byKey('toto', 'core', 'plop'));
@@ -26,6 +14,6 @@ class configTest extends TestCase
 		\config::save('toto', 'toto');
         $this->assertEquals('toto', \config::byKey('toto'));
         \config::remove('toto');
-        $this->assertEquals('plop', \config::byKey('toto'));
+        $this->assertEquals(null, \config::byKey('toto'));
 	}
 }

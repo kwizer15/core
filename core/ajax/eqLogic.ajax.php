@@ -361,7 +361,7 @@ try {
 						$cmd->setEqLogic_id($eqLogic->getId());
 						$cmd->setOrder($cmd_order);
 						utils::a2o($cmd, $cmd_info);
-						$cmd->save();
+                        $commandRepository->add($cmd);
 						$cmd_order++;
 						$enableList[$cmd->getId()] = true;
 					}
