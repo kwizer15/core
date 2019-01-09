@@ -15,7 +15,7 @@
         "doctrine/cache": "^1.4.0",
         "knplabs/github-api": "^1.7",
         "league/flysystem-webdav": "~1.0",
-        "league/oauth2-client": "^1.0",
+        "league/oauth2-client": "~2.3",
         "matthiasmullie/minify": "^1.3",
         "monolog/monolog": "^1.17",
         "mtdowling/cron-expression": "~1.0",
