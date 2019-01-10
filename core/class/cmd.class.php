@@ -18,6 +18,12 @@
 
 /* * ***************************Includes********************************* */
 
+use Jeedom\Core\Application\Query\CommandSubTypesQuery;
+use Jeedom\Core\Application\Query\CommandSubTypesQueryHandler;
+use Jeedom\Core\Application\Query\CommandTypesQuery;
+use Jeedom\Core\Application\Query\CommandTypesQueryHandler;
+use Jeedom\Core\Application\Query\CommandUnitesQuery;
+use Jeedom\Core\Application\Query\CommandUnitesQueryHandler;
 use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Infrastructure\Repository\RepositoryFactory;
 
@@ -52,131 +58,95 @@ class cmd {
 	private static $_templateArray = array();
 	
 	/*     * ***********************Méthodes statiques*************************** */
-	
-	public static function byId($_id) {
+
+    public static function byId($_id) {
         if ($_id == '') {
             return;
         }
 
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-	    return $commandRepository->get($_id);
-	}
-	
-	public static function byIds($_ids) {
+        return self::getRepository()->get($_id);
+    }
+
+    public static function byIds($_ids) {
         if (!is_array($_ids) || count($_ids) === 0) {
             return;
         }
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
 
-        return $commandRepository->findByIds($_ids);
-	}
-	
-	public static function all() {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->all();
-	}
-	
-	public static function allHistoryCmd() {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->allHistoryCmd();
-	}
-	
-	public static function byEqLogicId($_eqLogic_id, $_type = null, $_visible = null, $_eqLogic = null, $_has_generic_type = null) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->findByEqLogicId($_eqLogic_id, $_type, $_visible, $_eqLogic, $_has_generic_type);
-	}
-	
-	public static function byLogicalId($_logical_id, $_type = null) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->findByLogicalId($_logical_id, $_type);
-	}
-	
-	public static function byGenericType($_generic_type, $_eqLogic_id = null, $_one = false) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-	    if ($_one) {
-            return $commandRepository->findOneByGenericType($_generic_type, $_eqLogic_id);
+        return self::getRepository()->findByIds($_ids);
+    }
+
+    public static function all() {
+        return self::getRepository()->all();
+    }
+
+    public static function allHistoryCmd() {
+        return self::getRepository()->allHistoryCmd();
+    }
+
+    public static function byEqLogicId($_eqLogic_id, $_type = null, $_visible = null, $_eqLogic = null, $_has_generic_type = null) {
+        return self::getRepository()->findByEqLogicId($_eqLogic_id, $_type, $_visible, $_eqLogic, $_has_generic_type);
+    }
+
+    public static function byLogicalId($_logical_id, $_type = null) {
+        return self::getRepository()->findByLogicalId($_logical_id, $_type);
+    }
+
+    public static function byGenericType($_generic_type, $_eqLogic_id = null, $_one = false) {
+        if ($_one) {
+            return self::getRepository()->findOneByGenericType($_generic_type, $_eqLogic_id);
         }
-        return $commandRepository->findByGenericType($_generic_type, $_eqLogic_id);
-	}
+        return self::getRepository()->findByGenericType($_generic_type, $_eqLogic_id);
+    }
 
     public static function searchConfiguration($_configuration, $_eqType = null) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->searchConfiguration($_configuration, $_eqType);
-	}
-	
-	public static function searchConfigurationEqLogic($_eqLogic_id, $_configuration, $_type = null) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->searchConfigurationEqLogic($_eqLogic_id, $_configuration, $_type);
-	}
-	
-	public static function searchTemplate($_template, $_eqType = null, $_type = null, $_subtype = null) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->searchTemplate($_template, $_eqType, $_type, $_subtype);
-	}
-	
-	public static function byEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_multiple = false, $_type = null) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-		if ($_multiple) {
-            return $commandRepository->findByEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_type);
-		}
-        return $commandRepository->findOneByEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_type);
-	}
-	
-	public static function byEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_multiple = false, $_type = null) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-		if ($_multiple) {
-            return $commandRepository->findByEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_type);
-		}
-        return $commandRepository->findOneByEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_type);
-	}
-	
-	public static function byValue($_value, $_type = null, $_onlyEnable = false) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->findByValue($_value, $_type, $_onlyEnable);
-	}
-	
-	public static function byTypeEqLogicNameCmdName($_eqType_name, $_eqLogic_name, $_cmd_name) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->findOneByTypeEqLogicNameCmdName($_eqType_name, $_eqLogic_name, $_cmd_name);
-	}
-	
-	public static function byEqLogicIdCmdName($_eqLogic_id, $_cmd_name) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->findOneByEqLogicIdCmdName($_eqLogic_id, $_cmd_name);
-	}
-	
-	public static function byObjectNameEqLogicNameCmdName($_object_name, $_eqLogic_name, $_cmd_name) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->findOneByObjectNameEqLogicNameCmdName($_object_name, $_eqLogic_name, $_cmd_name);
-	}
-	
-	public static function byObjectNameCmdName($_object_name, $_cmd_name) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->findOneByObjectNameCmdName($_object_name, $_cmd_name);
-	}
-	
-	public static function byTypeSubType($_type, $_subType = '') {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->findByTypeSubType($_type, $_subType);
-	}
+        return self::getRepository()->searchConfiguration($_configuration, $_eqType);
+    }
+
+    public static function searchConfigurationEqLogic($_eqLogic_id, $_configuration, $_type = null) {
+        return self::getRepository()->searchConfigurationEqLogic($_eqLogic_id, $_configuration, $_type);
+    }
+
+    public static function searchTemplate($_template, $_eqType = null, $_type = null, $_subtype = null) {
+        return self::getRepository()->searchTemplate($_template, $_eqType, $_type, $_subtype);
+    }
+
+    public static function byEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_multiple = false, $_type = null) {
+        if ($_multiple) {
+            return self::getRepository()->findByEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_type);
+        }
+        return self::getRepository()->findOneByEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_type);
+    }
+
+    public static function byEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_multiple = false, $_type = null) {
+        if ($_multiple) {
+            return self::getRepository()->findByEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_type);
+        }
+        return self::getRepository()->findOneByEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_type);
+    }
+
+    public static function byValue($_value, $_type = null, $_onlyEnable = false) {
+        return self::getRepository()->findByValue($_value, $_type, $_onlyEnable);
+    }
+
+    public static function byTypeEqLogicNameCmdName($_eqType_name, $_eqLogic_name, $_cmd_name) {
+        return self::getRepository()->findOneByTypeEqLogicNameCmdName($_eqType_name, $_eqLogic_name, $_cmd_name);
+    }
+
+    public static function byEqLogicIdCmdName($_eqLogic_id, $_cmd_name) {
+        return self::getRepository()->findOneByEqLogicIdCmdName($_eqLogic_id, $_cmd_name);
+    }
+
+    public static function byObjectNameEqLogicNameCmdName($_object_name, $_eqLogic_name, $_cmd_name) {
+        return self::getRepository()->findOneByObjectNameEqLogicNameCmdName($_object_name, $_eqLogic_name, $_cmd_name);
+    }
+
+    public static function byObjectNameCmdName($_object_name, $_cmd_name) {
+        return self::getRepository()->findOneByObjectNameCmdName($_object_name, $_cmd_name);
+    }
+
+    public static function byTypeSubType($_type, $_subType = '') {
+        return self::getRepository()->findByTypeSubType($_type, $_subType);
+    }
 
     /**
      * @param $_input
@@ -196,7 +166,7 @@ class cmd {
 		if (count($matches[1]) === 0) {
 			return $_input;
 		}
-		$cmds = self::byIds($matches[1]);
+		$cmds = self::getRepository()->get($matches[1]);
 		foreach ($cmds as $cmd) {
             $hashId = '#' . $cmd->getId() . '#';
             if (!isset($replace[$hashId])) {
@@ -239,7 +209,7 @@ class cmd {
 					continue;
 				}
 				if (isset($matches[1][$i], $matches[2][$i], $matches[3][$i])) {
-					$cmd = self::byObjectNameEqLogicNameCmdName($matches[1][$i], $matches[2][$i], $matches[3][$i]);
+					$cmd = self::getRepository()->findOneByObjectNameEqLogicNameCmdName($matches[1][$i], $matches[2][$i], $matches[3][$i]);
 					if (is_object($cmd)) {
 						$replace[$matches[0][$i]] = '#' . $cmd->getId() . '#';
 					}
@@ -250,9 +220,7 @@ class cmd {
 	}
 	
 	public static function byString($_string) {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        return $commandRepository->findOneByString($_string);
+        return self::getRepository()->findOneByString($_string);
 	}
 
     /**
@@ -286,7 +254,7 @@ class cmd {
 				$valueDate = utils::getJsonAttr($cache, 'valueDate', date('Y-m-d H:i:s'));
 				$cmd_value = utils::getJsonAttr($cache, 'value', '');
 			} else {
-				$cmd = self::byId($cmd_id);
+				$cmd = self::getRepository()->get($cmd_id);
 				if (!is_object($cmd) || $cmd->getType() != 'info') {
 					continue;
 				}
@@ -310,28 +278,34 @@ class cmd {
 		}
 		return str_replace(array_keys($replace), $replace, $_input);
 	}
-	
+
+    /**
+     * @return array
+     * @throws Exception
+     */
 	public static function allType() {
-		$sql = 'SELECT distinct(type) as type
-		FROM cmd';
-		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
+	    $handler = new CommandTypesQueryHandler();
+	    return $handler->handle(new CommandTypesQuery());
 	}
-	
+
+    /**
+     * @param string $_type
+     *
+     * @return array
+     * @throws Exception
+     */
 	public static function allSubType($_type = '') {
-		$values = array();
-		$sql = 'SELECT distinct(subType) as subtype';
-		if ($_type != '') {
-			$values['type'] = $_type;
-			$sql .= ' WHERE type=:type';
-		}
-		$sql .= ' FROM cmd';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
+        $handler = new CommandSubTypesQueryHandler();
+        return $handler->handle(new CommandSubTypesQuery($_type));
 	}
-	
+
+    /**
+     * @return array
+     * @throws Exception
+     */
 	public static function allUnite() {
-		$sql = 'SELECT distinct(unite) as unite
-		FROM cmd';
-		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
+        $handler = new CommandUnitesQueryHandler();
+        return $handler->handle(new CommandUnitesQuery());
 	}
 	
 	public static function convertColor($_color) {
@@ -380,7 +354,7 @@ class cmd {
 	}
 	
 	public static function returnState($_options) {
-		$cmd = self::byId($_options['cmd_id']);
+		$cmd = self::getRepository()->get($_options['cmd_id']);
 		if (is_object($cmd)) {
 			$cmd->event($cmd->getConfiguration('returnStateValue', 0));
 		}
@@ -394,7 +368,7 @@ class cmd {
             'jeedomPostExecCmd',
             'jeedomPreExecCmd'
         ];
-		foreach (self::all() as $cmd) {
+		foreach (self::getRepository()->all() as $cmd) {
 		    foreach ($configs as $config) {
                 $actionCommand = $cmd->getConfiguration($config, '');
                 if (is_array($actionCommand)) {
@@ -406,7 +380,7 @@ class cmd {
             foreach ($actionCmds as $actionCmd) {
                 if ($actionCmd['cmd'] != ''
                     && strpos($actionCmd['cmd'], '#') !== false
-                    && !self::byId(str_replace('#', '', $actionCmd['cmd']))
+                    && !self::getRepository()->get(str_replace('#', '', $actionCmd['cmd']))
                 ) {
                     $return[] = [
                         'detail' => 'Commande ' . $cmd->getName() . ' de ' . $cmd->getEqLogic()->getName() . ' (' . $cmd->getEqLogic()->getEqType_name() . ')',
@@ -419,7 +393,7 @@ class cmd {
 	}
 	
 	public static function cmdAlert($_options) {
-		$cmd = self::byId($_options['cmd_id']);
+		$cmd = self::getRepository()->get($_options['cmd_id']);
 		if (!is_object($cmd)) {
 			return;
 		}
@@ -435,7 +409,7 @@ class cmd {
 		$return['date'] = $_event['datetime'];
 		$return['type'] = $_event['type'];
 		$return['group'] = $_event['subtype'];
-		$cmd = self::byId($_event['id']);
+		$cmd = self::getRepository()->get($_event['id']);
 		if (!is_object($cmd)) {
 			return null;
 		}
@@ -552,24 +526,18 @@ class cmd {
 	}
 	
 	public function save() {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        $commandRepository->add($this);
+        self::getRepository()->add($this);
 
         return true;
 	}
 	
 	public function refresh() {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
-        $commandRepository->refresh($this);
+        self::getRepository()->refresh($this);
 	}
 	
 	public function remove() {
-        /** @var CommandRepository $commandRepository */
-        $commandRepository = RepositoryFactory::build(CommandRepository::class);
         try {
-            $commandRepository->remove($this);
+            self::getRepository()->remove($this);
         } catch (\Exception $e) {
             return false;
         }
@@ -708,15 +676,15 @@ class cmd {
 		if ($options !== null && $this->getValue() == '') {
 			if (isset($options['slider'])) {
 				$this->setConfiguration('lastCmdValue', $options['slider']);
-				$this->save();
+				self::getRepository()->add($this);
 			}
 			if (isset($options['color'])) {
 				$this->setConfiguration('lastCmdValue', $options['color']);
-				$this->save();
+				self::getRepository()->add($this);
 			}
 		}
 		if ($this->getConfiguration('updateCmdId') != '') {
-			$cmd = self::byId($this->getConfiguration('updateCmdId'));
+			$cmd = self::getRepository()->get($this->getConfiguration('updateCmdId'));
 			if (is_object($cmd)) {
 				$value = $this->getConfiguration('updateCmdToValue');
 				switch ($this->getSubType()) {
@@ -1014,7 +982,7 @@ class cmd {
 			$level = $this->checkAlertLevel($value);
 			$events[] = array('cmd_id' => $this->getId(), 'value' => $value, 'display_value' => $display_value, 'valueDate' => $this->getValueDate(), 'collectDate' => $this->getCollectDate(), 'alertLevel' => $level);
 			$foundInfo = false;
-			$value_cmd = self::byValue($this->getId(), null, true);
+			$value_cmd = self::getRepository()->findByValue($this->getId(), null, true);
 			if (is_array($value_cmd) && count($value_cmd) > 0) {
 				foreach ($value_cmd as $cmd) {
 					if ($cmd->getType() == 'action') {
@@ -1199,7 +1167,7 @@ class cmd {
 	}
 	
 	public static function duringAlertLevel($_options) {
-		$cmd = self::byId($_options['cmd_id']);
+		$cmd = self::getRepository()->get($_options['cmd_id']);
 		if (!is_object($cmd)) {
 			return;
 		}
@@ -1239,7 +1207,7 @@ class cmd {
 			$cmds = explode('&&', config::byKey('alert::' . $_level . 'Cmd'));
 			if (count($cmds) > 0 && trim(config::byKey('alert::' . $_level . 'Cmd')) != '') {
 				foreach ($cmds as $id) {
-					$cmd = self::byId(str_replace('#', '', $id));
+					$cmd = self::getRepository()->get(str_replace('#', '', $id));
 					if (is_object($cmd)) {
 						$cmd->execCmd(array(
 							'title' => __('[' . config::byKey('name', 'core', 'JEEDOM') . '] ', __FILE__) . $message,
@@ -1348,7 +1316,7 @@ class cmd {
 	}
 	
 	public function getCmdValue() {
-		$cmd = self::byId(str_replace('#', '', $this->getValue()));
+		$cmd = self::getRepository()->get(str_replace('#', '', $this->getValue()));
 		if (is_object($cmd)) {
 			return $cmd;
 		}
@@ -1491,7 +1459,7 @@ class cmd {
 		}
 		if (sha1($_code) == $this->getConfiguration('actionCodeAccess')) {
 			$this->setConfiguration('actionCodeAccess', sha512($_code));
-			$this->save();
+			self::getRepository()->add($this);
 			return true;
 		}
 		if (sha512($_code) == $this->getConfiguration('actionCodeAccess')) {
@@ -1548,7 +1516,7 @@ class cmd {
 	
 	public function getUsedBy($_array = false) {
 		$return = ['cmd' => [], 'eqLogic' => [], 'scenario' => [], 'plan' => [], 'view' => []];
-		$return['cmd'] = self::searchConfiguration('#' . $this->getId() . '#');
+		$return['cmd'] = self::getRepository()->searchConfiguration('#' . $this->getId() . '#');
 		$return['eqLogic'] = eqLogic::searchConfiguration('#' . $this->getId() . '#');
 		$return['scenario'] = scenario::searchByUse(array(array('action' => '#' . $this->getId() . '#')));
 		$return['interactDef'] = interactDef::searchByUse('#' . $this->getId() . '#');
@@ -1866,5 +1834,13 @@ class cmd {
         }
 
         return $_input;
+    }
+
+    /**
+     * @return CommandRepository
+     */
+    private static function getRepository()
+    {
+        return RepositoryFactory::build(CommandRepository::class);
     }
 }
