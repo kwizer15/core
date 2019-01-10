@@ -2,7 +2,9 @@
 
 namespace Jeedom\Core\Application\Query;
 
-class CommandSubTypesQueryHandler
+use Jeedom\Common\Application\Query\QueryHandler;
+
+class CommandSubTypesQueryHandler implements QueryHandler
 {
     /**
      * @param CommandSubTypesQuery $query
@@ -10,7 +12,7 @@ class CommandSubTypesQueryHandler
      * @return array
      * @throws \Exception
      */
-    public function handle(CommandSubTypesQuery $query)
+    public function handle($query)
     {
         $type = $query->getType();
         $values = [];

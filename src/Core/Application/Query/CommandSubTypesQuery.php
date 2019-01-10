@@ -2,7 +2,9 @@
 
 namespace Jeedom\Core\Application\Query;
 
-class CommandSubTypesQuery
+use Jeedom\Common\Application\Query\Query;
+
+class CommandSubTypesQuery implements Query
 {
     private $type;
 
