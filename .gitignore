@@ -37,3 +37,6 @@ tmp/*
 
 /vendor
 /var
+phpunit.xml
+/report
+
