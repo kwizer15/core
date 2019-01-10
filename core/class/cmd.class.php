@@ -1529,7 +1529,11 @@ class cmd {
 	}
 
     /**
+<<<<<<< HEAD
      * @deprecated This method is deprecated
+=======
+     * @deprcated This method is deprecated
+>>>>>>> Add command repository
      */
 	public function setEventOnly($eventOnly) {
 		trigger_error('This method is deprecated', E_USER_DEPRECATED);

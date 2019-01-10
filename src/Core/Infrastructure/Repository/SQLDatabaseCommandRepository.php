@@ -553,7 +553,6 @@ class SQLDatabaseCommandRepository implements CommandRepository
      */
     private static function cast($_inputs, $_eqLogic = null)
     {
-
         if ($_inputs instanceof \cmd && class_exists($_inputs->getEqType() . 'Cmd')) {
             $destination = $_inputs->getEqType() . 'Cmd';
             if ($_eqLogic !== null) {

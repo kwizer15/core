@@ -59,3 +59,4 @@ $(CONFIGURATION_FILE): $(CONFIGURATION_FILE_SAMPLE)
 	sed -i "s/#USERNAME#/$(DB_USER)/g" $@
 	sed -i "s/#PORT#/$(DB_PORT)/g" $@
 	sed -i "s/#HOST#/$(DB_HOST)/g" $@
+
