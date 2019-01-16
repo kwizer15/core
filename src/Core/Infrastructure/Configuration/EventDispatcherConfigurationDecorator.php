@@ -30,7 +30,7 @@ class EventDispatcherConfigurationDecorator implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         return $this->decoratedConfiguration->get($key, $default);
     }
@@ -38,7 +38,7 @@ class EventDispatcherConfigurationDecorator implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value)
+    public function set(string $key, $value): Configuration
     {
         $event = $this->eventDispatcher->dispatch('preConfig', new Configured($key, $value, $this->plugin));
         $value = $event->getValue();
@@ -51,7 +51,7 @@ class EventDispatcherConfigurationDecorator implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function remove($key)
+    public function remove(string $key): Configuration
     {
         $this->decoratedConfiguration->remove($key);
 
@@ -61,7 +61,7 @@ class EventDispatcherConfigurationDecorator implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function multiGet(array $keys, $default = null)
+    public function multiGet(array $keys, $default = null): array
     {
         return $this->decoratedConfiguration->multiGet($keys, $default);
     }
@@ -69,7 +69,7 @@ class EventDispatcherConfigurationDecorator implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function search($pattern)
+    public function search(string $pattern): array
     {
         return $this->decoratedConfiguration->search($pattern);
     }

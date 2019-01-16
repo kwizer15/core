@@ -16,19 +16,19 @@ class InMemoryCacheConfigurationDecorator implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         if (!array_key_exists($key, $this->cache)) {
             $this->cache[$key] = $this->decoratedConfiguration->get($key);
         }
 
-        return null === $this->cache[$key] ? $default : $this->cache[$key];
+        return $this->cache[$key] ?? $default;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value)
+    public function set(string $key, $value): Configuration
     {
         $this->decoratedConfiguration->set($key, $value);
         $this->cache[$key] = $value;
@@ -39,7 +39,7 @@ class InMemoryCacheConfigurationDecorator implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function remove($key)
+    public function remove(string $key): Configuration
     {
         $this->decoratedConfiguration->remove($key);
         unset($this->cache[$key]);
@@ -50,7 +50,7 @@ class InMemoryCacheConfigurationDecorator implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function multiGet(array $keys, $default = null)
+    public function multiGet(array $keys, $default = null): array
     {
         if (!is_array($default)) {
             $default = array_fill_keys($keys, $default);
@@ -78,7 +78,7 @@ class InMemoryCacheConfigurationDecorator implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function search($pattern)
+    public function search(string $pattern): array
     {
         $results = $this->decoratedConfiguration->search($pattern);
         foreach ($results as $key => $value) {

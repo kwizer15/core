@@ -3,6 +3,7 @@
 namespace Jeedom\Core\Infrastructure\Factory;
 
 use Jeedom\Core\Application\Configuration\ChainConfiguration;
+use Jeedom\Core\Application\Configuration\Configuration;
 use Jeedom\Core\Application\Configuration\InMemoryCacheConfigurationDecorator;
 use Jeedom\Core\Application\Configuration\InMemoryConfiguration;
 use Jeedom\Core\Application\Configuration\ReadOnlyIniFileConfiguration;
@@ -57,10 +58,9 @@ class ConfigurationFactory
     /**
      * @param string $plugin
      *
-     * @return ChainConfiguration
+     * @return Configuration
      */
-    public static function getDefaultConfiguration($plugin)
-    {
+    public static function getDefaultConfiguration($plugin): Configuration {
         if (isset(self::$defaultConfigurations[$plugin])) {
             return self::$defaultConfigurations[$plugin];
         }
@@ -73,7 +73,6 @@ class ConfigurationFactory
             $iniFiles[] = [$plugin, dirname(__DIR__, 4) . '/data/custom/custom.config.ini'];
             $iniFiles[] = [$plugin, dirname(__DIR__, 4) . '/plugins/' . $plugin . '/core/config/' . $plugin . '.config.ini'];
         }
-
         $configuration = [];
         foreach ($iniFiles as list($section, $filename)) {
             try {

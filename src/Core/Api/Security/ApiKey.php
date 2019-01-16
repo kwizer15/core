@@ -4,8 +4,13 @@ namespace Jeedom\Core\Api\Security;
 
 class ApiKey
 {
-    public static function generate($nbChars = 32)
-    {
+    /**
+     * @param int $nbChars
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public static function generate($nbChars = 32): string {
         $key = '';
         $chaine = 'abcdefghijklmnpqrstuvwxy1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         for ($i = 0; $i < $nbChars; $i++) {

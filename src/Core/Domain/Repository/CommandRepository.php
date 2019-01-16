@@ -9,26 +9,26 @@ interface CommandRepository
      *
      * @return CommandRepository
      */
-    public function add(\cmd $cmd);
+    public function add(\cmd $cmd): CommandRepository;
 
     /**
      * @param \cmd $cmd
      *
      * @return CommandRepository
      */
-    public function refresh(\cmd $cmd);
+    public function refresh(\cmd $cmd): CommandRepository;
 
     /**
      * @param $cmdId
      *
      * @return CommandRepository
      */
-    public function remove($cmdId);
+    public function remove($cmdId): CommandRepository;
 
     /**
      * @param $id
      *
-     * @return mixed
+     * @return \cmd
      */
     public function get($id);
 
@@ -97,17 +97,17 @@ interface CommandRepository
      *
      * @return \cmd[]
      */
-    public function findByIds($ids);
+    public function findByIds($ids): array;
 
     /**
      * @return \cmd[]
      */
-    public function all();
+    public function all(): array;
 
     /**
      * @return \cmd[]
      */
-    public function allHistoryCmd();
+    public function allHistoryCmd(): array;
 
     /**
      * @param $eqLogicId
@@ -118,7 +118,7 @@ interface CommandRepository
      *
      * @return \cmd[]
      */
-    public function findByEqLogicId($eqLogicId, $type = null, $visible = null, $eqLogic = null, $hasGenericType = null);
+    public function findByEqLogicId($eqLogicId, $type = null, $visible = null, $eqLogic = null, $hasGenericType = null): array;
 
     /**
      * @param $logical_id
@@ -126,7 +126,7 @@ interface CommandRepository
      *
      * @return \cmd[]
      */
-    public function findByLogicalId($logical_id, $type = null);
+    public function findByLogicalId($logical_id, $type = null): array;
 
     /**
      * @param $generic_type
@@ -135,7 +135,7 @@ interface CommandRepository
      *
      * @return \cmd[]
      */
-    public function findByGenericType($generic_type, $eqLogicId = null);
+    public function findByGenericType($generic_type, $eqLogicId = null): array;
 
     /**
      * @param $configuration
@@ -143,7 +143,7 @@ interface CommandRepository
      *
      * @return \cmd[]
      */
-    public function searchConfiguration($configuration, $eqType = null);
+    public function searchConfiguration($configuration, $eqType = null): array;
 
     /**
      * @param $eqLogicId
@@ -152,7 +152,7 @@ interface CommandRepository
      *
      * @return \cmd[]
      */
-    public function searchConfigurationEqLogic($eqLogicId, $configuration, $type = null);
+    public function searchConfigurationEqLogic($eqLogicId, $configuration, $type = null): array;
 
     /**
      * @param $template
@@ -162,7 +162,7 @@ interface CommandRepository
      *
      * @return \cmd[]
      */
-    public function searchTemplate($template, $eqType = null, $type = null, $subtype = null);
+    public function searchTemplate($template, $eqType = null, $type = null, $subtype = null): array;
 
     /**
      * @param $eqLogicId
@@ -171,7 +171,7 @@ interface CommandRepository
      *
      * @return \cmd[]
      */
-    public function findByEqLogicIdAndLogicalId($eqLogicId, $logicalId, $type = null);
+    public function findByEqLogicIdAndLogicalId($eqLogicId, $logicalId, $type = null): array;
 
     /**
      * @param $eqLogicId
@@ -180,7 +180,7 @@ interface CommandRepository
      *
      * @return \cmd[]
      */
-    public function findByEqLogicIdAndGenericType($eqLogicId, $genericType, $type = null);
+    public function findByEqLogicIdAndGenericType($eqLogicId, $genericType, $type = null): array;
 
     /**
      * @param $value
@@ -189,7 +189,7 @@ interface CommandRepository
      *
      * @return \cmd[]
      */
-    public function findByValue($value, $type = null, $onlyEnable = false);
+    public function findByValue($value, $type = null, $onlyEnable = false): array;
 
     /**
      * @param $type
@@ -197,22 +197,22 @@ interface CommandRepository
      *
      * @return \cmd[]
      */
-    public function findByTypeSubType($type, $subType = '');
+    public function findByTypeSubType($type, $subType = ''): array;
 
     /**
      * @return string[]
      */
-    public function listTypes();
+    public function listTypes(): array;
 
     /**
      * @param $type
      *
      * @return string[]
      */
-    public function listSubTypes($type);
+    public function listSubTypes($type): array;
 
     /**
      * @return string[]
      */
-    public function listUnites();
+    public function listUnites(): array;
 }

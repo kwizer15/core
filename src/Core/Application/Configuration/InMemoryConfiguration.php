@@ -14,7 +14,7 @@ class InMemoryConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         if (!isset($this->configuration[$key])) {
             return $default;
@@ -26,7 +26,7 @@ class InMemoryConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value)
+    public function set(string $key, $value): Configuration
     {
         $this->configuration[$key] = $value;
 
@@ -36,7 +36,7 @@ class InMemoryConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function remove($key)
+    public function remove(string $key): Configuration
     {
         unset($this->configuration[$key]);
 
@@ -46,7 +46,7 @@ class InMemoryConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function multiGet(array $keys, $default = null)
+    public function multiGet(array $keys, $default = null): array
     {
         $asKeys = array_flip($keys);
         if (!is_array($default)) {
@@ -65,7 +65,7 @@ class InMemoryConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function search($pattern)
+    public function search(string $pattern): array
     {
         return array_filter($this->configuration, function($key) use ($pattern) {
             return false !== stripos($key, $pattern);

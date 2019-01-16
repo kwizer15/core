@@ -23,7 +23,7 @@ class ChainConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         foreach ($this->configurations as $configuration) {
             $value = $configuration->get($key);
@@ -38,7 +38,7 @@ class ChainConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value)
+    public function set(string $key, $value): Configuration
     {
         $setted = false;
         foreach ($this->configurations as $configuration) {
@@ -58,7 +58,7 @@ class ChainConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function remove($key)
+    public function remove(string $key): Configuration
     {
         $unsetted = false;
         foreach ($this->configurations as $configuration) {
@@ -84,7 +84,7 @@ class ChainConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function multiGet(array $keys, $default = null)
+    public function multiGet(array $keys, $default = null): array
     {
         $asKeys = array_flip($keys);
         if (!is_array($default)) {
@@ -121,7 +121,7 @@ class ChainConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function search($pattern)
+    public function search(string $pattern): array
     {
         $returns = [];
         foreach ($this->configurations as $configuration) {

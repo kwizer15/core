@@ -3,9 +3,13 @@
 namespace Jeedom\Core\Infrastructure\Configuration;
 
 use Jeedom\Core\Application\Configuration\Configuration;
+use Jeedom\Core\Application\Configuration\ReadOnlyConfigurationException;
 
 class LogConfigurationDecorator implements Configuration
 {
+    /**
+     * @var Configuration
+     */
     private $decoratedConfiguration;
 
     /**
@@ -14,7 +18,7 @@ class LogConfigurationDecorator implements Configuration
      * @param $decoratedConfiguration
      *
      */
-    public function __construct($decoratedConfiguration)
+    public function __construct(Configuration $decoratedConfiguration)
     {
         $this->decoratedConfiguration = $decoratedConfiguration;
     }
@@ -28,7 +32,7 @@ class LogConfigurationDecorator implements Configuration
      *
      * @return mixed
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         $value = $this->decoratedConfiguration->get($key, $default);
         echo "get({$key}, {$default}) => ".var_export($value, true).PHP_EOL;
@@ -47,7 +51,7 @@ class LogConfigurationDecorator implements Configuration
      *
      * @return Configuration
      */
-    public function set($key, $value)
+    public function set(string $key, $value): Configuration
     {
         echo "set({$key}, {$value})".PHP_EOL;
         return $this->decoratedConfiguration->set($key, $value);
@@ -58,14 +62,13 @@ class LogConfigurationDecorator implements Configuration
      *
      * @param string $key
      *
-     * @throws ReadOnlyConfigurationException
-     *
      * @return Configuration
+     * @throws ReadOnlyConfigurationException
      */
-    public function remove($key)
+    public function remove(string $key): Configuration
     {
-        echo "remove({$key}, {$value})".PHP_EOL;
-        return $this->decoratedConfiguration->remove($key, $value);
+        echo "remove({$key})".PHP_EOL;
+        return $this->decoratedConfiguration->remove($key);
     }
 
     /**
@@ -80,7 +83,7 @@ class LogConfigurationDecorator implements Configuration
      *
      * @return mixed[]
      */
-    public function multiGet(array $keys, $default = null)
+    public function multiGet(array $keys, $default = null): array
     {
         $value = $this->decoratedConfiguration->multiGet($keys, $default);
         echo 'multiGet([' .implode(', ', $keys)."], {$default}) => ".var_export($value, true).PHP_EOL;
@@ -95,7 +98,7 @@ class LogConfigurationDecorator implements Configuration
      *
      * @return mixed[]
      */
-    public function search($pattern)
+    public function search(string $pattern): array
     {
         $value = $this->decoratedConfiguration->search($pattern);
         echo "search({$pattern}) => ".var_export($value, true).PHP_EOL;

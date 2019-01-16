@@ -13,7 +13,7 @@ interface Configuration
      *
      * @return mixed
      */
-    public function get($key, $default = null);
+    public function get(string $key, $default = null);
 
     /**
      * Définie une valeur liée à une clé
@@ -26,7 +26,7 @@ interface Configuration
      *
      * @return Configuration
      */
-    public function set($key, $value);
+    public function set(string $key, $value): Configuration;
 
     /**
      * Supprime une clé et sa valeur liée
@@ -37,7 +37,7 @@ interface Configuration
      *
      * @return Configuration
      */
-    public function remove($key);
+    public function remove(string $key): Configuration;
 
     /**
      * Retourne un tableau clé => valeur des clés demandées
@@ -51,7 +51,7 @@ interface Configuration
      *
      * @return mixed[]
      */
-    public function multiGet(array $keys, $default = null);
+    public function multiGet(array $keys, $default = null): array;
 
     /**
      * Retourne les clés/valeur correspondant au pattern
@@ -60,5 +60,5 @@ interface Configuration
      *
      * @return mixed[]
      */
-    public function search($pattern);
+    public function search(string $pattern): array;
 }

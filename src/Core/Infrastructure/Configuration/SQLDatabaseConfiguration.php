@@ -16,7 +16,7 @@ class SQLDatabaseConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function get($key, $default = null)
+    public function get(string $key, $default = null)
     {
         $values = [
             'plugin' => $this->plugin,
@@ -31,7 +31,7 @@ class SQLDatabaseConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value)
+    public function set(string $key, $value): Configuration
     {
         $exists = null !== $this->get($key);
 
@@ -52,7 +52,7 @@ class SQLDatabaseConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function remove($key)
+    public function remove(string $key): Configuration
     {
         $values = [
             'plugin' => $this->plugin,
@@ -72,7 +72,7 @@ class SQLDatabaseConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function multiGet(array $keys, $default = null)
+    public function multiGet(array $keys, $default = null): array
     {
         if (!is_array($keys) || \count($keys) === 0) {
             return [];
@@ -106,7 +106,7 @@ class SQLDatabaseConfiguration implements Configuration
     /**
      * {@inheritdoc}
      */
-    public function search($pattern)
+    public function search(string $pattern): array
     {
         $values = [
             'plugin' => $this->plugin,
@@ -138,11 +138,11 @@ class SQLDatabaseConfiguration implements Configuration
             return $return;
         }
 
-        return ((is_string($value) && is_array(json_decode($value, true, 512, JSON_BIGINT_AS_STRING)))) ? true : false;
+        return (is_string($value) && \is_array(json_decode($value, true, 512, JSON_BIGINT_AS_STRING)));
     }
 
     private static function serialize($value)
     {
-        return is_object($value) || is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
+        return is_object($value) || \is_array($value) ? json_encode($value, JSON_UNESCAPED_UNICODE) : $value;
     }
 }

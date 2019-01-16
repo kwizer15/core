@@ -23,7 +23,7 @@ class ReadOnlyIniFileConfiguration extends InMemoryConfiguration
     /**
      * {@inheritdoc}
      */
-    public function set($key, $value)
+    public function set(string $key, $value): Configuration
     {
         throw new ReadOnlyConfigurationException('Cette configuration est en lecture seule.');
     }
@@ -31,7 +31,7 @@ class ReadOnlyIniFileConfiguration extends InMemoryConfiguration
     /**
      * {@inheritdoc}
      */
-    public function remove($key)
+    public function remove(string $key): Configuration
     {
         throw new ReadOnlyConfigurationException('Cette configuration est en lecture seule.');
     }
