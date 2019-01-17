@@ -1,4 +1,8 @@
 <?php
+
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Factory\RepositoryFactory;
+
 class pluginTest extends \PHPUnit_Framework_TestCase {
 	protected function setUp() {
 		try {
@@ -89,7 +93,7 @@ class pluginTest extends \PHPUnit_Framework_TestCase {
 		$cmd->setLogicalId('virtual_test_1');
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('calcul', 1);
-		$cmd->save();
+        RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 
@@ -104,7 +108,7 @@ class pluginTest extends \PHPUnit_Framework_TestCase {
 		$cmd->setLogicalId('virtual_test_2');
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('calcul', '1+1');
-		$cmd->save();
+        RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 
@@ -127,7 +131,7 @@ class pluginTest extends \PHPUnit_Framework_TestCase {
 		$cmd->setLogicalId('virtual_test_3');
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('calcul', 'toto');
-		$cmd->save();
+        RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 
@@ -153,7 +157,7 @@ class pluginTest extends \PHPUnit_Framework_TestCase {
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_other_info');
 		$cmd->setConfiguration('value', 1);
-		$cmd->save();
+        RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 
 		$virtual = virtual::byLogicalId('virtual_test', 'virtual');
@@ -165,7 +169,7 @@ class pluginTest extends \PHPUnit_Framework_TestCase {
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_other_info');
 		$cmd->setConfiguration('value', 0);
-		$cmd->save();
+        RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 
 		$virtual = virtual::byLogicalId('virtual_test', 'virtual');
@@ -177,7 +181,7 @@ class pluginTest extends \PHPUnit_Framework_TestCase {
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_other_info');
 		$cmd->setConfiguration('value', 'plop');
-		$cmd->save();
+        RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 
 		$info = virtualCmd::byEqLogicIdCmdName($virtual->getId(), 'test_action_other_info');
@@ -190,7 +194,7 @@ class pluginTest extends \PHPUnit_Framework_TestCase {
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_other_info');
 		$cmd->setConfiguration('value', 'not(#' . $info->getId() . '#)');
-		$cmd->save();
+        RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 
@@ -227,7 +231,7 @@ class pluginTest extends \PHPUnit_Framework_TestCase {
 		$cmd->setLogicalId('virtual_test_8');
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_slider_info');
-		$cmd->save();
+        RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 
@@ -254,7 +258,7 @@ class pluginTest extends \PHPUnit_Framework_TestCase {
 		$cmd->setLogicalId('virtual_test_9');
 		$cmd->setEqLogic_id($virtual->getId());
 		$cmd->setConfiguration('infoName', 'test_action_color_info');
-		$cmd->save();
+        RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		$this->assertTrue((is_numeric($cmd->getId()) && $cmd->getId() != ''));
 	}
 

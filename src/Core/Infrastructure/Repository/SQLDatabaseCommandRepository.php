@@ -2,6 +2,7 @@
 
 namespace Jeedom\Core\Infrastructure\Repository;
 
+use Jeedom\Core\Domain\Entity\Command;
 use Jeedom\Core\Domain\Repository\CommandRepository;
 
 class SQLDatabaseCommandRepository implements CommandRepository
@@ -11,7 +12,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
     /**
      * {@inheritdoc}
      */
-    public function add(\cmd $cmd)
+    public function add(Command $cmd): CommandRepository
     {
         if ($cmd->getName() == '') {
             throw new \DomainException(__('Le nom de la commande ne peut pas être vide :', __FILE__) . print_r($cmd, true));
@@ -55,7 +56,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function refresh(\cmd $cmd)
+    public function refresh(Command $cmd): CommandRepository
     {
         \DB::refresh($cmd);
 
@@ -66,7 +67,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function remove($cmdId)
+    public function remove($cmdId): CommandRepository
     {
         \viewData::removeByTypeLinkId('cmd', $cmdId);
         \dataStore::removeByTypeLinkId('cmd', $cmdId);
@@ -107,7 +108,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function findByIds($_ids)
+    public function findByIds($_ids): array
     {
         if (!is_array($_ids) || count($_ids) === 0) {
             return [];
@@ -128,7 +129,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function all()
+    public function all(): array
     {
         $sql = 'SELECT ' . $this->getFields() . ' FROM cmd ORDER BY id';
 
@@ -139,7 +140,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function allHistoryCmd()
+    public function allHistoryCmd(): array
     {
         $sql = 'SELECT ' . $this->getFields('c') . '
 		FROM cmd c
@@ -166,7 +167,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function findByEqLogicId($_eqLogic_id, $_type = null, $_visible = null, $_eqLogic = null, $_has_generic_type = null)
+    public function findByEqLogicId($_eqLogic_id, $_type = null, $_visible = null, $_eqLogic = null, $_has_generic_type = null): array
     {
         $values = [];
         if (is_array($_eqLogic_id)) {
@@ -196,7 +197,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function findByLogicalId($_logical_id, $_type = null)
+    public function findByLogicalId($_logical_id, $_type = null): array
     {
         $values = [
             'logicalId' => $_logical_id,
@@ -224,7 +225,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function findByGenericType($_generic_type, $_eqLogic_id = null, $one = false)
+    public function findByGenericType($_generic_type, $_eqLogic_id = null, $one = false): array
     {
         $sql = 'SELECT ' . $this->getFields() . ' FROM cmd WHERE ';
         $values = [];
@@ -254,7 +255,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function searchConfiguration($_configuration, $_eqType = null)
+    public function searchConfiguration($_configuration, $_eqType = null): array
     {
         $sql = 'SELECT ' . $this->getFields() . ' FROM cmd WHERE ';
         if (!is_array($_configuration)) {
@@ -286,7 +287,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function searchConfigurationEqLogic($_eqLogic_id, $_configuration, $_type = null)
+    public function searchConfigurationEqLogic($_eqLogic_id, $_configuration, $_type = null): array
     {
         $values = [
             'configuration' => '%' . $_configuration . '%',
@@ -306,7 +307,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function searchTemplate($_template, $_eqType = null, $_type = null, $_subtype = null)
+    public function searchTemplate($_template, $_eqType = null, $_type = null, $_subtype = null): array
     {
         $values = [
             'template' => '%' . $_template . '%',
@@ -344,7 +345,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function findByEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_type = null, $_multiple = true)
+    public function findByEqLogicIdAndLogicalId($_eqLogic_id, $_logicalId, $_type = null, $_multiple = true): array
     {
         $values = [
             'eqLogic_id' => $_eqLogic_id,
@@ -378,7 +379,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function findByEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_type = null, $_multiple = true)
+    public function findByEqLogicIdAndGenericType($_eqLogic_id, $_generic_type, $_type = null, $_multiple = true): array
     {
         $values = [
             'eqLogic_id' => $_eqLogic_id,
@@ -403,7 +404,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function findByValue($_value, $_type = null, $_onlyEnable = false)
+    public function findByValue($_value, $_type = null, $_onlyEnable = false): array
     {
         $values = [
             'value' => $_value,
@@ -529,7 +530,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function findByTypeSubType($_type, $_subType = '')
+    public function findByTypeSubType($_type, $_subType = ''): array
     {
         $values = [
             'type' => $_type,
@@ -599,7 +600,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      */
     private function getResults($sql, $values = [], $eqLogic = null)
     {
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, __CLASS__), $eqLogic);
+        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, Command::class), $eqLogic);
     }
 
     /**
@@ -613,14 +614,14 @@ class SQLDatabaseCommandRepository implements CommandRepository
      */
     private function getOneResult($sql, $values = [], $eqLogic = null)
     {
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, __CLASS__), $eqLogic);
+        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, Command::class), $eqLogic);
     }
 
     /**
      * @return string[]
      * @throws \Exception
      */
-    public function listTypes()
+    public function listTypes(): array
     {
         $sql = 'SELECT DISTINCT(type) as type FROM cmd';
 
@@ -631,7 +632,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * @return string[]
      * @throws \Exception
      */
-    public function listSubTypes($type)
+    public function listSubTypes($type): array
     {
         $values = [];
         $sql = 'SELECT distinct(subType) as subtype';
@@ -647,7 +648,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * @return string[]
      * @throws \Exception
      */
-    public function listUnites()
+    public function listUnites(): array
     {
         $sql = 'SELECT distinct(unite) as unite FROM cmd';
 

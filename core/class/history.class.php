@@ -17,6 +17,10 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Factory\RepositoryFactory;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class history {
@@ -52,7 +56,7 @@ class history {
 		}
 		if ($target_cmd->getIsHistorized() != 1) {
 			$target_cmd->setIsHistorized(1);
-			$target_cmd->save();
+            RepositoryFactory::build(CommandRepository::class)->add($target_cmd);
 		}
 		$values = array(
 			'source_id' => $source_cmd->getId(),

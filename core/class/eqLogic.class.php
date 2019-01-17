@@ -17,6 +17,10 @@
 */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Factory\RepositoryFactory;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class eqLogic {
@@ -597,7 +601,7 @@ class eqLogic {
 		$eqLogicCopy->setId('');
 		$eqLogicCopy->save();
 		foreach ($eqLogicCopy->getCmd() as $cmd) {
-			$cmd->remove();
+            RepositoryFactory::build(CommandRepository::class)->remove($cmd);
 		}
 		$cmd_link = array();
 		foreach ($this->getCmd() as $cmd) {
@@ -908,7 +912,7 @@ class eqLogic {
 	
 	public function remove() {
 		foreach ($this->getCmd() as $cmd) {
-			$cmd->remove();
+            RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		}
 		viewData::removeByTypeLinkId('eqLogic', $this->getId());
 		dataStore::removeByTypeLinkId('eqLogic', $this->getId());
@@ -1245,7 +1249,7 @@ class eqLogic {
 					}
 					utils::a2o($cmd, $command);
 					$cmd->setConfiguration('logicalId', $cmd->getLogicalId());
-					$cmd->save();
+                    RepositoryFactory::build(CommandRepository::class)->add($cmd);
 					if (isset($command['value'])) {
 						$link_cmds[$cmd->getId()] = $command['value'];
 					}
@@ -1266,7 +1270,7 @@ class eqLogic {
 						$cmd = cmd::byId($cmd_id);
 						if (is_object($cmd)) {
 							$cmd->setValue($eqLogic_cmd->getId());
-							$cmd->save();
+                            RepositoryFactory::build(CommandRepository::class)->add($cmd);
 						}
 					}
 				}
@@ -1279,7 +1283,7 @@ class eqLogic {
 						$cmd = cmd::byId($cmd_id);
 						if (is_object($cmd)) {
 							$cmd->setConfiguration('updateCmdId', $eqLogic_cmd->getId());
-							$cmd->save();
+                            RepositoryFactory::build(CommandRepository::class)->add($cmd);
 						}
 					}
 				}

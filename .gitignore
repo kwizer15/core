@@ -34,3 +34,4 @@ phpunit.xml
 /report
 
 .env
+/node_modules

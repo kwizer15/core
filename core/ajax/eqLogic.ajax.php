@@ -16,6 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Factory\RepositoryFactory;
+
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
 	include_file('core', 'authentification', 'php');
@@ -346,6 +349,7 @@ try {
 				if (isset($eqLogicSave['cmd'])) {
 					$cmd_order = 0;
 					foreach ($eqLogicSave['cmd'] as $cmd_info) {
+					    /** @var \Jeedom\Core\Domain\Entity\Command $cmd */
 						$cmd = null;
 						if (isset($cmd_info['id'])) {
 							$cmd = $typeCmd::byId($cmd_info['id']);
@@ -356,7 +360,7 @@ try {
 						$cmd->setEqLogic_id($eqLogic->getId());
 						$cmd->setOrder($cmd_order);
 						utils::a2o($cmd, $cmd_info);
-						$cmd->save();
+                        RepositoryFactory::build(CommandRepository::class)->add($cmd);
 						$cmd_order++;
 						$enableList[$cmd->getId()] = true;
 					}

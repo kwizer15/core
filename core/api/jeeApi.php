@@ -15,6 +15,11 @@
 * You should have received a copy of the GNU General Public License
 * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 */
+
+use Jeedom\Core\Domain\Entity\Command;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Factory\RepositoryFactory;
+
 header('Access-Control-Allow-Origin: *');
 require_once __DIR__ . "/../php/core.inc.php";
 if (user::isBan()) {
@@ -573,6 +578,7 @@ try {
 		if (isset($params['cmd'])) {
 			$cmd_order = 0;
 			foreach ($params['cmd'] as $cmd_info) {
+			    /** @var Command $cmd */
 				$cmd = null;
 				if (isset($cmd_info['id'])) {
 					$cmd = $typeCmd::byId($cmd_info['id']);
@@ -583,7 +589,7 @@ try {
 				$cmd->setEqLogic_id($eqLogic->getId());
 				$cmd->setOrder($cmd_order);
 				utils::a2o($cmd, jeedom::fromHumanReadable($cmd_info));
-				$cmd->save();
+                RepositoryFactory::build(CommandRepository::class)->add($cmd);
 				$cmd_order++;
 				$enableList[$cmd->getId()] = true;
 			}
@@ -741,10 +747,10 @@ try {
 			if (is_object($_USER_GLOBAL) && $_USER_GLOBAL->getProfils() != 'admin') {
 				throw new Exception(__('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__), -32001);
 			}
-			$cmd = new cmd();
+			$cmd = new Command();
 		}
 		utils::a2o($cmd, jeedom::fromHumanReadable($params));
-		$cmd->save();
+        RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		$jsonrpc->makeSuccess(utils::o2a($cmd));
 	}
 	

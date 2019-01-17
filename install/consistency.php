@@ -16,6 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Factory\RepositoryFactory;
+
 if (php_sapi_name() != 'cli' || isset($_SERVER['REQUEST_METHOD']) || !isset($_SERVER['argc'])) {
 	header("Statut: 404 Page non trouvée");
 	header('HTTP/1.0 404 Not Found');
@@ -360,7 +363,7 @@ try {
 			$change = true;
 		}
 		if ($change) {
-			$cmd->save();
+            RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		}
 	}
 

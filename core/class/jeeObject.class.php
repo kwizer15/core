@@ -17,6 +17,10 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Factory\RepositoryFactory;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class jeeObject {
@@ -384,7 +388,8 @@ class jeeObject {
 			$cmd->setSubtype('numeric');
 		}
 		$cmd->setUnite($def[$_key]['unit']);
-		$cmd->save();
+        RepositoryFactory::build(CommandRepository::class)->add($cmd);
+
 
 		foreach (jeeObject::all() as $object) {
 			$summaries = $object->getConfiguration('summary');
@@ -423,7 +428,7 @@ class jeeObject {
 				$cmd->setSubtype('numeric');
 			}
 			$cmd->setUnite($def[$_key]['unit']);
-			$cmd->save();
+            RepositoryFactory::build(CommandRepository::class)->add($cmd);
 		}
 	}
 

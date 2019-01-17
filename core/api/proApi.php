@@ -16,6 +16,9 @@
  * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
  */
 
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Factory\RepositoryFactory;
+
 require_once __DIR__ . "/../php/core.inc.php";
 
 if (isset($argv)) {
@@ -432,7 +435,7 @@ try {
 					$cmd->setEqLogic_id($eqLogic->getId());
 					$cmd->setOrder($cmd_order);
 					utils::a2o($cmd, jeedom::fromHumanReadable($cmd_info));
-					$cmd->save();
+                    RepositoryFactory::build(CommandRepository::class)->add($cmd);
 					$cmd_order++;
 					$enableList[$cmd->getId()] = true;
 				}

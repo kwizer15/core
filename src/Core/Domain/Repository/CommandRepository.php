@@ -2,21 +2,23 @@
 
 namespace Jeedom\Core\Domain\Repository;
 
+use Jeedom\Core\Domain\Entity\Command;
+
 interface CommandRepository
 {
     /**
-     * @param \cmd $cmd
+     * @param Command $cmd
      *
      * @return CommandRepository
      */
-    public function add(\cmd $cmd): CommandRepository;
+    public function add(Command $cmd): CommandRepository;
 
     /**
-     * @param \cmd $cmd
+     * @param Command $cmd
      *
      * @return CommandRepository
      */
-    public function refresh(\cmd $cmd): CommandRepository;
+    public function refresh(Command $cmd): CommandRepository;
 
     /**
      * @param $cmdId
@@ -28,7 +30,7 @@ interface CommandRepository
     /**
      * @param $id
      *
-     * @return \cmd
+     * @return Command
      */
     public function get($id);
 
@@ -37,7 +39,7 @@ interface CommandRepository
      * @param $eqLogicName
      * @param $cmdName
      *
-     * @return \cmd
+     * @return Command
      */
     public function findOneByTypeEqLogicNameCmdName($eqTypeName, $eqLogicName, $cmdName);
 
@@ -45,7 +47,7 @@ interface CommandRepository
      * @param $eqLogicId
      * @param $cmd_name
      *
-     * @return \cmd
+     * @return Command
      */
     public function findOneByEqLogicIdCmdName($eqLogicId, $cmd_name);
 
@@ -54,7 +56,7 @@ interface CommandRepository
      * @param $eqLogicName
      * @param $cmdName
      *
-     * @return \cmd
+     * @return Command
      */
     public function findOneByObjectNameEqLogicNameCmdName($objectName, $eqLogicName, $cmdName);
 
@@ -62,7 +64,7 @@ interface CommandRepository
      * @param $objectName
      * @param $cmdName
      *
-     * @return \cmd
+     * @return Command
      */
     public function findOneByObjectNameCmdName($objectName, $cmdName);
 
@@ -70,7 +72,7 @@ interface CommandRepository
      * @param $genericType
      * @param null $eqLogicId
      *
-     * @return \cmd
+     * @return Command
      */
     public function findOneByGenericType($genericType, $eqLogicId = null);
 
@@ -79,7 +81,7 @@ interface CommandRepository
      * @param $logicalId
      * @param null $type
      *
-     * @return \cmd
+     * @return Command
      */
     public function findOneByEqLogicIdAndLogicalId($eqLogicId, $logicalId, $type = null);
 
@@ -88,24 +90,24 @@ interface CommandRepository
      * @param $genericType
      * @param null $type
      *
-     * @return \cmd
+     * @return Command
      */
     public function findOneByEqLogicIdAndGenericType($eqLogicId, $genericType, $type = null);
 
     /**
      * @param array $ids
      *
-     * @return \cmd[]
+     * @return Command[]
      */
     public function findByIds($ids): array;
 
     /**
-     * @return \cmd[]
+     * @return Command[]
      */
     public function all(): array;
 
     /**
-     * @return \cmd[]
+     * @return Command[]
      */
     public function allHistoryCmd(): array;
 
@@ -116,7 +118,7 @@ interface CommandRepository
      * @param null $eqLogic
      * @param null $hasGenericType
      *
-     * @return \cmd[]
+     * @return Command[]
      */
     public function findByEqLogicId($eqLogicId, $type = null, $visible = null, $eqLogic = null, $hasGenericType = null): array;
 
@@ -124,7 +126,7 @@ interface CommandRepository
      * @param $logical_id
      * @param null $type
      *
-     * @return \cmd[]
+     * @return Command[]
      */
     public function findByLogicalId($logical_id, $type = null): array;
 
@@ -133,7 +135,7 @@ interface CommandRepository
      * @param null $eqLogicId
      * @param bool $one
      *
-     * @return \cmd[]
+     * @return Command[]
      */
     public function findByGenericType($generic_type, $eqLogicId = null): array;
 
@@ -141,7 +143,7 @@ interface CommandRepository
      * @param $configuration
      * @param null $eqType
      *
-     * @return \cmd[]
+     * @return Command[]
      */
     public function searchConfiguration($configuration, $eqType = null): array;
 
@@ -150,7 +152,7 @@ interface CommandRepository
      * @param $configuration
      * @param null $type
      *
-     * @return \cmd[]
+     * @return Command[]
      */
     public function searchConfigurationEqLogic($eqLogicId, $configuration, $type = null): array;
 
@@ -160,7 +162,7 @@ interface CommandRepository
      * @param null $type
      * @param null $subtype
      *
-     * @return \cmd[]
+     * @return Command[]
      */
     public function searchTemplate($template, $eqType = null, $type = null, $subtype = null): array;
 
@@ -169,7 +171,7 @@ interface CommandRepository
      * @param $logicalId
      * @param null $type
      *
-     * @return \cmd[]
+     * @return Command[]
      */
     public function findByEqLogicIdAndLogicalId($eqLogicId, $logicalId, $type = null): array;
 
@@ -178,7 +180,7 @@ interface CommandRepository
      * @param $genericType
      * @param null $type
      *
-     * @return \cmd[]
+     * @return Command[]
      */
     public function findByEqLogicIdAndGenericType($eqLogicId, $genericType, $type = null): array;
 
@@ -187,7 +189,7 @@ interface CommandRepository
      * @param null $type
      * @param bool $onlyEnable
      *
-     * @return \cmd[]
+     * @return Command[]
      */
     public function findByValue($value, $type = null, $onlyEnable = false): array;
 
@@ -195,7 +197,7 @@ interface CommandRepository
      * @param $type
      * @param string $subType
      *
-     * @return \cmd[]
+     * @return Command[]
      */
     public function findByTypeSubType($type, $subType = ''): array;
 

@@ -16,6 +16,10 @@
 * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use Jeedom\Core\Domain\Entity\Command;
+use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Factory\RepositoryFactory;
+
 try {
 	require_once __DIR__ . '/../../core/php/core.inc.php';
 	include_file('core', 'authentification', 'php');
@@ -185,10 +189,10 @@ try {
 			$cmd_ajax = jeedom::fromHumanReadable(json_decode(init('cmd'), true));
 			$cmd = cmd::byId($cmd_ajax['id']);
 			if (!is_object($cmd)) {
-				$cmd = new cmd();
+				$cmd = new Command();
 			}
 			utils::a2o($cmd, $cmd_ajax);
-			$cmd->save();
+            RepositoryFactory::build(CommandRepository::class)->add($cmd);
 			ajax::success(utils::o2a($cmd));
 		}
 		
@@ -204,7 +208,7 @@ try {
 					continue;
 				}
 				utils::a2o($cmd, $cmd_ajax);
-				$cmd->save();
+                RepositoryFactory::build(CommandRepository::class)->add($cmd);
 			}
 			ajax::success();
 		}
@@ -381,7 +385,7 @@ try {
 					continue;
 				}
 				$cmd->setOrder($cmd_json['order']);
-				$cmd->save(true);
+                RepositoryFactory::build(CommandRepository::class)->add($cmd);
 				if (isset($cmd_json['line']) && isset($cmd_json['column'])) {
 					$eqLogic = $cmd->getEqLogic();
 					if ($eqLogic->getDisplay('layout::' . init('version', 'dashboard') . '::table::cmd::' . $cmd->getId() . '::line') != $cmd_json['line'] || $eqLogic->getDisplay('layout::' . init('version', 'dashboard') . '::table::cmd::' . $cmd->getId() . '::column') != $cmd_json['column']) {
@@ -399,4 +403,3 @@ try {
 	} catch (Exception $e) {
 		ajax::error(displayException($e), $e->getCode());
 	}
-	
