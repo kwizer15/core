@@ -84,13 +84,18 @@ jeedom.changes = function(){
   }
   var params = $.extend({}, jeedom.private.default_params, paramsSpecifics);
   var paramsAJAX = jeedom.private.getParamsAJAX(params);
-  paramsAJAX.url = 'core/ajax/event.ajax.php';
+  // paramsAJAX.url = 'core/ajax/event.ajax.php';
+  paramsAJAX.url = 'core/api/jeeApi.php';
   paramsAJAX.data = {
-    action: 'changes',
-    datetime:jeedom.datetime,
+    jsonrpc: '2.0',
+    method: 'event::changes',
+    params: {
+      datetime:jeedom.datetime
+    },
   };
-  $.ajax(paramsAJAX);
-}
+  jeedom.private.socketListen(paramsAJAX);
+  //$.ajax(paramsAJAX);
+};
 
 
 jeedom.init = function () {

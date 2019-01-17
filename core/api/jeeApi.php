@@ -245,7 +245,7 @@ try {
 		$request = file_get_contents("php://input");
 	}
 	log::add('api', 'info', $request . ' - IP :' . $IP);
-	
+
 	$jsonrpc = new jsonrpc($request);
 	
 	if (!jeedom::apiModeResult(config::byKey('api::core::jsonrpc::mode', 'core', 'enable'))) {
@@ -256,9 +256,9 @@ try {
 		user::failedLogin();
 		throw new Exception(__('Requête invalide. Version JSON-RPC invalide : ', __FILE__) . $jsonrpc->getJsonrpc(), -32001);
 	}
-	
+
 	$params = $jsonrpc->getParams();
-	
+
 	if ($jsonrpc->getMethod() == 'user::useTwoFactorAuthentification') {
 		if (network::getUserLocation() == 'internal') {
 			$jsonrpc->makeSuccess(0);
@@ -310,7 +310,7 @@ try {
 			$_USER_GLOBAL = $_SESSION['user'];
 		}
 	}
-	
+
 	if (!is_object($_USER_GLOBAL)) {
 		if (!isset($params['apikey']) && !isset($params['api'])) {
 			throw new Exception(__('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__), -32001);

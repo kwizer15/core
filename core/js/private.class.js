@@ -302,3 +302,14 @@ jeedom.private.checkParamsValue = function(_params) {
         }
     }
 };
+
+jeedom.private.socketListen = function(param) {
+    if(undefined === jeedom.private.socket) {
+        jeedom.private.socket = io.connect('http://localhost:8889');
+        jeedom.private.socket.on('message', function(message) {
+            console.log(message);
+            param.success(message);
+        });
+        jeedom.private.socket.emit('event', param);
+    }
+};

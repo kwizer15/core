@@ -124,6 +124,7 @@ if (init('rescue', 0) == 0) {
 		}
 	})
 	</script>
+    <script src="http://localhost:8889/socket.io/socket.io.js"></script>
 	<?php
 	include_file('3rdparty', 'font-noto/font-noto', 'css');
 	include_file('3rdparty', 'jquery.utils/jquery.utils', 'js');
@@ -473,4 +474,3 @@ if (init('rescue', 0) == 0) {
 		<?php } 	?>
 	</body>
 	</html>
-	

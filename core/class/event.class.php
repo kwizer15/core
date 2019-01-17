@@ -47,6 +47,7 @@ class event {
 			$value[] = array('datetime' => getmicrotime(), 'name' => $_event, 'option' => $_option);
 			cache::set('event', json_encode(self::cleanEvent($value)));
 			flock($fd, LOCK_UN);
+            self::emitEvent(self::cleanEvent($value));
 		}
 	}
 
@@ -65,6 +66,7 @@ class event {
 			}
 			cache::set('event', json_encode(self::cleanEvent(array_merge($value_src, $value))));
 			flock($fd, LOCK_UN);
+            self::emitEvent(self::cleanEvent(array_merge($value_src, $value)));
 		}
 	}
 
@@ -156,7 +158,16 @@ class event {
 		return $return;
 	}
 
-	/*     * *********************Methode d'instance************************* */
+    private static function emitEvent($values)
+    {
+        // TODO:  getenv(NODE_HOST).':'.getenv('NODE_PORT')
+        $client = new \ElephantIO\Client(new \ElephantIO\Engine\SocketIO\Version2X('http://localhost:8889'));
+        $client->initialize();
+        $client->emit('event', $values);
+        $client->close();
+    }
+
+    /*     * *********************Methode d'instance************************* */
 
 	/*     * **********************Getteur Setteur*************************** */
 }
