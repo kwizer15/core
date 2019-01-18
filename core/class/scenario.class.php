@@ -17,6 +17,11 @@
  */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
+use Jeedom\Core\Infrastructure\Factory\ConfigurationFactory;
+use Jeedom\Core\Infrastructure\Factory\RepositoryFactory;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
 class scenario {
@@ -48,210 +53,112 @@ class scenario {
 
 	/*     * ***********************Méthodes statiques*************************** */
 
-	/**
-	 * Renvoie un objet scenario
-	 * @param int  $_id id du scenario voulu
-	 * @return scenario object scenario
-	 */
+    /**
+     * Renvoie un objet scenario
+     *
+     * @param int $_id id du scenario voulu
+     *
+     * @return scenario object scenario
+     * @throws Exception
+     */
 	public static function byId($_id) {
-		$values = array(
-			'id' => $_id,
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM scenario
-		WHERE id=:id';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+	    return self::getRepository()->get($_id);
 	}
 
 	public static function byString($_string) {
-		$scenario = self::byId(str_replace('#scenario', '', self::fromHumanReadable($_string)));
+		$scenario = self::getRepository()->get(str_replace('#scenario', '', self::fromHumanReadable($_string)));
 		if (!is_object($scenario)) {
 			throw new Exception(__('La commande n\'a pas pu être trouvée : ', __FILE__) . $_string . __(' => ', __FILE__) . self::fromHumanReadable($_string));
 		}
 		return $scenario;
 	}
 
-	/**
-	 * Renvoie tous les objets scenario
-	 * @return [] scenario object scenario
-	 */
+    /**
+     * Renvoie tous les objets scenario
+     *
+     * @param string $_group
+     * @param null $_type
+     *
+     * @return scenario[] [] scenario object scenario
+     * @throws Exception
+     */
 	public static function all($_group = '', $_type = null) {
-		$values = array();
-		if ($_group === '') {
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			INNER JOIN object ob ON s.object_id=ob.id';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' WHERE `type`=:type';
-			}
-			$sql .= ' ORDER BY ob.name,s.group, s.name';
-			$result1 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			if (!is_array($result1)) {
-				$result1 = array();
-			}
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			WHERE s.object_id IS NULL';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND `type`=:type';
-			}
-			$sql .= ' ORDER BY s.group, s.name';
-			$result2 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			return array_merge($result1, $result2);
-		} elseif ($_group === null) {
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			INNER JOIN object ob ON s.object_id=ob.id
-			WHERE (`group` IS NULL OR `group` = "")';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND `type`=:type';
-			}
-			$sql .= ' ORDER BY s.group, s.name';
-			$result1 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			if (!is_array($result1)) {
-				$result1 = array();
-			}
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			WHERE (`group` IS NULL OR `group` = "")
-			AND s.object_id IS NULL';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND `type`=:type';
-			}
-			$sql .= ' ORDER BY  s.name';
-			$result2 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			return array_merge($result1, $result2);
-		} else {
-			$values = array(
-				'group' => $_group,
-			);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			INNER JOIN object ob ON s.object_id=ob.id
-			WHERE `group`=:group';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND `type`=:type';
-			}
-			$sql .= ' ORDER BY ob.name,s.group, s.name';
-			$result1 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-			FROM scenario s
-			WHERE `group`=:group
-			AND s.object_id IS NULL';
-			if ($_type !== null) {
-				$values['type'] = $_type;
-				$sql .= ' AND `type`=:type';
-			}
-			$sql .= ' ORDER BY s.group, s.name';
-			$result2 = DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
-			return array_merge($result1, $result2);
-		}
+        return self::getRepository()->all($_group, $_type);
 	}
-	/**
-	 *
-	 * @return type
-	 */
+
+    /**
+     *
+     * @return scenario[]
+     * @throws Exception
+     */
 	public static function schedule() {
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM scenario
-		WHERE `mode` != "provoke"
-		AND isActive=1';
-		return DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+        return self::getRepository()->schedule();
 	}
-	/**
-	 *
-	 * @param type $_group
-	 * @return type
-	 */
+
+    /**
+     *
+     * @param type $_group
+     *
+     * @return string[]
+     * @throws Exception
+     */
 	public static function listGroup($_group = null) {
-		$values = array();
-		$sql = 'SELECT DISTINCT(`group`)
-		FROM scenario';
-		if ($_group !== null) {
-			$values['group'] = '%' . $_group . '%';
-			$sql .= ' WHERE `group` LIKE :group';
-		}
-		$sql .= ' ORDER BY `group`';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL);
+        return self::getRepository()->listGroup($_group);
 	}
-	/**
-	 *
-	 * @param type $_cmd_id
-	 * @return type
-	 */
+
+    /**
+     *
+     * @param type $_cmd_id
+     * @param bool $_onlyEnable
+     *
+     * @return scenario[]
+     * @throws Exception
+     */
 	public static function byTrigger($_cmd_id, $_onlyEnable = true) {
-		$values = array(
-			'cmd_id' => '%#' . $_cmd_id . '#%',
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM scenario
-		WHERE mode != "schedule"';
-		if ($_onlyEnable) {
-			$sql .= ' AND isActive=1';
-		}
-		$sql .= ' AND `trigger` LIKE :cmd_id';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+	    return self::getRepository()->findByTrigger($_cmd_id, $_onlyEnable);
 	}
-	/**
-	 *
-	 * @param type $_element_id
-	 * @return type
-	 */
+
+    /**
+     *
+     * @param type $_element_id
+     *
+     * @return scenario
+     * @throws Exception
+     */
 	public static function byElement($_element_id) {
-		$values = array(
-			'element_id' => '%"' . $_element_id . '"%',
-		);
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM scenario
-		WHERE `scenarioElement` LIKE :element_id';
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+        return self::getRepository()->findOneByElement($_element_id);
 	}
-	/**
-	 *
-	 * @param type $_object_id
-	 * @param type $_onlyEnable
-	 * @param type $_onlyVisible
-	 * @return type
-	 */
+
+    /**
+     *
+     * @param type $_object_id
+     * @param bool $_onlyEnable
+     * @param bool $_onlyVisible
+     *
+     * @return scenario[]
+     * @throws Exception
+     */
 	public static function byObjectId($_object_id, $_onlyEnable = true, $_onlyVisible = false) {
-		$values = array();
-		$sql = 'SELECT ' . DB::buildField(__CLASS__) . '
-		FROM scenario';
-		if ($_object_id === null) {
-			$sql .= ' WHERE object_id IS NULL';
-		} else {
-			$values['object_id'] = $_object_id;
-			$sql .= ' WHERE object_id=:object_id';
-		}
-		if ($_onlyEnable) {
-			$sql .= ' AND isActive = 1';
-		}
-		if ($_onlyVisible) {
-			$sql .= ' AND isVisible = 1';
-		}
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, __CLASS__);
+        return self::getRepository()->findByObjectId($_object_id, $_onlyEnable, $_onlyVisible);
 	}
-	/**
-	 *
-	 * @param type $_event
-	 * @param type $_forceSyncMode
-	 * @return boolean
-	 */
+
+    /**
+     *
+     * @param type $_event
+     * @param bool $_forceSyncMode
+     *
+     * @return boolean
+     * @throws Exception
+     */
 	public static function check($_event = null, $_forceSyncMode = false) {
-		$message = '';
 		if ($_event !== null) {
 			$scenarios = array();
 			if (is_object($_event)) {
-				$scenarios1 = self::byTrigger($_event->getId());
+				$scenarios1 = self::getRepository()->findByTrigger($_event->getId());
 				$trigger = '#' . $_event->getId() . '#';
 				$message = __('Scénario exécuté automatiquement sur événement venant de : ', __FILE__) . $_event->getHumanName();
 			} else {
-				$scenarios1 = self::byTrigger($_event);
+				$scenarios1 = self::getRepository()->findByTrigger($_event);
 				$trigger = $_event;
 				$message = __('Scénario exécuté sur événement : #', __FILE__) . $_event . '#';
 			}
@@ -264,7 +171,7 @@ class scenario {
 			}
 		} else {
 			$message = __('Scénario exécuté automatiquement sur programmation', __FILE__);
-			$scenarios = scenario::schedule();
+			$scenarios = self::getRepository()->schedule();
 			$trigger = 'schedule';
 			if (jeedom::isDateOk()) {
 				foreach ($scenarios as $key => &$scenario) {
@@ -287,7 +194,7 @@ class scenario {
 	}
 
 	public static function control() {
-		foreach (scenario::all() as $scenario) {
+		foreach (self::getRepository()->all() as $scenario) {
 			if ($scenario->getState() != 'in progress') {
 				continue;
 			}
@@ -295,7 +202,7 @@ class scenario {
 				$scenario->setState('error');
 				continue;
 			}
-			$runtime = strtotime('now') - strtotime($scenario->getLastLaunch());
+			$runtime = time() - strtotime($scenario->getLastLaunch());
 			if (is_numeric($scenario->getTimeout()) && $scenario->getTimeout() != '' && $scenario->getTimeout() != 0 && $runtime > $scenario->getTimeout()) {
 				$scenario->stop();
 				$scenario->setLog(__('Arret du scénario car il a dépassé son temps de timeout : ', __FILE__) . $scenario->getTimeout() . 's');
@@ -310,7 +217,7 @@ class scenario {
 	 * @return type
 	 */
 	public static function doIn($_options) {
-		$scenario = self::byId($_options['scenario_id']);
+		$scenario = self::getRepository()->get($_options['scenario_id']);
 		if (!is_object($scenario)) {
 			return;
 		}
@@ -339,45 +246,12 @@ class scenario {
 	 *
 	 */
 	public static function cleanTable() {
-		$ids = array(
-			'element' => array(),
-			'subelement' => array(),
-			'expression' => array(),
-		);
-		foreach (scenario::all() as $scenario) {
-			foreach ($scenario->getElement() as $element) {
-				$result = $element->getAllId();
-				$ids['element'] = array_merge($ids['element'], $result['element']);
-				$ids['subelement'] = array_merge($ids['subelement'], $result['subelement']);
-				$ids['expression'] = array_merge($ids['expression'], $result['expression']);
-			}
-		}
-
-		$sql = 'DELETE FROM scenarioExpression WHERE id NOT IN (-1';
-		foreach ($ids['expression'] as $expression_id) {
-			$sql .= ',' . $expression_id;
-		}
-		$sql .= ')';
-		DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
-
-		$sql = 'DELETE FROM scenarioSubElement WHERE id NOT IN (-1';
-		foreach ($ids['subelement'] as $subelement_id) {
-			$sql .= ',' . $subelement_id;
-		}
-		$sql .= ')';
-		DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
-
-		$sql = 'DELETE FROM scenarioElement WHERE id NOT IN (-1';
-		foreach ($ids['element'] as $element_id) {
-			$sql .= ',' . $element_id;
-		}
-		$sql .= ')';
-		DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL);
+	    self::getRepository()->cleanTable();
 	}
 
 	public static function consystencyCheck($_needsReturn = false) {
 		$return = array();
-		foreach (self::all() as $scenario) {
+		foreach (self::getRepository()->all() as $scenario) {
 			if ($scenario->getGroup() == '') {
 				$group = 'aucun';
 			} else {
@@ -393,7 +267,8 @@ class scenario {
 				foreach ($scenario->getTrigger() as $trigger) {
 					$trigger_list .= cmd::cmdToHumanReadable($trigger) . '_';
 				}
-				preg_match_all("/#([0-9]*)#/", $trigger_list, $matches);foreach ($matches[1] as $cmd_id) {
+				preg_match_all("/#([0-9]*)#/", $trigger_list, $matches);
+				foreach ($matches[1] as $cmd_id) {
 					if (is_numeric($cmd_id)) {
 						if ($_needsReturn) {
 							$return[] = array('detail' => 'Scénario ' . $scenario->getName() . ' du groupe ' . $group, 'help' => 'Déclencheur du scénario', 'who' => '#' . $cmd_id . '#');
@@ -423,53 +298,16 @@ class scenario {
 		}
 	}
 
-	/**
-	 * @name byObjectNameGroupNameScenarioName()
-	 * @param object $_object_name
-	 * @param type $_group_name
-	 * @param type $_scenario_name
-	 * @return type
-	 */
+    /**
+     * @param object $_object_name
+     * @param type $_group_name
+     * @param type $_scenario_name
+     *
+     * @return scenario
+     * @throws Exception
+     */
 	public static function byObjectNameGroupNameScenarioName($_object_name, $_group_name, $_scenario_name) {
-		$values = array(
-			'scenario_name' => html_entity_decode($_scenario_name),
-		);
-
-		if ($_object_name == __('Aucun', __FILE__)) {
-			if ($_group_name == __('Aucun', __FILE__)) {
-				$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-				FROM scenario s
-				WHERE s.name=:scenario_name
-				AND (`group` IS NULL OR `group`=""  OR `group`="Aucun" OR `group`="None")
-				AND s.object_id IS NULL';
-			} else {
-				$values['group_name'] = $_group_name;
-				$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-				FROM scenario s
-				WHERE s.name=:scenario_name
-				AND s.object_id IS NULL
-				AND `group`=:group_name';
-			}
-		} else {
-			$values['object_name'] = $_object_name;
-			if ($_group_name == __('Aucun', __FILE__)) {
-				$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-				FROM scenario s
-				INNER JOIN object ob ON s.object_id=ob.id
-				WHERE s.name=:scenario_name
-				AND ob.name=:object_name
-				AND (`group` IS NULL OR `group`=""  OR `group`="Aucun" OR `group`="None")';
-			} else {
-				$values['group_name'] = $_group_name;
-				$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
-				FROM scenario s
-				INNER JOIN object ob ON s.object_id=ob.id
-				WHERE s.name=:scenario_name
-				AND ob.name=:object_name
-				AND `group`=:group_name';
-			}
-		}
-		return DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW, PDO::FETCH_CLASS, __CLASS__);
+	    return self::getRepository()->findOneByObjectNameGroupNameScenarioName($_object_name, $_group_name, $_scenario_name);
 	}
 
 	/**
@@ -504,7 +342,7 @@ class scenario {
 		preg_match_all("/#scenario([0-9]*)#/", $text, $matches);
 		foreach ($matches[1] as $scenario_id) {
 			if (is_numeric($scenario_id)) {
-				$scenario = self::byId($scenario_id);
+				$scenario = self::getRepository()->get($scenario_id);
 				if (is_object($scenario)) {
 					$text = str_replace('#scenario' . $scenario_id . '#', '#' . $scenario->getHumanName(true) . '#', $text);
 				}
@@ -555,7 +393,7 @@ class scenario {
 			$countMatches = count($matches[0]);
 			for ($i = 0; $i < $countMatches; $i++) {
 				if (isset($matches[1][$i]) && isset($matches[2][$i]) && isset($matches[3][$i])) {
-					$scenario = self::byObjectNameGroupNameScenarioName($matches[1][$i], $matches[2][$i], $matches[3][$i]);
+					$scenario = self::getRepository()->findOneByObjectNameGroupNameScenarioName($matches[1][$i], $matches[2][$i], $matches[3][$i]);
 					if (is_object($scenario)) {
 						$text = str_replace($matches[0][$i], '#scenario' . $scenario->getId() . '#', $text);
 					}
@@ -576,7 +414,7 @@ class scenario {
 		$scenarios = array();
 		foreach ($searchs as $search) {
 			$_cmd_id = str_replace('#', '', $search['action']);
-			$return = array_merge($return, self::byTrigger($_cmd_id, false));
+			$return = array_merge($return, self::getRepository()->findByTrigger($_cmd_id, false));
 			if (!isset($search['and'])) {
 				$search['and'] = false;
 			}
@@ -614,7 +452,7 @@ class scenario {
 	 * @return type
 	 */
 	public static function getTemplate($_template = '') {
-		$path = __DIR__ . '/../config/scenario';
+		$path = dirname(__DIR__) . '/config/scenario';
 		if (isset($_template) && $_template != '') {
 
 		}
@@ -624,7 +462,7 @@ class scenario {
 	/*     * *************************MARKET**************************************** */
 
 	public static function shareOnMarket(&$market) {
-		$moduleFile = __DIR__ . '/../config/scenario/' . $market->getLogicalId() . '.json';
+		$moduleFile = dirname(__DIR__) . '/config/scenario/' . $market->getLogicalId() . '.json';
 		if (!file_exists($moduleFile)) {
 			throw new Exception('Impossible de trouver le fichier de configuration ' . $moduleFile);
 		}
@@ -672,7 +510,7 @@ class scenario {
 		$return['date'] = $_event['datetime'];
 		$return['group'] = 'scenario';
 		$return['type'] = $_event['type'];
-		$scenario = scenario::byId($_event['id']);
+		$scenario = self::getRepository()->get($_event['id']);
 		if (!is_object($scenario)) {
 			return null;
 		}
@@ -710,7 +548,8 @@ class scenario {
 	 * @return boolean
 	 */
 	public function launch($_trigger = '', $_message = '', $_forceSyncMode = false) {
-		if (config::byKey('enableScenario') != 1 || $this->getIsActive() != 1) {
+	    $configuration = ConfigurationFactory::build('core');
+		if ($configuration->get('enableScenario') != 1 || $this->getIsActive() != 1) {
 			return false;
 		}
 		if ($this->getConfiguration('syncmode') == 1 || $_forceSyncMode) {
@@ -1067,6 +906,7 @@ class scenario {
 		$now = time();
 		$now = ($now - $now % 60);
 		$last = ($last - $last % 60);
+		$configuration = ConfigurationFactory::build('core');
 		if ($now == $last) {
 			return false;
 		}
@@ -1092,7 +932,7 @@ class scenario {
 					}
 					$lastCheck = strtotime($this->getLastLaunch());
 					$diff = abs((strtotime('now') - $prev) / 60);
-					if ($lastCheck <= $prev && $diff <= config::byKey('maxCatchAllow') || config::byKey('maxCatchAllow') == -1) {
+					if ($lastCheck <= $prev && $diff <= $configuration->get('maxCatchAllow') || $configuration->get('maxCatchAllow') == -1) {
 						return true;
 					}
 				} catch (Exception $e) {
@@ -1122,7 +962,7 @@ class scenario {
 				}
 				$lastCheck = strtotime($this->getLastLaunch());
 				$diff = abs((strtotime('now') - $prev) / 60);
-				if ($lastCheck <= $prev && $diff <= config::byKey('maxCatchAllow') || config::byKey('maxCatchAllow') == -1) {
+				if ($lastCheck <= $prev && $diff <= $configuration->get('maxCatchAllow') || $configuration->get('maxCatchAllow') == -1) {
 					return true;
 				}
 			} catch (Exception $exc) {
@@ -1229,35 +1069,35 @@ class scenario {
 	public function export($_mode = 'text') {
 		if ($_mode == 'text') {
 			$return = '';
-			$return .= '- Nom du scénario : ' . $this->getName() . "\n";
+			$return .= '- Nom du scénario : ' . $this->getName() . PHP_EOL;
 			if (is_numeric($this->getObject_id())) {
-				$return .= '- Objet parent : ' . $this->getObject()->getName() . "\n";
+				$return .= '- Objet parent : ' . $this->getObject()->getName() . PHP_EOL;
 			}
-			$return .= '- Mode du scénario : ' . $this->getMode() . "\n";
+			$return .= '- Mode du scénario : ' . $this->getMode() . PHP_EOL;
 			$schedules = $this->getSchedule();
 			if ($this->getMode() == 'schedule' || $this->getMode() == 'all') {
 				if (is_array($schedules)) {
 					foreach ($schedules as $schedule) {
-						$return .= '    - Programmation : ' . $schedule . "\n";
+						$return .= '    - Programmation : ' . $schedule . PHP_EOL;
 					}
 				} else {
 					if ($schedules != '') {
-						$return .= '    - Programmation : ' . $schedules . "\n";
+						$return .= '    - Programmation : ' . $schedules . PHP_EOL;
 					}
 				}
 			}
 			if ($this->getMode() == 'provoke' || $this->getMode() == 'all') {
 				foreach ($this->getTrigger() as $trigger) {
-					$return .= '    - Evènement : ' . jeedom::toHumanReadable($trigger) . "\n";
+					$return .= '    - Evènement : ' . jeedom::toHumanReadable($trigger) . PHP_EOL;
 				}
 			}
-			$return .= "\n";
+			$return .= PHP_EOL;
 			$return .= $this->getDescription();
-			$return .= "\n\n";
+			$return .= PHP_EOL.PHP_EOL;
 			foreach ($this->getElement() as $element) {
-				$exports = explode("\n", $element->export());
+				$exports = explode(PHP_EOL, $element->export());
 				foreach ($exports as $export) {
-					$return .= "    " . $export . "\n";
+					$return .= '    ' . $export . PHP_EOL;
 				}
 			}
 		}
@@ -1438,7 +1278,8 @@ class scenario {
 	 */
 	public function getLinkData(&$_data = array('node' => array(), 'link' => array()), $_level = 0, $_drill = null) {
 		if ($_drill === null) {
-			$_drill = config::byKey('graphlink::scenario::drill');
+		    $configuration = ConfigurationFactory::build('core');
+			$_drill = $configuration->get('graphlink::scenario::drill');
 		}
 		if (isset($_data['node']['scenario' . $this->getId()])) {
 			return;
@@ -1743,7 +1584,7 @@ class scenario {
 	 * @param type $log
 	 */
 	public function setLog($log) {
-		$this->_log .= '[' . date('Y-m-d H:i:s') . '][SCENARIO] ' . $log . "\n";
+		$this->_log .= '[' . date('Y-m-d H:i:s') . '][SCENARIO] ' . $log . PHP_EOL;
 		if ($this->getConfiguration('logmode', 'default') == 'realtime') {
 			$this->persistLog(true);
 			$this->_log = '';
@@ -1952,4 +1793,19 @@ class scenario {
 		cache::set('scenarioCacheAttr' . $this->getId(), utils::setJsonAttr(cache::byKey('scenarioCacheAttr' . $this->getId())->getValue(), $_key, $_value));
 	}
 
+	public function hasChanged(): bool
+    {
+        $state = $this->_changeState;
+        $this->_changeState = false;
+
+        return $state;
+    }
+
+    /**
+     * @return ScenarioRepository
+     */
+    private static function getRepository(): ScenarioRepository
+    {
+        return RepositoryFactory::build(ScenarioRepository::class);
+    }
 }

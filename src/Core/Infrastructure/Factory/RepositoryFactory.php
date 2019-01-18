@@ -3,7 +3,9 @@
 namespace Jeedom\Core\Infrastructure\Factory;
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Repository\SQLDatabaseCommandRepository;
+use Jeedom\Core\Infrastructure\Repository\SQLDatabaseScenarioRepository;
 
 class RepositoryFactory
 {
@@ -44,6 +46,7 @@ class RepositoryFactory
     {
         return [
             CommandRepository::class => function() { return new SQLDatabaseCommandRepository(); },
+            ScenarioRepository::class => function() { return new SQLDatabaseScenarioRepository(); },
         ];
     }
 }
