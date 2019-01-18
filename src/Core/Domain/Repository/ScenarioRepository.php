@@ -9,8 +9,7 @@ interface ScenarioRepository
      *
      * @param int $id id du scenario voulu
      *
-     * @return \scenario object scenario
-     * @throws \Exception
+     * @return \scenario|null object scenario
      */
     public function get($id);
 
@@ -21,16 +20,14 @@ interface ScenarioRepository
      * @param null $type
      *
      * @return \scenario[]
-     * @throws \Exception
      */
-    public function all($group = '', $type = null);
+    public function all($group = '', $type = null): array;
 
     /**
      *
      * @return \scenario[]
-     * @throws \Exception
      */
-    public function schedule();
+    public function schedule(): array;
 
     /**
      *
@@ -38,16 +35,14 @@ interface ScenarioRepository
      * @param bool $onlyEnable
      *
      * @return \scenario[]
-     * @throws \Exception
      */
-    public function findByTrigger($cmdId, $onlyEnable = true);
+    public function findByTrigger($cmdId, $onlyEnable = true): array;
 
     /**
      *
      * @param string $elementId
      *
-     * @return \scenario
-     * @throws \Exception
+     * @return \scenario|null
      */
     public function findOneByElement($elementId);
 
@@ -58,29 +53,29 @@ interface ScenarioRepository
      * @param bool $onlyVisible
      *
      * @return \scenario[]
-     * @throws \Exception
      */
-    public function findByObjectId($objectId, $onlyEnable = true, $onlyVisible = false);
+    public function findByObjectId($objectId, $onlyEnable = true, $onlyVisible = false): array;
 
     /**
      * @param string $objectName
      * @param string $groupName
      * @param string $scenarioName
      *
-     * @return \scenario
-     * @throws \Exception
+     * @return \scenario|null
      */
     public function findOneByObjectNameGroupNameScenarioName($objectName, $groupName, $scenarioName);
 
     /**
      * @param \scenario $scenario
+     *
+     * @return void
      */
     public function add(\scenario $scenario);
 
     /**
      * @param \scenario $scenario
      *
-     * @throws \Exception
+     * @return void
      */
     public function refresh(\scenario $scenario);
 
@@ -88,8 +83,7 @@ interface ScenarioRepository
      *
      * @param $scenarioId
      *
-     * @return bool
-     * @throws \Exception
+     * @return void
      */
     public function remove($scenarioId);
 
@@ -98,9 +92,8 @@ interface ScenarioRepository
      * @param null|string $group
      *
      * @return string[]
-     * @throws \Exception
      */
-    public function listGroup($group = null);
+    public function listGroup($group = null): array;
 
     /**
      * @return void

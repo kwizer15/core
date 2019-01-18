@@ -3,9 +3,10 @@
 namespace Jeedom\Core\Infrastructure\Service;
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Presenter\HumanCommandMap;
 use ReflectionException;
 
-class RepositoryHumanCommandMap
+class RepositoryHumanCommandMap implements HumanCommandMap
 {
     /**
      * @var CommandRepository

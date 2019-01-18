@@ -18,9 +18,12 @@
 
 /* * ***************************Includes********************************* */
 
+use Jeedom\Core\Domain\Repository\CommandRepository;
 use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Factory\ConfigurationFactory;
 use Jeedom\Core\Infrastructure\Factory\RepositoryFactory;
+use Jeedom\Core\Infrastructure\Factory\ServiceFactory;
+use Jeedom\Core\Presenter\Service\HumanScenarioMap;
 
 require_once __DIR__ . '/../../core/php/core.inc.php';
 
@@ -257,11 +260,9 @@ class scenario {
 			} else {
 				$group = $scenario->getGroup();
 			}
-			if ($scenario->getIsActive() != 1) {
-				if (!$_needsReturn) {
-					continue;
-				}
-			}
+			if ($scenario->getIsActive() != 1 && !$_needsReturn) {
+                continue;
+            }
 			if ($scenario->getMode() == 'provoke' || $scenario->getMode() == 'all') {
 				$trigger_list = '';
 				foreach ($scenario->getTrigger() as $trigger) {
@@ -314,137 +315,76 @@ class scenario {
 	 * @name toHumanReadable()
 	 * @param object $_input
 	 * @return string
+     * @deprecated
 	 */
 	public static function toHumanReadable($_input) {
-		if (is_object($_input)) {
-			$reflections = array();
-			$uuid = spl_object_hash($_input);
-			if (!isset($reflections[$uuid])) {
-				$reflections[$uuid] = new ReflectionClass($_input);
-			}
-			$reflection = $reflections[$uuid];
-			$properties = $reflection->getProperties();
-			foreach ($properties as $property) {
-				$property->setAccessible(true);
-				$value = $property->getValue($_input);
-				$property->setValue($_input, self::toHumanReadable($value));
-				$property->setAccessible(false);
-			}
-			return $_input;
-		}
-		if (is_array($_input)) {
-			foreach ($_input as $key => $value) {
-				$_input[$key] = self::toHumanReadable($value);
-			}
-			return $_input;
-		}
-		$text = $_input;
-		preg_match_all("/#scenario([0-9]*)#/", $text, $matches);
-		foreach ($matches[1] as $scenario_id) {
-			if (is_numeric($scenario_id)) {
-				$scenario = self::getRepository()->get($scenario_id);
-				if (is_object($scenario)) {
-					$text = str_replace('#scenario' . $scenario_id . '#', '#' . $scenario->getHumanName(true) . '#', $text);
-				}
-			}
-		}
-		return $text;
+	    return ServiceFactory::build(HumanScenarioMap::class)->toHumanReadable($_input);
 	}
+
 	/**
 	 *
 	 * @param type $_input
 	 * @return type
+     * deprecated
 	 */
 	public static function fromHumanReadable($_input) {
-		$isJson = false;
-		if (is_json($_input)) {
-			$isJson = true;
-			$_input = json_decode($_input, true);
-		}
-		if (is_object($_input)) {
-			$reflections = array();
-			$uuid = spl_object_hash($_input);
-			if (!isset($reflections[$uuid])) {
-				$reflections[$uuid] = new ReflectionClass($_input);
-			}
-			$reflection = $reflections[$uuid];
-			$properties = $reflection->getProperties();
-			foreach ($properties as $property) {
-				$property->setAccessible(true);
-				$value = $property->getValue($_input);
-				$property->setValue($_input, self::fromHumanReadable($value));
-				$property->setAccessible(false);
-			}
-			return $_input;
-		}
-		if (is_array($_input)) {
-			foreach ($_input as $key => $value) {
-				$_input[$key] = self::fromHumanReadable($value);
-			}
-			if ($isJson) {
-				return json_encode($_input, JSON_UNESCAPED_UNICODE);
-			}
-			return $_input;
-		}
-		$text = $_input;
-
-		preg_match_all("/#\[(.*?)\]\[(.*?)\]\[(.*?)\]#/", $text, $matches);
-		if (count($matches) == 4) {
-			$countMatches = count($matches[0]);
-			for ($i = 0; $i < $countMatches; $i++) {
-				if (isset($matches[1][$i]) && isset($matches[2][$i]) && isset($matches[3][$i])) {
-					$scenario = self::getRepository()->findOneByObjectNameGroupNameScenarioName($matches[1][$i], $matches[2][$i], $matches[3][$i]);
-					if (is_object($scenario)) {
-						$text = str_replace($matches[0][$i], '#scenario' . $scenario->getId() . '#', $text);
-					}
-				}
-			}
-		}
-
-		return $text;
+        return ServiceFactory::build(HumanScenarioMap::class)->fromHumanReadable($_input);
 	}
-	/**
-	 *
-	 * @param type $searchs
-	 * @return type
-	 */
-	public static function searchByUse($searchs) {
-		$return = array();
-		$expressions = array();
-		$scenarios = array();
+
+    /**
+     *
+     * @param array $searchs
+     *
+     * @return array
+     * @throws Exception
+     */
+	public static function searchByUse(array $searchs): array {
+        $expressionsTemp = [];
+		$returnTemp = [];
 		foreach ($searchs as $search) {
 			$_cmd_id = str_replace('#', '', $search['action']);
-			$return = array_merge($return, self::getRepository()->findByTrigger($_cmd_id, false));
+            $returnTemp = self::getRepository()->findByTrigger($_cmd_id, false);
 			if (!isset($search['and'])) {
 				$search['and'] = false;
 			}
 			if (!isset($search['option'])) {
 				$search['option'] = $search['action'];
 			}
-			$expressions = array_merge($expressions, scenarioExpression::searchExpression($search['action'], $search['option'], $search['and']));
+            $expressionsTemp = scenarioExpression::searchExpression($search['action'], $search['option'], $search['and']);
 		}
-		if (is_array($expressions) && count($expressions) > 0) {
-			foreach ($expressions as $expression) {
-				$scenarios[] = $expression->getSubElement()->getElement()->getScenario();
-			}
-		}
-		if (is_array($scenarios) && count($scenarios) > 0) {
-			foreach ($scenarios as $scenario) {
-				if (is_object($scenario)) {
-					$find = false;
-					foreach ($return as $existScenario) {
-						if ($scenario->getId() == $existScenario->getId()) {
-							$find = true;
-							break;
-						}
-					}
-					if (!$find) {
-						$return[] = $scenario;
-					}
-				}
-			}
-		}
-		return $return;
+
+		$return = array_merge([], $returnTemp);
+        $expressions = array_merge([], $expressionsTemp);
+
+		if (empty($expressions)) {
+            return $return;
+        }
+
+        $scenarios = [];
+        foreach ($expressions as $expression) {
+            $scenarios[] = $expression->getSubElement()->getElement()->getScenario();
+        }
+
+        if (empty($scenarios)) {
+            return $return;
+        }
+
+        foreach ($scenarios as $scenario) {
+            if (is_object($scenario)) {
+                $find = false;
+                foreach ($return as $existScenario) {
+                    if ($scenario->getId() == $existScenario->getId()) {
+                        $find = true;
+                        break;
+                    }
+                }
+                if (!$find) {
+                    $return[] = $scenario;
+                }
+            }
+        }
+
+        return $return;
 	}
 	/**
 	 *
@@ -484,7 +424,7 @@ class scenario {
 	 * @throws Exception
 	 */
 	public static function getFromMarket(&$market, $_path) {
-		$cibDir = __DIR__ . '/../config/scenario/';
+		$cibDir = dirname(__DIR__) . '/config/scenario/';
 		if (!file_exists($cibDir)) {
 			mkdir($cibDir);
 		}
@@ -501,12 +441,16 @@ class scenario {
 		trigger_error('This method is deprecated', E_USER_DEPRECATED);
 	}
 
-	public static function listMarketObject() {
-		return array();
+    /**
+     * @return array
+     */
+	public static function listMarketObject(): array
+    {
+		return [];
 	}
 
 	public static function timelineDisplay($_event) {
-		$return = array();
+		$return = [];
 		$return['date'] = $_event['datetime'];
 		$return['group'] = 'scenario';
 		$return['type'] = $_event['type'];
@@ -531,7 +475,7 @@ class scenario {
 	 */
 	public function testTrigger($_event) {
 		foreach ($this->getTrigger() as $trigger) {
-			$trigger = str_replace(array('#variable(', ')#'), array('variable(', ')'), $trigger);
+			$trigger = str_replace(['#variable(', ')#'], ['variable(', ')'], $trigger);
 			if ($trigger == $_event) {
 				return true;
 			} elseif (strpos($trigger, $_event) !== false && jeedom::evaluateExpression($trigger)) {
@@ -559,7 +503,7 @@ class scenario {
 			if (count($this->getTags()) != '') {
 				$this->setCache('tags', $this->getTags());
 			}
-			$cmd = __DIR__ . '/../../core/php/jeeScenario.php ';
+			$cmd = dirname(__DIR__, 2) . '/core/php/jeeScenario.php ';
 			$cmd .= ' scenario_id=' . $this->getId();
 			$cmd .= ' trigger=' . escapeshellarg($_trigger);
 			$cmd .= ' "message=' . escapeshellarg(sanitizeAccent($_message)) . '"';
@@ -595,12 +539,16 @@ class scenario {
 		if (is_object($cmd)) {
 			log::add('event', 'info', __('Exécution du scénario ', __FILE__) . $this->getHumanName() . __(' déclenché par : ', __FILE__) . $cmd->getHumanName());
 			if ($this->getConfiguration('timeline::enable')) {
-				jeedom::addTimelineEvent(array('type' => 'scenario', 'id' => $this->getId(), 'name' => $this->getHumanName(true), 'datetime' => date('Y-m-d H:i:s'), 'trigger' => $cmd->getHumanName(true)));
+				jeedom::addTimelineEvent(
+                    ['type' => 'scenario', 'id' => $this->getId(), 'name' => $this->getHumanName(true), 'datetime' => date('Y-m-d H:i:s'), 'trigger' => $cmd->getHumanName(true)]
+                );
 			}
 		} else {
 			log::add('event', 'info', __('Exécution du scénario ', __FILE__) . $this->getHumanName() . __(' déclenché par : ', __FILE__) . $_trigger);
 			if ($this->getConfiguration('timeline::enable')) {
-				jeedom::addTimelineEvent(array('type' => 'scenario', 'id' => $this->getId(), 'name' => $this->getHumanName(true), 'datetime' => date('Y-m-d H:i:s'), 'trigger' => ($_trigger == 'schedule') ? 'programmation' : $_trigger));
+				jeedom::addTimelineEvent(
+                    ['type' => 'scenario', 'id' => $this->getId(), 'name' => $this->getHumanName(true), 'datetime' => date('Y-m-d H:i:s'), 'trigger' => ($_trigger == 'schedule') ? 'programmation' : $_trigger]
+                );
 			}
 		}
 		if (count($this->getTags()) == 0) {
@@ -633,15 +581,15 @@ class scenario {
 		$scenarioCopy = clone $this;
 		$scenarioCopy->setName($_name);
 		$scenarioCopy->setId('');
-		$scenario_element_list = array();
+		$scenario_element_list = [];
 		foreach ($this->getElement() as $element) {
 			$scenario_element_list[] = $element->copy();
 		}
 		$scenarioCopy->setScenarioElement($scenario_element_list);
 		$scenarioCopy->setLog('');
 		$scenarioCopy->save();
-		if (file_exists(__DIR__ . '/../../log/scenarioLog/scenario' . $scenarioCopy->getId() . '.log')) {
-			unlink(__DIR__ . '/../../log/scenarioLog/scenario' . $scenarioCopy->getId() . '.log');
+		if (file_exists(dirname(__DIR__, 2) . '/log/scenarioLog/scenario' . $scenarioCopy->getId() . '.log')) {
+			unlink(dirname(__DIR__, 2) . '/log/scenarioLog/scenario' . $scenarioCopy->getId() . '.log');
 		}
 		return $scenarioCopy;
 	}
@@ -660,7 +608,7 @@ class scenario {
 		}
 
 		$version = jeedom::versionAlias($_version);
-		$replace = array(
+		$replace = [
 			'#id#' => $this->getId(),
 			'#state#' => $this->getState(),
 			'#isActive#' => $this->getIsActive(),
@@ -669,12 +617,11 @@ class scenario {
 			'#treename#' => $this->getHumanName(false, false, false, false, true),
 			'#icon#' => $this->getIcon(),
 			'#lastLaunch#' => $this->getLastLaunch(),
-			'#lastLaunch#' => $this->getLastLaunch(),
 			'#scenarioLink#' => $this->getLinkToConfiguration(),
 			'#version#' => $_version,
-		);
+        ];
 		if (!isset(self::$_templateArray)) {
-			self::$_templateArray = array();
+			self::$_templateArray = [];
 		}
 		if (!isset(self::$_templateArray[$version])) {
 			self::$_templateArray[$version] = getTemplate('core', $version, 'scenario');
@@ -711,7 +658,7 @@ class scenario {
 						return 'fa fa-exclamation-triangle';
 					default:
 						if (strpos($this->getDisplay('icon'), '<i') === 0) {
-							return str_replace(array('<i', 'class=', '"', '/>'), '', $this->getDisplay('icon'));
+							return str_replace(['<i', 'class=', '"', '/>'], '', $this->getDisplay('icon'));
 						}
 						return 'fa fa-check';
 				}
@@ -775,40 +722,22 @@ class scenario {
 	 *
 	 */
 	public function save() {
-		if ($this->getLastLaunch() == '' && ($this->getMode() == 'schedule' || $this->getMode() == 'all')) {
-			$calculateScheduleDate = $this->calculateScheduleDate();
-			$this->setLastLaunch($calculateScheduleDate['prevDate']);
-		}
-		DB::save($this);
-		$this->emptyCacheWidget();
-		if ($this->_changeState) {
-			$this->_changeState = false;
-			event::add('scenario::update', array('scenario_id' => $this->getId(), 'isActive' => $this->getIsActive(), 'state' => $this->getState(), 'lastLaunch' => $this->getLastLaunch()));
-		}
+	    return self::getRepository()->add($this);
 	}
 	/**
 	 *
 	 */
 	public function refresh() {
-		DB::refresh($this);
+        return self::getRepository()->refresh($this);
 	}
-	/**
-	 *
-	 * @return type
-	 */
+
+    /**
+     *
+     * @return bool
+     * @throws Exception
+     */
 	public function remove() {
-		viewData::removeByTypeLinkId('scenario', $this->getId());
-		dataStore::removeByTypeLinkId('scenario', $this->getId());
-		foreach ($this->getElement() as $element) {
-			$element->remove();
-		}
-		$this->emptyCacheWidget();
-		if (file_exists(__DIR__ . '/../../log/scenarioLog/scenario' . $this->getId() . '.log')) {
-			unlink(__DIR__ . '/../../log/scenarioLog/scenario' . $this->getId() . '.log');
-		}
-		cache::delete('scenarioCacheAttr' . $this->getId());
-		jeedom::addRemoveHistory(array('id' => $this->getId(), 'name' => $this->getHumanName(), 'date' => date('Y-m-d H:i:s'), 'type' => 'scenario'));
-		return DB::remove($this);
+        return self::getRepository()->remove($this->getId());
 	}
 	/**
 	 *
@@ -864,9 +793,9 @@ class scenario {
 	 * @return type
 	 */
 	public function calculateScheduleDate() {
-		$calculatedDate = array('prevDate' => '', 'nextDate' => '');
+		$calculatedDate = ['prevDate' => '', 'nextDate' => ''];
 		if (is_array($this->getSchedule())) {
-			$calculatedDate_tmp = array('prevDate' => '', 'nextDate' => '');
+			$calculatedDate_tmp = ['prevDate' => '', 'nextDate' => ''];
 			foreach ($this->getSchedule() as $schedule) {
 				try {
 					$c = new Cron\CronExpression($schedule, new Cron\FieldFactory);
@@ -904,8 +833,8 @@ class scenario {
 	public function isDue() {
 		$last = strtotime($this->getLastLaunch());
 		$now = time();
-		$now = ($now - $now % 60);
-		$last = ($last - $last % 60);
+		$now -= $now % 60;
+		$last -= $last % 60;
 		$configuration = ConfigurationFactory::build('core');
 		if ($now == $last) {
 			return false;
@@ -981,7 +910,7 @@ class scenario {
 		if (intval($this->getPID()) > 0 && posix_getsid(intval($this->getPID())) && (!file_exists('/proc/' . $this->getPID() . '/cmdline') || strpos(file_get_contents('/proc/' . $this->getPID() . '/cmdline'), 'scenario_id=' . $this->getId()) !== false)) {
 			return true;
 		}
-		if (count(system::ps('scenario_id=' . $this->getId() . ' ', array(getmypid()))) > 0) {
+		if (count(system::ps('scenario_id=' . $this->getId() . ' ', [getmypid()])) > 0) {
 			return true;
 		}
 		return false;
@@ -1033,13 +962,14 @@ class scenario {
 	}
 	/**
 	 *
-	 * @return type
+	 * @return \scenarioElement[]
 	 */
-	public function getElement() {
+	public function getElement(): array
+    {
 		if (count($this->_elements) > 0) {
 			return $this->_elements;
 		}
-		$return = array();
+		$return = [];
 		$elements = $this->getScenarioElement();
 		if (is_array($elements)) {
 			foreach ($this->getScenarioElement() as $element_id) {
@@ -1052,22 +982,23 @@ class scenario {
 			return $return;
 		}
 		if ($elements != '') {
-			$element = scenarioElement::byId($element_id);
+			$element = scenarioElement::byId($element_id); // FIXME: variable $element_id potentiellement inexistante
 			if (is_object($element)) {
 				$return[] = $element;
 				$this->_elements = $return;
 				return $return;
 			}
 		}
-		return array();
+		return [];
 	}
 	/**
 	 *
-	 * @param type $_mode
-	 * @return type
+	 * @param string $_mode Type de sortie ('text' ou 'array')
+	 * @return null|string|array
 	 */
 	public function export($_mode = 'text') {
-		if ($_mode == 'text') {
+	    $return = null;
+		if ($_mode === 'text') {
 			$return = '';
 			$return .= '- Nom du scénario : ' . $this->getName() . PHP_EOL;
 			if (is_numeric($this->getObject_id())) {
@@ -1080,13 +1011,12 @@ class scenario {
 					foreach ($schedules as $schedule) {
 						$return .= '    - Programmation : ' . $schedule . PHP_EOL;
 					}
-				} else {
-					if ($schedules != '') {
-						$return .= '    - Programmation : ' . $schedules . PHP_EOL;
-					}
-				}
+				} elseif ($schedules != '') {
+                    $return .= '    - Programmation : ' . $schedules . PHP_EOL;
+                }
 			}
-			if ($this->getMode() == 'provoke' || $this->getMode() == 'all') {
+			$mode = $this->getMode();
+			if ($mode == 'provoke' || $mode == 'all') {
 				foreach ($this->getTrigger() as $trigger) {
 					$return .= '    - Evènement : ' . jeedom::toHumanReadable($trigger) . PHP_EOL;
 				}
@@ -1101,7 +1031,7 @@ class scenario {
 				}
 			}
 		}
-		if ($_mode == 'array') {
+		if ($_mode === 'array') {
 			$return = utils::o2a($this);
 			$return['trigger'] = jeedom::toHumanReadable($return['trigger']);
 			$return['elements'] = array();
@@ -1159,14 +1089,14 @@ class scenario {
 	}
 	/**
 	 *
-	 * @param type $_complete
-	 * @param type $_noGroup
-	 * @param type $_tag
-	 * @param type $_prettify
-	 * @param type $_withoutScenarioName
+	 * @param bool $_complete
+	 * @param bool $_noGroup
+	 * @param bool $_tag
+	 * @param bool $_prettify
+	 * @param bool $_withoutScenarioName
 	 * @return string
 	 */
-	public function getHumanName($_complete = false, $_noGroup = false, $_tag = false, $_prettify = false, $_withoutScenarioName = false) {
+	public function getHumanName($_complete = false, $_noGroup = false, $_tag = false, $_prettify = false, $_withoutScenarioName = false): string {
 		$name = '';
 		if (is_numeric($this->getObject_id()) && is_object($this->getObject())) {
 			$object = $this->getObject();
@@ -1179,23 +1109,19 @@ class scenario {
 			} else {
 				$name .= '[' . $object->getName() . ']';
 			}
-		} else {
-			if ($_complete) {
-				if ($_tag) {
-					$name .= '<span class="label label-default" style="text-shadow : none;">' . __('Aucun', __FILE__) . '</span>';
-				} else {
-					$name .= '[' . __('Aucun', __FILE__) . ']';
-				}
-			}
-		}
+		} elseif ($_complete) {
+            if ($_tag) {
+                $name .= '<span class="label label-default" style="text-shadow : none;">' . __('Aucun', __FILE__) . '</span>';
+            } else {
+                $name .= '[' . __('Aucun', __FILE__) . ']';
+            }
+        }
 		if (!$_noGroup) {
 			if ($this->getGroup() != '') {
 				$name .= '[' . $this->getGroup() . ']';
-			} else {
-				if ($_complete) {
-					$name .= '[' . __('Aucun', __FILE__) . ']';
-				}
-			}
+			} elseif ($_complete) {
+                $name .= '[' . __('Aucun', __FILE__) . ']';
+            }
 		}
 		if ($_prettify) {
 			$name .= '<br/><strong>';
@@ -1212,14 +1138,18 @@ class scenario {
 		}
 		return $name;
 	}
-	/**
-	 *
-	 * @param type $_right
-	 * @return boolean
-	 */
-	public function hasRight($_right, $_user = null) {
-		if ($_user != null) {
-			if ($_user->getProfils() == 'admin' || $_user->getProfils() == 'user') {
+
+    /**
+     *
+     * @param string $_right
+     * @param user|null $_user
+     *
+     * @return boolean
+     */
+	public function hasRight($_right, \user $_user = null) {
+		if ($_user !== null) {
+		    $profile = $_user->getProfils();
+			if ($profile === 'admin' || $profile === 'user') {
 				return true;
 			}
 			if (strpos($_user->getRights('scenario' . $this->getId()), $_right) !== false) {
@@ -1240,8 +1170,7 @@ class scenario {
 	}
 	/**
 	 *
-	 * @param type $_partial
-	 * @return type
+	 * @param bool $_partial
 	 */
 	public function persistLog($_partial = false) {
 		if ($this->getConfiguration('logmode', 'default') == 'none') {
@@ -1260,9 +1189,9 @@ class scenario {
 	}
 	/**
 	 *
-	 * @return type
+	 * @return array
 	 */
-	public function toArray() {
+	public function toArray(): array {
 		$return = utils::o2a($this, true);
 		$cache = $this->getCache(array('state', 'lastLaunch'));
 		$return['state'] = $cache['state'];
@@ -1336,13 +1265,13 @@ class scenario {
 	 */
 	public function getUsedBy($_array = false) {
 		$return = array('cmd' => array(), 'eqLogic' => array(), 'scenario' => array(), 'plan' => array(), 'view' => array());
-		$return['cmd'] = cmd::searchConfiguration('#scenario' . $this->getId() . '#');
+		$return['cmd'] = RepositoryFactory::build(CommandRepository::class)->searchConfiguration('#scenario' . $this->getId() . '#');
 		$return['eqLogic'] = eqLogic::searchConfiguration(array('#scenario' . $this->getId() . '#', '"scenario_id":"' . $this->getId()));
 		$return['interactDef'] = interactDef::searchByUse(array('#scenario' . $this->getId() . '#', '"scenario_id":"' . $this->getId()));
-		$return['scenario'] = scenario::searchByUse(array(
-			array('action' => 'scenario', 'option' => $this->getId(), 'and' => true),
-			array('action' => '#scenario' . $this->getId() . '#'),
-		));
+		$return['scenario'] = self::searchByUse([
+			['action' => 'scenario', 'option' => $this->getId(), 'and' => true],
+			['action' => '#scenario' . $this->getId() . '#'],
+        ]);
 		$return['view'] = view::searchByUse('scenario', $this->getId());
 		$return['plan'] = planHeader::searchByUse('scenario', $this->getId());
 		if ($_array) {

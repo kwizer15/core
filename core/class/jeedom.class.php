@@ -17,6 +17,11 @@
 */
 
 /* * ***************************Includes********************************* */
+
+use Jeedom\Core\Infrastructure\Factory\ServiceFactory;
+use Jeedom\Core\Presenter\HumanCommandMap;
+use Jeedom\Core\Presenter\Service\HumanScenarioMap;
+
 require_once __DIR__ . '/../../core/php/core.inc.php';
 global $JEEDOM_INTERNAL_CONFIG;
 class jeedom {
@@ -1007,11 +1012,19 @@ class jeedom {
 	}
 	
 	public static function toHumanReadable($_input) {
-		return scenario::toHumanReadable(eqLogic::toHumanReadable(cmd::cmdToHumanReadable($_input)));
+		return ServiceFactory::build(HumanScenarioMap::class)->toHumanReadable(
+		    eqLogic::toHumanReadable(
+                ServiceFactory::build(HumanCommandMap::class)->cmdToHumanReadable($_input)
+            )
+        );
 	}
 	
 	public static function fromHumanReadable($_input) {
-		return scenario::fromHumanReadable(eqLogic::fromHumanReadable(cmd::humanReadableToCmd($_input)));
+		return ServiceFactory::build(HumanScenarioMap::class)->fromHumanReadable(
+		    eqLogic::fromHumanReadable(
+                ServiceFactory::build(HumanCommandMap::class)->humanReadableToCmd($_input)
+            )
+        );
 	}
 	
 	public static function evaluateExpression($_input, $_scenario = null) {

@@ -12,142 +12,95 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
     private $fields = [];
 
     /**
-     * Renvoie un objet scenario
-     *
-     * @param int $id id du scenario voulu
-     *
-     * @return \scenario object scenario
+     * {@inheritdoc}
      * @throws \Exception
      */
     public function get($id)
     {
-        $values = array(
+        $values = [
             'id' => $id,
-        );
-        $sql = 'SELECT ' . $this->getFields() . '
-		FROM scenario
-		WHERE id=:id';
+        ];
+        $sql = $this->getBaseSQL() . ' WHERE id=:id';
 
         return $this->getOneResult($sql, $values);
     }
 
     /**
-     * Renvoie tous les objets scenario
-     *
-     * @param string $group
-     * @param null $type
-     *
-     * @return \scenario[]
+     * {@inheritdoc}
      * @throws \Exception
      */
-    public function all($group = '', $type = null)
+    public function all($group = '', $type = null): array
     {
-        $values = array();
-        if ($group === '') {
-            $sql = 'SELECT ' . $this->getFields('s') . '
-			FROM scenario s
-			INNER JOIN object ob ON s.object_id=ob.id';
-            if ($type !== null) {
-                $values['type'] = $type;
-                $sql .= ' WHERE `type`=:type';
-            }
-            $sql .= ' ORDER BY ob.name,s.group, s.name';
-            $result1 = $this->getResults($sql, $values);
-            if (!is_array($result1)) {
-                $result1 = array();
-            }
-            $sql = 'SELECT ' . $this->getFields('s') . '
-			FROM scenario s
-			WHERE s.object_id IS NULL';
-            if ($type !== null) {
-                $values['type'] = $type;
-                $sql .= ' AND `type`=:type';
-            }
-            $sql .= ' ORDER BY s.group, s.name';
-            $result2 = $this->getResults($sql, $values);
-            return array_merge($result1, $result2);
-        } elseif ($group === null) {
-            $sql = 'SELECT ' . $this->getFields('s') . '
-			FROM scenario s
-			INNER JOIN object ob ON s.object_id=ob.id
-			WHERE (`group` IS NULL OR `group` = "")';
-            if ($type !== null) {
-                $values['type'] = $type;
-                $sql .= ' AND `type`=:type';
-            }
-            $sql .= ' ORDER BY s.group, s.name';
-            $result1 = $this->getResults($sql, $values);
-            if (!is_array($result1)) {
-                $result1 = array();
-            }
-            $sql = 'SELECT ' . $this->getFields('s') . '
-			FROM scenario s
-			WHERE (`group` IS NULL OR `group` = "")
-			AND s.object_id IS NULL';
-            if ($type !== null) {
-                $values['type'] = $type;
-                $sql .= ' AND `type`=:type';
-            }
-            $sql .= ' ORDER BY  s.name';
-            $result2 = $this->getResults($sql, $values);
-            return array_merge($result1, $result2);
-        } else {
-            $values = array(
-                'group' => $group,
-            );
-            $sql = 'SELECT ' . $this->getFields('s') . '
-			FROM scenario s
-			INNER JOIN object ob ON s.object_id=ob.id
-			WHERE `group`=:group';
-            if ($type !== null) {
-                $values['type'] = $type;
-                $sql .= ' AND `type`=:type';
-            }
-            $sql .= ' ORDER BY ob.name,s.group, s.name';
-            $result1 = $this->getResults($sql, $values);
-            $sql = 'SELECT ' . $this->getFields('s') . '
-			FROM scenario s
-			WHERE `group`=:group
-			AND s.object_id IS NULL';
-            if ($type !== null) {
-                $values['type'] = $type;
-                $sql .= ' AND `type`=:type';
-            }
-            $sql .= ' ORDER BY s.group, s.name';
-            $result2 = $this->getResults($sql, $values);
-            return array_merge($result1, $result2);
+        $values = [];
+        $sql = $this->getBaseSQL('s') . ' INNER JOIN object ob ON s.object_id=ob.id';
+
+        $typeRule= '';
+        if ($type !== null) {
+            $values['type'] = $type;
+            $typeRule = ' AND `type`=:type';
         }
+
+        if ($group === null) {
+            $sql .= ' WHERE (`group` IS NULL OR `group` = "")';
+        } elseif ($group !== '') {
+            $values['group'] = $group;
+            $sql .= ' WHERE `group`=:group';
+        } else {
+            $sql .= ' WHERE 1';
+        }
+
+        $sql .= $typeRule . ' ORDER BY ';
+        if ($group !== null) {
+            $sql .= 'ob.name, ';
+        }
+
+        $sql .= 's.group, s.name';
+        $result1 = $this->getResults($sql, $values);
+
+        if (!is_array($result1)) {
+            $result1 = [];
+        }
+
+        $sql = $this->getBaseSQL('s') . ' WHERE ';
+
+        if ($group === '') {
+            $sql .= 's.object_id IS NULL';
+            $sql .= $typeRule . ' ORDER BY s.group, s.name';
+
+        } elseif ($group === null) {
+            $sql .= '(`group` IS NULL OR `group` = "") AND s.object_id IS NULL';
+            $sql .= $typeRule . ' ORDER BY  s.name';
+        } else {
+            $sql .= '`group`=:group AND s.object_id IS NULL';
+            $sql .= $typeRule . ' ORDER BY s.group, s.name';
+        }
+        $result2 = $this->getResults($sql, $values);
+
+        return array_merge($result1, $result2);
     }
 
     /**
-     *
-     * @return \scenario[]
+     * {@inheritdoc}
      * @throws \Exception
      */
-    public function schedule()
+    public function schedule(): array
     {
-        $sql = 'SELECT ' . $this->getFields() . '
-		FROM scenario
+        $sql = $this->getBaseSQL() . '
 		WHERE `mode` != "provoke"
 		AND isActive=1';
-        return \DB::Prepare($sql, array(), \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \scenario::class);
+        return $this->getResults($sql);
     }
 
     /**
-     *
-     * @param string $cmdId
-     * @param bool $onlyEnable
-     *
-     * @return \scenario[]
+     * {@inheritdoc}
      * @throws \Exception
      */
-    public function findByTrigger($cmdId, $onlyEnable = true)
+    public function findByTrigger($cmdId, $onlyEnable = true): array
     {
         $values = array(
             'cmd_id' => '%#' . $cmdId . '#%',
         );
-        $sql = 'SELECT ' . $this->getFields() . '
-		FROM scenario
+        $sql = $this->getBaseSQL() . '
 		WHERE mode != "schedule"';
         if ($onlyEnable) {
             $sql .= ' AND isActive=1';
@@ -157,10 +110,7 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
     }
 
     /**
-     *
-     * @param string $elementId
-     *
-     * @return \scenario
+     * {@inheritdoc}
      * @throws \Exception
      */
     public function findOneByElement($elementId)
@@ -168,26 +118,19 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
         $values = array(
             'element_id' => '%"' . $elementId . '"%',
         );
-        $sql = 'SELECT ' . $this->getFields() . '
-		FROM scenario
+        $sql = $this->getBaseSQL() . '
 		WHERE `scenarioElement` LIKE :element_id';
         return $this->getOneResult($sql, $values);
     }
 
     /**
-     *
-     * @param string|int $objectId
-     * @param bool $onlyEnable
-     * @param bool $onlyVisible
-     *
-     * @return \scenario[]
+     * {@inheritdoc}
      * @throws \Exception
      */
-    public function findByObjectId($objectId, $onlyEnable = true, $onlyVisible = false)
+    public function findByObjectId($objectId, $onlyEnable = true, $onlyVisible = false): array
     {
         $values = array();
-        $sql = 'SELECT ' . $this->getFields() . '
-		FROM scenario';
+        $sql = $this->getBaseSQL();
         if ($objectId === null) {
             $sql .= ' WHERE object_id IS NULL';
         } else {
@@ -204,11 +147,7 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
     }
 
     /**
-     * @param string $objectName
-     * @param string $groupName
-     * @param string $scenarioName
-     *
-     * @return \scenario
+     * {@inheritdoc}
      * @throws \Exception
      */
     public function findOneByObjectNameGroupNameScenarioName($objectName, $groupName, $scenarioName)
@@ -219,15 +158,13 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
 
         if ($objectName == __('Aucun', __FILE__)) {
             if ($groupName == __('Aucun', __FILE__)) {
-                $sql = 'SELECT ' . $this->getFields('s') . '
-				FROM scenario s
+                $sql = $this->getBaseSQL('s') . '
 				WHERE s.name=:scenario_name
 				AND (`group` IS NULL OR `group`=""  OR `group`="Aucun" OR `group`="None")
 				AND s.object_id IS NULL';
             } else {
                 $values['group_name'] = $groupName;
-                $sql = 'SELECT ' . $this->getFields('s') . '
-				FROM scenario s
+                $sql = $this->getBaseSQL('s') . '
 				WHERE s.name=:scenario_name
 				AND s.object_id IS NULL
 				AND `group`=:group_name';
@@ -235,16 +172,14 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
         } else {
             $values['object_name'] = $objectName;
             if ($groupName == __('Aucun', __FILE__)) {
-                $sql = 'SELECT ' . $this->getFields('s') . '
-				FROM scenario s
+                $sql = $this->getBaseSQL('s') . '
 				INNER JOIN object ob ON s.object_id=ob.id
 				WHERE s.name=:scenario_name
 				AND ob.name=:object_name
 				AND (`group` IS NULL OR `group`=""  OR `group`="Aucun" OR `group`="None")';
             } else {
                 $values['group_name'] = $groupName;
-                $sql = 'SELECT ' . $this->getFields('s') . '
-				FROM scenario s
+                $sql = $this->getBaseSQL('s') . '
 				INNER JOIN object ob ON s.object_id=ob.id
 				WHERE s.name=:scenario_name
 				AND ob.name=:object_name
@@ -255,7 +190,7 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
     }
 
     /**
-     * @param \scenario $scenario
+     * {@inheritdoc}
      */
     public function add(\scenario $scenario)
     {
@@ -278,8 +213,7 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
     }
 
     /**
-     * @param \scenario $scenario
-     *
+     * {@inheritdoc}
      * @throws \Exception
      */
     public function refresh(\scenario $scenario)
@@ -288,10 +222,7 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
     }
 
     /**
-     *
-     * @param $scenarioId
-     *
-     * @return bool
+     * {@inheritdoc}
      * @throws \Exception
      */
     public function remove($scenarioId)
@@ -299,6 +230,9 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
         \viewData::removeByTypeLinkId('scenario', $scenarioId);
         \dataStore::removeByTypeLinkId('scenario', $scenarioId);
         $scenario = $this->get($scenarioId);
+        if (null === $scenario) {
+            return;
+        }
         foreach ($scenario->getElement() as $element) {
             $element->remove();
         }
@@ -313,17 +247,14 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
             'date' => date('Y-m-d H:i:s'),
             'type' => 'scenario'
         ]);
-        return \DB::remove($this);
+        \DB::remove($this);
     }
 
     /**
-     *
-     * @param null|string $group
-     *
-     * @return string[]
+     * {@inheritdoc}
      * @throws \Exception
      */
-    public function listGroup($group = null)
+    public function listGroup($group = null): array
     {
         $values = array();
         $sql = 'SELECT DISTINCT(`group`)
@@ -337,45 +268,43 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
     }
 
     /**
-     *
+     * {@inheritdoc}
+     * @throws \Exception
      */
     public function cleanTable() {
-        $ids = array(
-            'element' => array(),
-            'subelement' => array(),
-            'expression' => array(),
-        );
+        $elements = [];
+        $subElements = [];
+        $expression = [];
         foreach ($this->all() as $scenario) {
             foreach ($scenario->getElement() as $element) {
                 $result = $element->getAllId();
-                $ids['element'] = array_merge($ids['element'], $result['element']);
-                $ids['subelement'] = array_merge($ids['subelement'], $result['subelement']);
-                $ids['expression'] = array_merge($ids['expression'], $result['expression']);
+                $elements[] = $result['element'];
+                $subElements[] = $result['subelement'];
+                $expression[] = $result['expression'];
             }
         }
 
-        $sql = 'DELETE FROM scenarioExpression WHERE id NOT IN (-1';
-        foreach ($ids['expression'] as $expression_id) {
-            $sql .= ',' . $expression_id;
-        }
-        $sql .= ')';
-        \DB::Prepare($sql, array(), \DB::FETCH_TYPE_ALL);
+        $sql = 'DELETE FROM scenarioExpression WHERE id NOT IN ('
+            . implode(', ', array_merge([], ...$expression))
+            . ')';
+        \DB::Prepare($sql, [], \DB::FETCH_TYPE_ALL);
 
-        $sql = 'DELETE FROM scenarioSubElement WHERE id NOT IN (-1';
-        foreach ($ids['subelement'] as $subelement_id) {
-            $sql .= ',' . $subelement_id;
-        }
-        $sql .= ')';
-        \DB::Prepare($sql, array(), \DB::FETCH_TYPE_ALL);
+        $sql = 'DELETE FROM scenarioSubElement WHERE id NOT IN ('
+            . implode(', ', array_merge([], ...$subElements))
+            . ')';
+        \DB::Prepare($sql, [], \DB::FETCH_TYPE_ALL);
 
-        $sql = 'DELETE FROM scenarioElement WHERE id NOT IN (-1';
-        foreach ($ids['element'] as $element_id) {
-            $sql .= ',' . $element_id;
-        }
-        $sql .= ')';
-        \DB::Prepare($sql, array(), \DB::FETCH_TYPE_ALL);
+        $sql = 'DELETE FROM scenarioElement WHERE id NOT IN ('
+            . implode(', ', array_merge([], ...$elements))
+            . ')';
+        \DB::Prepare($sql, [], \DB::FETCH_TYPE_ALL);
     }
 
+    /**
+     * @param string $alias
+     *
+     * @return mixed
+     */
     private function getFields($alias = '')
     {
         if (null === $this->fields[$alias]) {
@@ -384,13 +313,32 @@ class SQLDatabaseScenarioRepository implements ScenarioRepository
 
         return $this->fields[$alias];
     }
-    
-    private function getResults($sql, $values)
+
+    private function getBaseSQL($alias = ''): string
+    {
+        return 'SELECT ' . $this->getFields($alias) . ' FROM scenario ' . $alias;
+    }
+
+    /**
+     * @param string $sql
+     * @param array $values
+     *
+     * @return \scenario[]
+     * @throws \Exception
+     */
+    private function getResults($sql, array $values = []): array
     {
         return \DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \scenario::class);
     }
-    
-    private function getOneResult($sql, $values)
+
+    /**
+     * @param string $sql
+     * @param array $values
+     *
+     * @return \scenario|null
+     * @throws \Exception
+     */
+    private function getOneResult($sql, array $values = [])
     {
         return \DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \scenario::class);
     }

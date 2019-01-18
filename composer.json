@@ -25,7 +25,8 @@
         "symfony/config": "^3.4",
         "symfony/expression-language": "~2.6",
         "symfony/translation": "^3.4",
-        "ext-zip": "^1.13"
+        "ext-zip": "^1.13",
+        "ext-PDO": "^7.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7"

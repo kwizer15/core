@@ -3,11 +3,14 @@
 namespace Jeedom\Core\Infrastructure\Factory;
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Domain\Repository\ScenarioRepository;
 use Jeedom\Core\Infrastructure\Service\ConfigurationColorConverter;
 use Jeedom\Core\Infrastructure\Service\FilesystemWidgetService;
 use Jeedom\Core\Infrastructure\Service\RepositoryHumanCommandMap;
+use Jeedom\Core\Infrastructure\Service\RepositoryHumanScenarioMap;
 use Jeedom\Core\Presenter\ColorConverter;
 use Jeedom\Core\Presenter\HumanCommandMap;
+use Jeedom\Core\Presenter\Service\HumanScenarioMap;
 use Jeedom\Core\Presenter\Service\WidgetService;
 
 class ServiceFactory
@@ -50,6 +53,7 @@ class ServiceFactory
         return [
             ColorConverter::class => function() { return new ConfigurationColorConverter(ConfigurationFactory::build('core')); },
             HumanCommandMap::class => function() { return new RepositoryHumanCommandMap(RepositoryFactory::build(CommandRepository::class)); },
+            HumanScenarioMap::class => function() { return new RepositoryHumanScenarioMap(RepositoryFactory::build(ScenarioRepository::class)); },
             WidgetService::class => function() { return new FilesystemWidgetService(); }
         ];
     }
