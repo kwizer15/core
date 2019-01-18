@@ -416,7 +416,11 @@ class cmd {
 	}
 	
 	public function refresh() {
-        self::getRepository()->refresh($this);
+        $cmd = self::getRepository()->get($this->getId());
+        $properties = get_class_vars($cmd);
+        foreach ($properties as $propertyName => $value) {
+            $this->{$propertyName} = $value;
+        }
 	}
 	
 	public function remove() {

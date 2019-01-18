@@ -12,13 +12,6 @@ interface CommandRepository
     public function add(\cmd $cmd);
 
     /**
-     * @param \cmd $cmd
-     *
-     * @return CommandRepository
-     */
-    public function refresh(\cmd $cmd);
-
-    /**
      * @param $cmdId
      *
      * @return CommandRepository

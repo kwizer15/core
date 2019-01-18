@@ -217,11 +217,11 @@ class scenario {
 	/**
 	 *
 	 * @param array $_options
-	 * @return type
+	 * @return void
 	 */
 	public static function doIn($_options) {
 		$scenario = self::getRepository()->get($_options['scenario_id']);
-		if (!is_object($scenario)) {
+		if (null === $scenario) {
 			return;
 		}
 		if ($scenario->getIsActive() == 0) {
@@ -343,14 +343,14 @@ class scenario {
 		$returnTemp = [];
 		foreach ($searchs as $search) {
 			$_cmd_id = str_replace('#', '', $search['action']);
-            $returnTemp = self::getRepository()->findByTrigger($_cmd_id, false);
+            $returnTemp[] = self::getRepository()->findByTrigger($_cmd_id, false);
 			if (!isset($search['and'])) {
 				$search['and'] = false;
 			}
 			if (!isset($search['option'])) {
 				$search['option'] = $search['action'];
 			}
-            $expressionsTemp = scenarioExpression::searchExpression($search['action'], $search['option'], $search['and']);
+            $expressionsTemp[] = scenarioExpression::searchExpression($search['action'], $search['option'], $search['and']);
 		}
 
 		$return = array_merge([], $returnTemp);

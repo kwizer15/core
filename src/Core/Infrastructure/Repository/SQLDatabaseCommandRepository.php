@@ -3,10 +3,58 @@
 namespace Jeedom\Core\Infrastructure\Repository;
 
 use Jeedom\Core\Domain\Repository\CommandRepository;
+use Jeedom\Core\Infrastructure\Repository\Mapper\SQLDatabaseCommandMapper;
 
-class SQLDatabaseCommandRepository implements CommandRepository
+class SQLDatabaseCommandRepository implements CommandRepository, PDORepository
 {
+    const TABLE_NAME = 'cmd';
+
+    const FIELD_LIST = [
+        'id',
+        'eqLogic_id',
+        'eqType',
+        'logicalId',
+        'generic_type',
+        'order',
+        'name',
+        'configuration',
+        'template',
+        'isHistorized',
+        'type',
+        'subType',
+        'unite',
+        'display',
+        'isVisible',
+        'value',
+        'html',
+        'alert',
+    ];
+
+    /**
+     * @var array
+     */
     private $fields;
+
+    /**
+     * @var \PDO
+     */
+    private $connection;
+
+    private $mapper;
+
+    public function __construct(\PDO $connection)
+    {
+        $this->connection = $connection;
+        $this->mapper = new SQLDatabaseCommandMapper($this);
+    }
+
+    /**
+     * @return string
+     */
+    public function getEntityClassName(): string
+    {
+        return \cmd::class;
+    }
 
     /**
      * {@inheritdoc}
@@ -35,29 +83,40 @@ class SQLDatabaseCommandRepository implements CommandRepository
             $cmd->setGeneric_type($cmd->getDisplay('generic_type'));
             $cmd->setDisplay('generic_type', '');
         }
-        \DB::save($cmd);
+
+        $parameters = $this->mapper->fromObjectToArray($cmd);
+        $fields = array_keys($parameters);
+        unset($fields['id']);
+        $sets = [];
+        foreach ($fields as $field) {
+            $sets[] = "`{$field}` = :{$field}";
+        }
+
+        if (!$cmd->getId()) {
+            //New object to save.
+            unset($parameters['id']);
+            $sql = 'INSERT INTO `' . self::TABLE_NAME . '` SET ' . implode(', ', $sets);
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($parameters);
+            $cmd->setId($this->connection->lastInsertId());
+        } else {
+            //Object to update.
+            $sql = 'UPDATE `' . self::TABLE_NAME . '` SET ' . implode(', ', $sets) . ' WHERE id = :id';
+            $stmt = $this->connection->prepare($sql);
+            $stmt->execute($parameters);
+        }
+
         if ($cmd->needRefreshWidget()) {
             $cmd->refreshWidget(false);
             $cmd->getEqLogic()->refreshWidget();
         }
-        if ($cmd->needRefreshAlert() && $cmd->getType() == 'info') {
+        if ($cmd->needRefreshAlert() && $cmd->getType() === 'info') {
             $value = $cmd->execCmd();
             $level = $cmd->checkAlertLevel($value);
             if ($level != $cmd->getCache('alertLevel')) {
                 $cmd->actionAlertLevel($level, $value);
             }
         }
-
-        return $this;
-    }
-
-    /**
-     * {@inheritdoc}
-     * @throws \Exception
-     */
-    public function refresh(\cmd $cmd)
-    {
-        \DB::refresh($cmd);
 
         return $this;
     }
@@ -88,19 +147,25 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * {@inheritdoc}
      * @throws \Exception
      */
-    public function get($_id)
+    public function get($id)
     {
-        if ($_id == '') {
+        $parameters = ['id' => $id];
+        $sql = 'SELECT ' . implode(', ', self::FIELD_LIST) .
+            ' FROM `' . self::TABLE_NAME . '` ' .
+            ' WHERE `id` = :id;';
+        $stmt = $this->connection->prepare($sql);
+        if (false === $stmt->execute($parameters)) {
+            throw new \PDOException($stmt->errorInfo(), $stmt->errorCode());
+        }
+        $arrayResult = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (false === $arrayResult) {
             return null;
         }
-        $values = [
-            'id' => $_id,
-        ];
-        $sql = 'SELECT ' . $this->getFields() . '
-		FROM cmd
-		WHERE id=:id';
 
-        return $this->getOneResult($sql, $values);
+        /** @var \cmd $cmd */
+        $cmd = $this->mapper->fromArrayToObject($arrayResult);
+
+        return $cmd;
     }
 
     /**
@@ -546,6 +611,44 @@ class SQLDatabaseCommandRepository implements CommandRepository
     }
 
     /**
+     * @return string[]
+     * @throws \Exception
+     */
+    public function listTypes()
+    {
+        $sql = 'SELECT DISTINCT(type) as type FROM cmd';
+
+        return \DB::Prepare($sql, array(), \DB::FETCH_TYPE_ALL);
+    }
+
+    /**
+     * @return string[]
+     * @throws \Exception
+     */
+    public function listSubTypes($type)
+    {
+        $values = [];
+        $sql = 'SELECT distinct(subType) as subtype';
+        if ($type != '') {
+            $values['type'] = $type;
+            $sql .= ' WHERE type=:type';
+        }
+        $sql .= ' FROM cmd';
+        return \DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL);
+    }
+
+    /**
+     * @return string[]
+     * @throws \Exception
+     */
+    public function listUnites()
+    {
+        $sql = 'SELECT distinct(unite) as unite FROM cmd';
+
+        return \DB::Prepare($sql, [], \DB::FETCH_TYPE_ALL);
+    }
+
+    /**
      * @param $_inputs
      * @param null $_eqLogic
      *
@@ -583,7 +686,7 @@ class SQLDatabaseCommandRepository implements CommandRepository
     private function getFields($alias = '')
     {
         if (null === $this->fields[$alias]) {
-            $this->fields[$alias] = \DB::buildField(\cmd::class, $alias);
+            $this->fields[$alias] = \DB::buildField(self::getEntityClassName(), $alias);
         }
 
         return $this->fields[$alias];
@@ -598,9 +701,9 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * @return \cmd[]
      * @throws \Exception
      */
-    private function getResults($sql, $values = [], $eqLogic = null)
+    private function getResults($sql, $values = [], $eqLogic = null): array
     {
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, \cmd::class), $eqLogic);
+        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL, \PDO::FETCH_CLASS, self::getEntityClassName()), $eqLogic);
     }
 
     /**
@@ -612,46 +715,8 @@ class SQLDatabaseCommandRepository implements CommandRepository
      * @return \cmd
      * @throws \Exception
      */
-    private function getOneResult($sql, $values = [], $eqLogic = null)
+    private function getOneResult($sql, $values = [], $eqLogic = null): \cmd
     {
-        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, \cmd::class), $eqLogic);
-    }
-
-    /**
-     * @return string[]
-     * @throws \Exception
-     */
-    public function listTypes()
-    {
-        $sql = 'SELECT DISTINCT(type) as type FROM cmd';
-
-        return \DB::Prepare($sql, array(), \DB::FETCH_TYPE_ALL);
-    }
-
-    /**
-     * @return string[]
-     * @throws \Exception
-     */
-    public function listSubTypes($type)
-    {
-        $values = [];
-        $sql = 'SELECT distinct(subType) as subtype';
-        if ($type != '') {
-            $values['type'] = $type;
-            $sql .= ' WHERE type=:type';
-        }
-        $sql .= ' FROM cmd';
-        return \DB::Prepare($sql, $values, \DB::FETCH_TYPE_ALL);
-    }
-
-    /**
-     * @return string[]
-     * @throws \Exception
-     */
-    public function listUnites()
-    {
-        $sql = 'SELECT distinct(unite) as unite FROM cmd';
-
-        return \DB::Prepare($sql, [], \DB::FETCH_TYPE_ALL);
+        return self::cast(\DB::Prepare($sql, $values, \DB::FETCH_TYPE_ROW, \PDO::FETCH_CLASS, self::getEntityClassName()), $eqLogic);
     }
 }
