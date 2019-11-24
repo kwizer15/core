@@ -21,19 +21,23 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxMessageController implements AjaxController
 {
-    ajax::checkAccess('');
-	if ($action == 'clearMessage') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+	public function clearMessage() {
 		message::removeAll(init('plugin'));
 		return '';
 	}
 
-	if ($action == 'nbMessage') {
+	public function nbMessage() {
 		return message::nbMessage();
 	}
 
-	if ($action == 'all') {
+	public function all() {
 		if (init('plugin') == '') {
 			$messages = utils::o2a(message::all());
 		} else {
@@ -45,7 +49,7 @@ ajaxHandle(function ($action)
 		return $messages;
 	}
 
-	if ($action == 'removeMessage') {
+	public function removeMessage() {
 		$message = message::byId(init('id'));
 		if (!is_object($message)) {
 			throw new Exception(__('Message inconnu. Vérifiez l\'ID', __FILE__));
@@ -53,7 +57,6 @@ ajaxHandle(function ($action)
 		$message->remove();
 		return '';
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxMessageController());

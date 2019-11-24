@@ -21,10 +21,14 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxConfigController implements AjaxController
 {
-    ajax::checkAccess('');
-    if ($action == 'genApiKey') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+    public function genApiKey() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		if (init('plugin') == 'core') {
@@ -39,7 +43,7 @@ ajaxHandle(function ($action)
 		}
 	}
 
-	if ($action == 'getKey') {
+	public function getKey() {
 		$keys = init('key');
 		if ($keys == '') {
 			throw new Exception(__('Aucune clef demandée', __FILE__));
@@ -60,7 +64,7 @@ ajaxHandle(function ($action)
 		}
 	}
 
-	if ($action == 'addKey') {
+	public function addKey() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$values = json_decode(init('value'), true);
@@ -70,7 +74,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'removeKey') {
+	public function removeKey() {
 		unautorizedInDemo();
 		$keys = init('key');
 		if ($keys == '') {
@@ -87,7 +91,6 @@ ajaxHandle(function ($action)
 		}
 		return '';
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxConfigController());

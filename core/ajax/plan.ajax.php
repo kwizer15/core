@@ -21,10 +21,14 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxPlanController implements AjaxController
 {
-    ajax::checkAccess('');
-	if ($action == 'save') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+	public function save() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plans = json_decode(init('plans'), true);
@@ -39,7 +43,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 	
-	if ($action == 'execute') {
+	public function execute() {
 		$plan = plan::byId(init('id'));
 		if (!is_object($plan)) {
 			throw new Exception(__('Aucun plan correspondant', __FILE__));
@@ -47,7 +51,7 @@ ajaxHandle(function ($action)
 		return $plan->execute();
 	}
 	
-	if ($action == 'planHeader') {
+	public function planHeader() {
 		$return = array();
 		foreach (plan::byPlanHeaderId(init('planHeader_id')) as $plan) {
 			$result = $plan->getHtml(init('version'));
@@ -58,7 +62,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 	
-	if ($action == 'create') {
+	public function create() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan = new plan();
@@ -67,7 +71,7 @@ ajaxHandle(function ($action)
 		return $plan->getHtml(init('version'));
 	}
 	
-	if ($action == 'copy') {
+	public function copy() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan = plan::byId(init('id'));
@@ -77,7 +81,7 @@ ajaxHandle(function ($action)
 		return $plan->copy()->getHtml(init('version', 'dashboard'));
 	}
 	
-	if ($action == 'get') {
+	public function get() {
 		$plan = plan::byId(init('id'));
 		if (!is_object($plan)) {
 			throw new Exception(__('Aucun plan correspondant', __FILE__));
@@ -85,7 +89,7 @@ ajaxHandle(function ($action)
 		return $plan->getHtml('dashboard');
 	}
 	
-	if ($action == 'remove') {
+	public function remove() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan = plan::byId(init('id'));
@@ -95,7 +99,7 @@ ajaxHandle(function ($action)
 		return $plan->remove();
 	}
 	
-	if ($action == 'removePlanHeader') {
+	public function removePlanHeader() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
@@ -106,7 +110,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 	
-	if ($action == 'allHeader') {
+	public function allHeader() {
 		$planHeaders = planHeader::all();
 		$return = array();
 		foreach ($planHeaders as $planHeader) {
@@ -117,7 +121,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 	
-	if ($action == 'getPlanHeader') {
+	public function getPlanHeader() {
 		$planHeader = planHeader::byId(init('id'));
 		if (!is_object($planHeader)) {
 			throw new Exception(__('Plan header inconnu. Vérifiez l\'ID ', __FILE__) . init('id'));
@@ -130,7 +134,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 	
-	if ($action == 'savePlanHeader') {
+	public function savePlanHeader() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$planHeader_ajax = json_decode(init('planHeader'), true);
@@ -146,7 +150,7 @@ ajaxHandle(function ($action)
 		return utils::o2a($planHeader);
 	}
 	
-	if ($action == 'copyPlanHeader') {
+	public function copyPlanHeader() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
@@ -156,7 +160,7 @@ ajaxHandle(function ($action)
 		return utils::o2a($planHeader->copy(init('name')));
 	}
 	
-	if ($action == 'removeImageHeader') {
+	public function removeImageHeader() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
@@ -170,7 +174,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 	
-	if ($action == 'uploadImage') {
+	public function uploadImage() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
@@ -209,7 +213,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 	
-	if ($action == 'uploadImagePlan') {
+	public function uploadImagePlan() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan = plan::byId(init('id'));
@@ -242,7 +246,6 @@ ajaxHandle(function ($action)
 		$plan->save();
 		return '';
 	}
-	
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+}
+
+ajaxHandle(new AjaxPlanController());

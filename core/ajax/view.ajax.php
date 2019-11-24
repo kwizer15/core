@@ -21,10 +21,14 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxViewController implements AjaxController
 {
-    ajax::checkAccess('');
-	if ($action == 'remove') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+	public function remove() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$view = view::byId(init('id'));
@@ -35,11 +39,11 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'all') {
+	public function all() {
 		return utils::o2a(view::all());
 	}
 
-	if ($action == 'get') {
+	public function get() {
 		if (init('id') == 'all' || is_json(init('id'))) {
 			if (is_json(init('id'))) {
 				$view_ajax = json_decode(init('id'), true);
@@ -64,7 +68,7 @@ ajaxHandle(function ($action)
 		}
 	}
 
-	if ($action == 'save') {
+	public function save() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$view = view::byId(init('view_id'));
@@ -97,7 +101,7 @@ ajaxHandle(function ($action)
 		return utils::o2a($view);
 	}
 
-	if ($action == 'getEqLogicviewZone') {
+	public function getEqLogicviewZone() {
 		$viewZone = viewZone::byId(init('viewZone_id'));
 		if (!is_object($viewZone)) {
 			throw new Exception(__('Vue non trouvée. Vérifiez l\'ID', __FILE__));
@@ -112,7 +116,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'setComponentOrder') {
+	public function setComponentOrder() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$components = json_decode(init('components'), true);
@@ -144,7 +148,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'setOrder') {
+	public function setOrder() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$order = 1;
@@ -159,7 +163,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'removeImage') {
+	public function removeImage() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$view = view::byId(init('id'));
@@ -172,7 +176,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'uploadImage') {
+	public function uploadImage() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$view = view::byId(init('id'));
@@ -206,7 +210,6 @@ ajaxHandle(function ($action)
 		$view->save();
 		return '';
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxViewController());

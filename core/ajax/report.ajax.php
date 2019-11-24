@@ -21,10 +21,14 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxReportController implements AjaxController
 {
-    ajax::checkAccess('admin');
-	if ($action == 'list') {
+    public function getDefaultAccess()
+    {
+        return 'admin';
+    }
+
+	public function list() {
 		$return = array();
 		$path = __DIR__ . '/../../data/report/' . init('type') . '/' . init('id') . '/';
 		foreach (ls($path, '*') as $value) {
@@ -33,7 +37,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'get') {
+	public function get() {
 		$path = __DIR__ . '/../../data/report/' . init('type') . '/' . init('id') . '/' . init('report');
 		$return = pathinfo($path);
 		$return['path'] = $path;
@@ -42,7 +46,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'remove') {
+	public function remove() {
 		$path = __DIR__ . '/../../data/report/' . init('type') . '/' . init('id') . '/' . init('report');
 		if (file_exists($path)) {
 			unlink($path);
@@ -53,14 +57,13 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'removeAll') {
+	public function removeAll() {
 		$path = __DIR__ . '/../../data/report/' . init('type') . '/' . init('id') . '/';
 		foreach (ls($path, '*') as $value) {
 			unlink($path . $value);
 		}
 		return $return; // FIXME: variable inconnue
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxReportController());

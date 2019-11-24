@@ -21,19 +21,24 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxNoteController implements AjaxController
 {
-	if ($action == 'all') {
+    public function getDefaultAccess()
+    {
+        return null;
+    }
+
+	public function all() {
         ajax::checkAccess('admin');
 		return utils::o2a(note::all());
 	}
 
-	if ($action == 'byId') {
+	public function byId() {
         ajax::checkAccess('admin');
 		return utils::o2a(note::byId(init('id')));
 	}
 
-	if ($action == 'save') {
+	public function save() {
         ajax::checkAccess('admin');
 		$note_json = json_decode(init('note'), true);
 		if (isset($note_json['id'])) {
@@ -47,7 +52,7 @@ ajaxHandle(function ($action)
 		return utils::o2a($note);
 	}
 
-	if ($action == 'remove') {
+	public function remove() {
         ajax::checkAccess('admin');
 		$note = note::byId(init('id'));
 		if (!is_object($note)) {
@@ -56,9 +61,6 @@ ajaxHandle(function ($action)
 		$note->remove();
 		return '';
 	}
+}
 
-    ajax::checkAccess('');
-
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxNoteController());

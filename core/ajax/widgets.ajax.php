@@ -21,15 +21,18 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxWidgetsController implements AjaxController
 {
-  ajax::checkAccess('admin');
+    public function getDefaultAccess()
+    {
+        return 'admin';
+    }
 
-  if ($action == 'all') {
+  public function all() {
     return utils::o2a(widgets::all());
   }
   
-  if ($action == 'byId') {
+  public function byId() {
     $widget = widgets::byId(init('id'));
     $result = utils::o2a($widget);
     $result['usedBy'] = array();
@@ -42,7 +45,7 @@ ajaxHandle(function ($action)
     return $result;
   }
   
-  if ($action == 'remove') {
+  public function remove() {
     $widgets = widgets::byId(init('id'));
     if(!is_object($widgets)){
       throw new Exception(__('Widgets inconnue - Vérifiez l\'id', __FILE__).init('id'));
@@ -51,7 +54,7 @@ ajaxHandle(function ($action)
     return '';
   }
   
-  if ($action == 'save') {
+  public function save() {
     unautorizedInDemo();
     $widgets_json = json_decode(init('widgets'), true);
     if (isset($widgets_json['id'])) {
@@ -65,11 +68,11 @@ ajaxHandle(function ($action)
     return utils::o2a($widgets);
   }
   
-  if ($action == 'getTemplateConfiguration') {
+  public function getTemplateConfiguration() {
     return widgets::getTemplateConfiguration(init('template'));
   }
   
-  if ($action == 'getPreview') {
+  public function getPreview() {
     $widget = widgets::byId(init('id'));
     $usedBy = $widget->getUsedBy();
     if(!is_array($usedBy) || count($usedBy) == 0){
@@ -78,11 +81,9 @@ ajaxHandle(function ($action)
     return array('html' =>$usedBy[0]->getEqLogic()->toHtml('dashboard'));
   }
   
-  if ($action == 'replacement') {
+  public function replacement() {
     return widgets::replacement(init('version'),init('replace'),init('by'));
   }
-  
-  throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-  
-  /*     * *********Catch exeption*************** */
-});
+}
+
+ajaxHandle(new AjaxWidgetsController());

@@ -21,13 +21,16 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxEventController implements AjaxController
 {
-    ajax::checkAccess('');
-	if ($action == 'changes') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+	public function changes() {
 		return event::changes(init('datetime', 0), 59);
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxEventController());

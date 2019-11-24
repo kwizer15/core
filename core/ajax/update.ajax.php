@@ -21,18 +21,19 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxUpdateController implements AjaxController
 {
-    ajax::checkAccess('');
-	if ($action == 'nbUpdate') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+	public function nbUpdate() {
 		return update::nbNeedUpdate();
 	}
 
-	if (!isConnect('admin')) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
-	}
-
-	if ($action == 'all') {
+	public function all() {
+        ajax::checkAccess('admin');
 		$return = array();
 		foreach (update::all(init('filter')) as $update) {
 			$infos = utils::o2a($update);
@@ -49,13 +50,15 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'checkAllUpdate') {
+	public function checkAllUpdate() {
+        ajax::checkAccess('admin');
 		unautorizedInDemo();
 		update::checkAllUpdate();
 		return '';
 	}
 
-	if ($action == 'update') {
+	public function update() {
+        ajax::checkAccess('admin');
 		unautorizedInDemo();
 		log::clear('update');
 		$update = update::byId(init('id'));
@@ -88,7 +91,8 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'remove') {
+	public function remove() {
+        ajax::checkAccess('admin');
 		unautorizedInDemo();
 		update::findNewUpdateObject();
 		$update = update::byId(init('id'));
@@ -102,7 +106,8 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'checkUpdate') {
+	public function checkUpdate() {
+        ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$update = update::byId(init('id'));
 		if (!is_object($update)) {
@@ -115,13 +120,15 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'updateAll') {
+	public function updateAll() {
+        ajax::checkAccess('admin');
 		unautorizedInDemo();
 		jeedom::update(json_decode(init('options', '{}'), true));
 		return '';
 	}
 
-	if ($action == 'save') {
+	public function save() {
+        ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$new = false;
 		$update_json = json_decode(init('update'), true);
@@ -151,13 +158,15 @@ ajaxHandle(function ($action)
 		return utils::o2a($update);
 	}
 
-	if ($action == 'saves') {
+	public function saves() {
+        ajax::checkAccess('admin');
 		unautorizedInDemo();
 		utils::processJsonObject('update', init('updates'));
 		return '';
 	}
 
-	if ($action == 'preUploadFile') {
+	public function preUploadFile() {
+        ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$uploaddir = '/tmp';
 		if (!file_exists($uploaddir)) {
@@ -178,7 +187,6 @@ ajaxHandle(function ($action)
 		}
 		return $uploaddir . '/' . $filename;
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxUpdateController());

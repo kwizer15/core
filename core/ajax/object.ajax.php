@@ -21,10 +21,14 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxObjectController implements AjaxController
 {
-    ajax::checkAccess('');
-	if ($action == 'remove') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+	public function remove() {
 		unautorizedInDemo();
         ajax::checkAccess('admin');
 		$object = jeeObject::byId(init('id'));
@@ -35,7 +39,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 	
-	if ($action == 'byId') {
+	public function byId() {
 		$object = jeeObject::byId(init('id'));
 		if (!is_object($object)) {
 			throw new Exception(__('Objet inconnu. Vérifiez l\'ID ', __FILE__) . init('id'));
@@ -43,12 +47,12 @@ ajaxHandle(function ($action)
 		return jeedom::toHumanReadable(utils::o2a($object));
 	}
 	
-	if ($action == 'createSummaryVirtual') {
+	public function createSummaryVirtual() {
 		jeeObject::createSummaryToVirtual(init('key'));
 		return '';
 	}
 	
-	if ($action == 'all') {
+	public function all() {
 		$objects = jeeObject::buildTree();
 		if (init('onlyHasEqLogic') != '') {
 			$return = array();
@@ -63,7 +67,7 @@ ajaxHandle(function ($action)
 		return utils::o2a($objects);
 	}
 	
-	if ($action == 'save') {
+	public function save() {
 		unautorizedInDemo();
         ajax::checkAccess('admin');
 		$object_json = json_decode(init('object'), true);
@@ -78,7 +82,7 @@ ajaxHandle(function ($action)
 		return utils::o2a($object);
 	}
 	
-	if ($action == 'getChild') {
+	public function getChild() {
 		$object = jeeObject::byId(init('id'));
 		if (!is_object($object)) {
 			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
@@ -87,7 +91,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 	
-	if ($action == 'toHtml') {
+	public function toHtml() {
 		if (init('id') == '' || init('id') == 'all' || is_json(init('id'))) {
 			if (is_json(init('id'))) {
 				$objects = json_decode(init('id'), true);
@@ -182,7 +186,7 @@ ajaxHandle(function ($action)
 		}
 	}
 	
-	if ($action == 'setOrder') {
+	public function setOrder() {
         ajax::checkAccess('admin');
 		$position = 1;
 		foreach (json_decode(init('objects'), true) as $id) {
@@ -196,7 +200,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 	
-	if ($action == 'getSummaryHtml') {
+	public function getSummaryHtml() {
 		if (init('ids') != '') {
 			$return = array();
 			foreach (json_decode(init('ids'), true) as $id => $value) {
@@ -229,7 +233,7 @@ ajaxHandle(function ($action)
 		}
 	}
 	
-	if ($action == 'removeImage') {
+	public function removeImage() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$object = jeeObject::byId(init('id'));
@@ -243,7 +247,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 	
-	if ($action == 'uploadImage') {
+	public function uploadImage() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$object = jeeObject::byId(init('id'));
@@ -283,7 +287,6 @@ ajaxHandle(function ($action)
 		$object->save();
 		return array('filepath' => $filepath);
 	}
-	
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+}
+
+ajaxHandle(new AjaxObjectController());

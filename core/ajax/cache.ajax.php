@@ -21,32 +21,34 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxCacheController implements AjaxController
 {
-    ajax::checkAccess('admin');
+    public function getDefaultAccess()
+    {
+        return 'admin';
+    }
 
-	if ($action == 'flush') {
+	public function flush() {
 		unautorizedInDemo();
 		cache::flush();
 		return '';
 	}
 	
-	if ($action == 'flushWidget') {
+	public function flushWidget() {
 		unautorizedInDemo();
 		cache::flushWidget();
 		return '';
 	}
 	
-	if ($action == 'clean') {
+	public function clean() {
 		unautorizedInDemo();
 		cache::clean();
 		return '';
 	}
 	
-	if ($action == 'stats') {
+	public function stats() {
 		return cache::stats();
 	}
-	
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+}
+
+ajaxHandle(new AjaxCacheController());

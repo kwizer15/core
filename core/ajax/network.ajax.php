@@ -21,23 +21,26 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxNetworkController implements AjaxController
 {
-    ajax::checkAccess('admin');
-	if ($action == 'restartDns') {
+    public function getDefaultAccess()
+    {
+        return 'admin';
+    }
+
+	public function restartDns() {
 		unautorizedInDemo();
 		config::save('market::allowDNS', 1);
 		network::dns_start();
 		return '';
 	}
 
-	if ($action == 'stopDns') {
+	public function stopDns() {
 		unautorizedInDemo();
 		config::save('market::allowDNS', 0);
 		network::dns_stop();
 		return '';
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxNetworkController());

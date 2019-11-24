@@ -21,10 +21,14 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxPluginController implements AjaxController
 {
-    ajax::checkAccess('');
-	if ($action == 'getConf') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+	public function getConf() {
         ajax::checkAccess('admin');
 		$plugin = plugin::byId(init('id'));
 		$update = update::byLogicalId(init('id'));
@@ -66,7 +70,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'toggle') {
+	public function toggle() {
 		unautorizedInDemo();
 		ajax::checkAccess('admin');
 		$plugin = plugin::byId(init('id'));
@@ -77,12 +81,12 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'all') {
-        ajax::checkAccess(''); // Double appel
+	public function all() {
+        ajax::checkAccess(''); // FIXME: Double appel
 		return utils::o2a(plugin::listPlugin(init('activateOnly',false)));
 	}
 
-	if ($action == 'getDependancyInfo') {
+	public function getDependancyInfo() {
 		ajax::checkAccess('admin');
 
 		$return = array('state' => 'nok', 'log' => 'nok');
@@ -93,7 +97,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'dependancyInstall') {
+	public function dependancyInstall() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plugin = plugin::byId(init('id'));
@@ -103,7 +107,7 @@ ajaxHandle(function ($action)
 		return $plugin->dependancy_install();
 	}
 
-	if ($action == 'getDeamonInfo') {
+	public function getDeamonInfo() {
 		ajax::checkAccess('admin');
 		$plugin_id = init('id');
 		$return = array('launchable_message' => '', 'launchable' => 'nok', 'state' => 'nok', 'log' => 'nok', 'auto' => 0);
@@ -115,7 +119,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'deamonStart') {
+	public function deamonStart() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plugin_id = init('id');
@@ -126,7 +130,7 @@ ajaxHandle(function ($action)
 		return $plugin->deamon_start(init('forceRestart', 0));
 	}
 
-	if ($action == 'deamonStop') {
+	public function deamonStop() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plugin = plugin::byId(init('id'));
@@ -136,7 +140,7 @@ ajaxHandle(function ($action)
 		return $plugin->deamon_stop();
 	}
 
-	if ($action == 'deamonChangeAutoMode') {
+	public function deamonChangeAutoMode() {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plugin = plugin::byId(init('id'));
@@ -145,7 +149,6 @@ ajaxHandle(function ($action)
 		}
 		return $plugin->deamon_changeAutoMode(init('mode'));
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxPluginController());

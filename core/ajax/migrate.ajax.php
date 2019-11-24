@@ -21,53 +21,56 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxMigrateController implements AjaxController
 {
-    ajax::checkAccess('admin');
-	if ($action == 'usbTry') {
+    public function getDefaultAccess()
+    {
+        return 'admin';
+    }
+
+	public function usbTry() {
 		$usbTry = migrate::usbTry();
 		return $usbTry;
 	}
 	
-	if ($action == 'backupToUsb') {
+	public function backupToUsb() {
 		$backupToUsb = migrate::backupToUsb();
 		return $backupToUsb;
 	}
 	
-	if ($action == 'imageToUsb') {
+	public function imageToUsb() {
 		$imageToUsb = migrate::imageToUsb();
 		return $imageToUsb;
 	}
 	
-	if ($action == 'freeSpaceUsb') {
+	public function freeSpaceUsb() {
 		$freeSpaceUsb = migrate::freeSpaceUsb();
 		return $freeSpaceUsb;
 	}
 	
-	if ($action == 'getStep') {
+	public function getStep() {
 		$valueMigrate = config::byKey('stepMigrate');
 		return $valueMigrate;
 	}
 	
-	if ($action == 'setStep') {
+	public function setStep() {
 		if(init('stepValues')){
 			config::save('stepMigrate', init('stepValues'));
 			return init('stepValues');
 		}
 	}
-	if ($action == 'renameImage'){
+	public function renameImage() {
 		$renameImage = migrate::renameImage();
 		return $renameImage;
 	}
-	if ($action == 'GoBackupInstall'){
+	public function GoBackupInstall() {
 		$GoBackupInstall = migrate::GoBackupInstall();
 		return $GoBackupInstall;
 	}
-	if ($action == 'finalisation'){
+	public function finalisation() {
 		$finalisation = migrate::finalisation();
 		return $finalisation;
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxMigrateController());

@@ -21,10 +21,14 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxTimelineController implements AjaxController
 {
-  ajax::checkAccess('');
-  if ($action == 'byFolder') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+  public function byFolder() {
     $return = array();
     $events = timeline::byFolder(init('folder','main'));
     foreach ($events as $event) {
@@ -36,16 +40,15 @@ ajaxHandle(function ($action)
     return $return;
   }
   
-  if ($action == 'deleteAll') {
+  public function deleteAll() {
     unautorizedInDemo();
     return timeline::cleaning(true);
   }
   
-  if ($action == 'listFolder') {
+  public function listFolder() {
     unautorizedInDemo();
     return timeline::listFolder();
   }
-  
-  throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-  /*     * *********Catch exeption*************** */
-});
+}
+
+ajaxHandle(new AjaxTimelineController());

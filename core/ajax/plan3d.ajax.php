@@ -21,10 +21,14 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxPlan3DController implements AjaxController
 {
-    ajax::checkAccess('');
-	if ($action == 'save') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+	public function save() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3ds = json_decode(init('plan3ds'), true);
@@ -39,7 +43,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'plan3dHeader') {
+	public function plan3dHeader() {
 		$return = array();
 		foreach (plan3d::byPlan3dHeaderId(init('plan3dHeader_id')) as $plan3d) {
 			$info = utils::o2a($plan3d);
@@ -49,7 +53,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'create') {
+	public function create() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3d = new plan3d();
@@ -58,7 +62,7 @@ ajaxHandle(function ($action)
 		return $plan3d->getHtml(init('version'));
 	}
 
-	if ($action == 'get') {
+	public function get() {
 		$plan3d = plan3d::byId(init('id'));
 		if (!is_object($plan3d)) {
 			throw new Exception(__('Aucun plan3d correspondant', __FILE__));
@@ -68,7 +72,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'byName') {
+	public function byName() {
 		$plan3d = plan3d::byName3dHeaderId(init('name'), init('plan3dHeader_id'));
 		if (!is_object($plan3d)) {
 			return '';
@@ -76,7 +80,7 @@ ajaxHandle(function ($action)
 		return $plan3d->getHtml();
 	}
 
-	if ($action == 'remove') {
+	public function remove() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3d = plan3d::byId(init('id'));
@@ -86,7 +90,7 @@ ajaxHandle(function ($action)
 		return $plan3d->remove();
 	}
 
-	if ($action == 'removeplan3dHeader') {
+	public function removeplan3dHeader() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3dHeader = plan3dHeader::byId(init('id'));
@@ -97,7 +101,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'allHeader') {
+	public function allHeader() {
 		$plan3dHeaders = plan3dHeader::all();
 		$return = array();
 		foreach ($plan3dHeaders as $plan3dHeader) {
@@ -108,7 +112,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'getplan3dHeader') {
+	public function getplan3dHeader() {
 		$plan3dHeader = plan3dHeader::byId(init('id'));
 		if (!is_object($plan3dHeader)) {
 			throw new Exception(__('plan3d header inconnu verifiez l\'id : ', __FILE__) . init('id'));
@@ -120,7 +124,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'saveplan3dHeader') {
+	public function saveplan3dHeader() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3dHeader_ajax = json_decode(init('plan3dHeader'), true);
@@ -136,7 +140,7 @@ ajaxHandle(function ($action)
 		return utils::o2a($plan3dHeader);
 	}
 
-	if ($action == 'uploadModel') {
+	public function uploadModel() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3dHeader = plan3dHeader::byId(init('id'));
@@ -188,7 +192,6 @@ ajaxHandle(function ($action)
 		$plan3dHeader->save();
 		return '';
 	}
+}
 
-	throw new Exception(__('Aucune methode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxPlan3DController());

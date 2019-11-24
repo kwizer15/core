@@ -21,10 +21,14 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxDataStoreController implements AjaxController
 {
-    ajax::checkAccess('');
-	if ($action == 'remove') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+	public function remove() {
 		$dataStore = dataStore::byId(init('id'));
 		if (!is_object($dataStore)) {
 			throw new Exception(__('Dépôt de données inconnu. Vérifiez l\'ID : ', __FILE__) . init('id'));
@@ -33,7 +37,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'save') {
+	public function save() {
 		if (init('id') == '') {
 			$dataStore = new dataStore();
 			$dataStore->setKey(init('key'));
@@ -50,7 +54,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'all') {
+	public function all() {
 		$dataStores = dataStore::byTypeLinkId(init('type'));
 		$return = array();
 		if (init('usedBy') == 1) {
@@ -82,7 +86,6 @@ ajaxHandle(function ($action)
 		}
 		return $return;
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxDataStoreController());

@@ -21,35 +21,38 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxLogController implements AjaxController
 {
-    ajax::checkAccess('admin');
-	if ($action == 'clear') {
+    public function getDefaultAccess()
+    {
+        return 'admin';
+    }
+
+	public function clear() {
 		unautorizedInDemo();
 		log::clear(init('log'));
 		return '';
 	}
 
-	if ($action == 'remove') {
+	public function remove() {
 		unautorizedInDemo();
 		log::remove(init('log'));
 		return '';
 	}
 
-	if ($action == 'list') {
+	public function list() {
 		return log::liste();
 	}
 
-	if ($action == 'removeAll') {
+	public function removeAll() {
 		unautorizedInDemo();
 		log::removeAll();
 		return '';
 	}
 
-	if ($action == 'get') {
+	public function get() {
 		return log::get(init('log'), init('start', 0), init('nbLine', 99999));
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxLogController());

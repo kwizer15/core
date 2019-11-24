@@ -21,10 +21,14 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxScenarioController implements AjaxController
 {
-    ajax::checkAccess('');
-	if ($action == 'changeState') {
+    public function getDefaultAccess()
+    {
+        return '';
+    }
+
+	public function changeState() {
 		$scenario = scenario::byId(init('id'));
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario ID inconnu : ', __FILE__) . init('id'));
@@ -54,7 +58,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'listScenarioHtml') {
+	public function listScenarioHtml() {
 		$return = array();
 		foreach (scenario::all() as $scenario) {
 			if ($scenario->getIsVisible() == 1) {
@@ -64,7 +68,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'setOrder') {
+	public function setOrder() {
 		unautorizedInDemo();
 		$scenarios = json_decode(init('scenarios'), true);
 		foreach ($scenarios as $scenario_json) {
@@ -81,7 +85,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'testExpression') {
+	public function testExpression() {
 		$return = array();
 		$scenario = null;
 		$return['evaluate'] = scenarioExpression::setTags(jeedom::fromHumanReadable(init('expression')), $scenario, true);
@@ -93,11 +97,11 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'getTemplate') {
+	public function getTemplate() {
 		return scenario::getTemplate();
 	}
 
-	if ($action == 'convertToTemplate') {
+	public function convertToTemplate() {
 		$scenario = scenario::byId(init('id'));
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario ID inconnu : ', __FILE__) . init('id'));
@@ -117,7 +121,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'removeTemplate') {
+	public function removeTemplate() {
 		unautorizedInDemo();
 		$path = __DIR__ . '/../config/scenario';
 		if (file_exists($path . '/' . init('template'))) {
@@ -126,7 +130,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'loadTemplateDiff') {
+	public function loadTemplateDiff() {
 		$path = __DIR__ . '/../config/scenario';
 		if (!file_exists($path . '/' . init('template'))) {
 			throw new Exception('Fichier non trouvé : ' . $path . '/' . init('template'));
@@ -172,7 +176,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'applyTemplate') {
+	public function applyTemplate() {
 		unautorizedInDemo();
 		$path = __DIR__ . '/../config/scenario';
 		if (!file_exists($path . '/' . init('template'))) {
@@ -215,7 +219,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'all') {
+	public function all() {
 		$scenarios = scenario::all();
 		$return = array();
 		foreach ($scenarios as $scenario) {
@@ -226,7 +230,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'saveAll') {
+	public function saveAll() {
 		unautorizedInDemo();
 		$scenarios = json_decode(init('scenarios'), true);
 		if (is_array($scenarios)) {
@@ -242,7 +246,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'autoCompleteGroup') {
+	public function autoCompleteGroup() {
         ajax::checkAccess('admin');
 		$return = array();
 		foreach (scenario::listGroup(init('term')) as $group) {
@@ -251,7 +255,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'toHtml') {
+	public function toHtml() {
 		if (init('id') == 'all' || is_json(init('id'))) {
 			if (is_json(init('id'))) {
 				$scenario_ajax = json_decode(init('id'), true);
@@ -276,7 +280,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'remove') {
+	public function remove() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$scenario = scenario::byId(init('id'));
@@ -290,7 +294,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'emptyLog') {
+	public function emptyLog() {
         ajax::checkAccess('admin');
 		$scenario = scenario::byId(init('id'));
 		if (!is_object($scenario)) {
@@ -305,7 +309,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'copy') {
+	public function copy() {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$scenario = scenario::byId(init('id'));
@@ -315,7 +319,7 @@ ajaxHandle(function ($action)
 		return utils::o2a($scenario->copy(init('name')));
 	}
 
-	if ($action == 'get') {
+	public function get() {
 		$scenario = scenario::byId(init('id'));
 		if (!is_object($scenario)) {
 			throw new Exception(__('Scénario ID inconnu', __FILE__));
@@ -345,7 +349,7 @@ ajaxHandle(function ($action)
 		return $return;
 	}
 
-	if ($action == 'save') {
+	public function save() {
         ajax::checkAccess('admin');
 		if (!is_json(init('scenario'))) {
 			throw new Exception(__('Champs json invalide', __FILE__));
@@ -396,7 +400,7 @@ ajaxHandle(function ($action)
 		return utils::o2a($scenario_db);
 	}
 
-	if ($action == 'actionToHtml') {
+	public function actionToHtml() {
 		if (init('params') != '' && is_json(init('params'))) {
 			$return = array();
 			$params = json_decode(init('params'), true);
@@ -418,7 +422,7 @@ ajaxHandle(function ($action)
 		return scenarioExpression::getExpressionOptions(init('expression'), init('option'));
 	}
 
-	if ($action == 'templateupload') {
+	public function templateupload() {
 		unautorizedInDemo();
 		$uploaddir = __DIR__ . '/../../core/config/scenario/';
 		if (!file_exists($uploaddir)) {
@@ -446,7 +450,6 @@ ajaxHandle(function ($action)
 		return '';
 
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxScenarioController());

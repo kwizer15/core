@@ -21,16 +21,20 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxListenerController implements AjaxController
 {
-    ajax::checkAccess('admin');
-	if ($action == 'save') {
+    public function getDefaultAccess()
+    {
+        return 'admin';
+    }
+
+	public function save() {
 		unautorizedInDemo();
 		utils::processJsonObject('listener', init('listeners'));
 		return '';
 	}
 
-	if ($action == 'remove') {
+	public function remove() {
 		unautorizedInDemo();
 		$listener = listener::byId(init('id'));
 		if (!is_object($listener)) {
@@ -40,7 +44,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 
-	if ($action == 'all') {
+	public function all() {
 		$listeners = utils::o2a(listener::all(true));
 		foreach ($listeners as &$listener) {
 			$listener['event_str'] = '';
@@ -51,8 +55,6 @@ ajaxHandle(function ($action)
 		}
 		return $listeners;
 	}
+}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-
-	/*     * *********Catch exeption*************** */
-});
+ajaxHandle(new AjaxListenerController());

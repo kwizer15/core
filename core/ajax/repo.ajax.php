@@ -21,35 +21,39 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ($action)
+class AjaxRepoController implements AjaxController
 {
-    ajax::checkAccess('admin');
-	if ($action == 'uploadCloud') {
+    public function getDefaultAccess()
+    {
+        return 'admin';
+    }
+
+	public function uploadCloud() {
 		unautorizedInDemo();
 		repo_market::backup_send(init('backup'));
 		return '';
 	}
 	
-	if ($action == 'restoreCloud') {
+	public function restoreCloud() {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		$class::backup_restore(init('backup'));
 		return '';
 	}
 	
-	if ($action == 'pullInstall') {
+	public function pullInstall() {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		return $class::pullInstall();
 	}
 	
-	if ($action == 'sendReportBug') {
+	public function sendReportBug() {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		return $class::saveTicket(json_decode(init('ticket'), true));
 	}
 	
-	if ($action == 'install') {
+	public function install() {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		$repo = $class::byId(init('id'));
@@ -70,17 +74,17 @@ ajaxHandle(function ($action)
 		return '';
 	}
 	
-	if ($action == 'test') {
+	public function test() {
 		$class = 'repo_' . init('repo');
 		$class::test();
 		return '';
 	}
 	
-	if ($action == 'remove') {
+	public function remove() {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		$repo = $class::byId(init('id'));
-		if (!is_object($market)) {
+		if (!is_object($market)) { // FIXME: variable non définie
 			throw new Exception(__('Impossible de trouver l\'objet associé : ', __FILE__) . init('id'));
 		}
 		$update = update::byTypeAndLogicalId($repo->getType(), $repo->getLogicalId());
@@ -98,7 +102,7 @@ ajaxHandle(function ($action)
 		return '';
 	}
 	
-	if ($action == 'save') {
+	public function save() {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		$repo_ajax = json_decode(init('market'), true);
@@ -112,12 +116,12 @@ ajaxHandle(function ($action)
 		return '';
 	}
 	
-	if ($action == 'getInfo') {
+	public function getInfo() {
 		$class = 'repo_' . init('repo');
 		return $class::getInfo(init('logicalId'));
 	}
 	
-	if ($action == 'byLogicalId') {
+	public function byLogicalId() {
 		$class = 'repo_' . init('repo');
 		if (init('noExecption', 0) == 1) {
 			try {
@@ -130,7 +134,7 @@ ajaxHandle(function ($action)
 		}
 	}
 	
-	if ($action == 'setRating') {
+	public function setRating() {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		$repo = $class::byId(init('id'));
@@ -141,12 +145,10 @@ ajaxHandle(function ($action)
 		return '';
 	}
 	
-	if ($action == 'backupList') {
+	public function backupList() {
 		$class = 'repo_' . init('repo');
 		return $class::backup_list();
 	}
-	
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
-	
-	/*     * *********Catch exeption*************** */
-});
+}
+
+ajaxHandle(new AjaxRepoController());
