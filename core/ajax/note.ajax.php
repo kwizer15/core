@@ -21,19 +21,19 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
-	if (init('action') == 'all') {
+	if ($action == 'all') {
         ajax::checkAccess('admin');
 		return utils::o2a(note::all());
 	}
 
-	if (init('action') == 'byId') {
+	if ($action == 'byId') {
         ajax::checkAccess('admin');
 		return utils::o2a(note::byId(init('id')));
 	}
 
-	if (init('action') == 'save') {
+	if ($action == 'save') {
         ajax::checkAccess('admin');
 		$note_json = json_decode(init('note'), true);
 		if (isset($note_json['id'])) {
@@ -47,7 +47,7 @@ ajaxHandle(function ()
 		return utils::o2a($note);
 	}
 
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
         ajax::checkAccess('admin');
 		$note = note::byId(init('id'));
 		if (!is_object($note)) {
@@ -59,6 +59,6 @@ ajaxHandle(function ()
 
     ajax::checkAccess('');
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

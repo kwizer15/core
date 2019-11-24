@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('');
-	if (init('action') == 'getConf') {
+	if ($action == 'getConf') {
         ajax::checkAccess('admin');
 		$plugin = plugin::byId(init('id'));
 		$update = update::byLogicalId(init('id'));
@@ -66,7 +66,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'toggle') {
+	if ($action == 'toggle') {
 		unautorizedInDemo();
 		ajax::checkAccess('admin');
 		$plugin = plugin::byId(init('id'));
@@ -77,12 +77,12 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'all') {
+	if ($action == 'all') {
         ajax::checkAccess(''); // Double appel
 		return utils::o2a(plugin::listPlugin(init('activateOnly',false)));
 	}
 
-	if (init('action') == 'getDependancyInfo') {
+	if ($action == 'getDependancyInfo') {
 		ajax::checkAccess('admin');
 
 		$return = array('state' => 'nok', 'log' => 'nok');
@@ -93,7 +93,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'dependancyInstall') {
+	if ($action == 'dependancyInstall') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plugin = plugin::byId(init('id'));
@@ -103,7 +103,7 @@ ajaxHandle(function ()
 		return $plugin->dependancy_install();
 	}
 
-	if (init('action') == 'getDeamonInfo') {
+	if ($action == 'getDeamonInfo') {
 		ajax::checkAccess('admin');
 		$plugin_id = init('id');
 		$return = array('launchable_message' => '', 'launchable' => 'nok', 'state' => 'nok', 'log' => 'nok', 'auto' => 0);
@@ -115,7 +115,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'deamonStart') {
+	if ($action == 'deamonStart') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plugin_id = init('id');
@@ -126,7 +126,7 @@ ajaxHandle(function ()
 		return $plugin->deamon_start(init('forceRestart', 0));
 	}
 
-	if (init('action') == 'deamonStop') {
+	if ($action == 'deamonStop') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plugin = plugin::byId(init('id'));
@@ -136,7 +136,7 @@ ajaxHandle(function ()
 		return $plugin->deamon_stop();
 	}
 
-	if (init('action') == 'deamonChangeAutoMode') {
+	if ($action == 'deamonChangeAutoMode') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plugin = plugin::byId(init('id'));
@@ -146,6 +146,6 @@ ajaxHandle(function ()
 		return $plugin->deamon_changeAutoMode(init('mode'));
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

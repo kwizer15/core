@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('');
-	if (init('action') == 'toHtml') {
+	if ($action == 'toHtml') {
 		if (init('ids') != '') {
 			$return = array();
 			foreach (json_decode(init('ids'), true) as $id => $value) {
@@ -50,7 +50,7 @@ ajaxHandle(function ()
 		}
 	}
 
-	if (init('action') == 'setIsVisibles') {
+	if ($action == 'setIsVisibles') {
 		unautorizedInDemo();
 		$cmds = json_decode(init('cmds'), true);
 		foreach ($cmds as $id) {
@@ -64,7 +64,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'execCmd') {
+	if ($action == 'execCmd') {
 		$cmd = cmd::byId(init('id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande ID inconnu : ', __FILE__) . init('id'));
@@ -86,7 +86,7 @@ ajaxHandle(function ()
 			return $cmd->execCmd($options);
 		}
 
-	if (init('action') == 'getByObjectNameEqNameCmdName') {
+	if ($action == 'getByObjectNameEqNameCmdName') {
 		$cmd = cmd::byObjectNameEqLogicNameCmdName(init('object_name'), init('eqLogic_name'), init('cmd_name'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Cmd inconnu : ', __FILE__) . init('object_name') . '/' . init('eqLogic_name') . '/' . init('cmd_name'));
@@ -94,7 +94,7 @@ ajaxHandle(function ()
 		return $cmd->getId();
 	}
 
-	if (init('action') == 'getByObjectNameCmdName') {
+	if ($action == 'getByObjectNameCmdName') {
 		$cmd = cmd::byObjectNameCmdName(init('object_name'), init('cmd_name'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Cmd inconnu : ', __FILE__) . init('object_name') . '/' . init('cmd_name'), 9999);
@@ -102,7 +102,7 @@ ajaxHandle(function ()
 		return utils::o2a($cmd);
 	}
 
-	if (init('action') == 'byId') {
+	if ($action == 'byId') {
 		$cmd = cmd::byId(init('id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande inconnue : ', __FILE__) . init('id'), 9999);
@@ -110,19 +110,19 @@ ajaxHandle(function ()
 		return jeedom::toHumanReadable(utils::o2a($cmd));
 	}
 
-	if (init('action') == 'copyHistoryToCmd') {
+	if ($action == 'copyHistoryToCmd') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		return history::copyHistoryToCmd(init('source_id'), init('target_id'));
 	}
 
-	if (init('action') == 'replaceCmd') {
+	if ($action == 'replaceCmd') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		return jeedom::replaceTag(array('#' . str_replace('#', '', init('source_id')) . '#' => '#' . str_replace('#', '', init('target_id')) . '#'));
 	}
 
-	if (init('action') == 'byHumanName') {
+	if ($action == 'byHumanName') {
 		$cmd_id = cmd::humanReadableToCmd(init('humanName'));
 		$cmd = cmd::byId(str_replace('#', '', $cmd_id));
 		if (!is_object($cmd)) {
@@ -131,7 +131,7 @@ ajaxHandle(function ()
 		return utils::o2a($cmd);
 	}
 
-	if (init('action') == 'usedBy') {
+	if ($action == 'usedBy') {
         ajax::checkAccess('admin');
 		$cmd = cmd::byId(init('id'));
 		if (!is_object($cmd)) {
@@ -160,15 +160,15 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'getHumanCmdName') {
+	if ($action == 'getHumanCmdName') {
 		return cmd::cmdToHumanReadable('#' . init('id') . '#');
 	}
 
-	if (init('action') == 'byEqLogic') {
+	if ($action == 'byEqLogic') {
 		return utils::o2a(cmd::byEqLogicId(init('eqLogic_id')));
 	}
 
-	if (init('action') == 'getCmd') {
+	if ($action == 'getCmd') {
 		$cmd = cmd::byId(init('id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande inconnue : ', __FILE__) . init('id'));
@@ -183,7 +183,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'save') {
+	if ($action == 'save') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$cmd_ajax = jeedom::fromHumanReadable(json_decode(init('cmd'), true));
@@ -196,7 +196,7 @@ ajaxHandle(function ()
 		return utils::o2a($cmd);
 	}
 
-	if (init('action') == 'multiSave') {
+	if ($action == 'multiSave') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$cmds = json_decode(init('cmd'), true);
@@ -211,7 +211,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'changeHistoryPoint') {
+	if ($action == 'changeHistoryPoint') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$history = history::byCmdIdDatetime(init('cmd_id'), init('datetime'));
@@ -240,7 +240,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'getHistory') {
+	if ($action == 'getHistory') {
 		global $JEEDOM_INTERNAL_CONFIG;
 		$return = array();
 		$data = array();
@@ -378,7 +378,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'emptyHistory') {
+	if ($action == 'emptyHistory') {
 		if (!isConnect('admin')) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
 		}
@@ -391,7 +391,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'setOrder') {
+	if ($action == 'setOrder') {
 		unautorizedInDemo();
 		$cmds = json_decode(init('cmds'), true);
 		$eqLogics = array();
@@ -427,7 +427,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'getDeadCmd') {
+	if ($action == 'getDeadCmd') {
 		$return = array(
 			'core' => array('cmd' => jeedom::deadCmd(),'name' => __('Jeedom',__FILE__)),
 			'cmd' => array('cmd' => cmd::deadCmd(),'name' => __('Commande',__FILE__)),
@@ -448,6 +448,6 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

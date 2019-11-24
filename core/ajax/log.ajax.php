@@ -21,35 +21,35 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('admin');
-	if (init('action') == 'clear') {
+	if ($action == 'clear') {
 		unautorizedInDemo();
 		log::clear(init('log'));
 		return '';
 	}
 
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
 		unautorizedInDemo();
 		log::remove(init('log'));
 		return '';
 	}
 
-	if (init('action') == 'list') {
+	if ($action == 'list') {
 		return log::liste();
 	}
 
-	if (init('action') == 'removeAll') {
+	if ($action == 'removeAll') {
 		unautorizedInDemo();
 		log::removeAll();
 		return '';
 	}
 
-	if (init('action') == 'get') {
+	if ($action == 'get') {
 		return log::get(init('log'), init('start', 0), init('nbLine', 99999));
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

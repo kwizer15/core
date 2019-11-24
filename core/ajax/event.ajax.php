@@ -21,13 +21,13 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('');
-	if (init('action') == 'changes') {
+	if ($action == 'changes') {
 		return event::changes(init('datetime', 0), 59);
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 /*     * *********Catch exeption*************** */
 });

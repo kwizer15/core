@@ -21,16 +21,16 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('admin');
-	if (init('action') == 'save') {
+    if ($action == 'save') {
 		unautorizedInDemo();
 		utils::processJsonObject('cron', init('crons'));
 		return '';
 	}
 
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
 		unautorizedInDemo();
 		$cron = cron::byId(init('id'));
 		if (!is_object($cron)) {
@@ -40,7 +40,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'all') {
+	if ($action == 'all') {
 		$crons = cron::all(true);
 		foreach ($crons as $cron) {
 			$cron->refresh();
@@ -48,7 +48,7 @@ ajaxHandle(function ()
 		return utils::o2a($crons);
 	}
 
-	if (init('action') == 'start') {
+	if ($action == 'start') {
 		$cron = cron::byId(init('id'));
 		if (!is_object($cron)) {
 			throw new Exception(__('Cron id inconnu', __FILE__));
@@ -58,7 +58,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'stop') {
+	if ($action == 'stop') {
 		$cron = cron::byId(init('id'));
 		if (!is_object($cron)) {
 			throw new Exception(__('Cron id inconnu', __FILE__));
@@ -68,7 +68,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 
 	/*     * *********Catch exeption*************** */
 });

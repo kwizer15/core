@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('');
-    if (init('action') == 'genApiKey') {
+    if ($action == 'genApiKey') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		if (init('plugin') == 'core') {
@@ -39,7 +39,7 @@ ajaxHandle(function ()
 		}
 	}
 
-	if (init('action') == 'getKey') {
+	if ($action == 'getKey') {
 		$keys = init('key');
 		if ($keys == '') {
 			throw new Exception(__('Aucune clef demandée', __FILE__));
@@ -60,7 +60,7 @@ ajaxHandle(function ()
 		}
 	}
 
-	if (init('action') == 'addKey') {
+	if ($action == 'addKey') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$values = json_decode(init('value'), true);
@@ -70,7 +70,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'removeKey') {
+	if ($action == 'removeKey') {
 		unautorizedInDemo();
 		$keys = init('key');
 		if ($keys == '') {
@@ -88,6 +88,6 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 /*     * *********Catch exeption*************** */
 });

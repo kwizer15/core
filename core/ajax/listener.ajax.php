@@ -21,16 +21,16 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('admin');
-	if (init('action') == 'save') {
+	if ($action == 'save') {
 		unautorizedInDemo();
 		utils::processJsonObject('listener', init('listeners'));
 		return '';
 	}
 
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
 		unautorizedInDemo();
 		$listener = listener::byId(init('id'));
 		if (!is_object($listener)) {
@@ -40,7 +40,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'all') {
+	if ($action == 'all') {
 		$listeners = utils::o2a(listener::all(true));
 		foreach ($listeners as &$listener) {
 			$listener['event_str'] = '';
@@ -52,7 +52,7 @@ ajaxHandle(function ()
 		return $listeners;
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 
 	/*     * *********Catch exeption*************** */
 });

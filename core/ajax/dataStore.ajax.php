@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('');
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
 		$dataStore = dataStore::byId(init('id'));
 		if (!is_object($dataStore)) {
 			throw new Exception(__('Dépôt de données inconnu. Vérifiez l\'ID : ', __FILE__) . init('id'));
@@ -33,7 +33,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'save') {
+	if ($action == 'save') {
 		if (init('id') == '') {
 			$dataStore = new dataStore();
 			$dataStore->setKey(init('key'));
@@ -50,7 +50,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'all') {
+	if ($action == 'all') {
 		$dataStores = dataStore::byTypeLinkId(init('type'));
 		$return = array();
 		if (init('usedBy') == 1) {
@@ -78,11 +78,11 @@ ajaxHandle(function ()
 				$return[] = $info_datastore;
 			}
 		} else {
-			$return = utils::o2a($dataStore);
+			$return = utils::o2a($dataStore); // FIXME: variable inexistante
 		}
 		return $return;
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('');
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
 		unautorizedInDemo();
         ajax::checkAccess('admin');
 		$object = jeeObject::byId(init('id'));
@@ -35,7 +35,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'byId') {
+	if ($action == 'byId') {
 		$object = jeeObject::byId(init('id'));
 		if (!is_object($object)) {
 			throw new Exception(__('Objet inconnu. Vérifiez l\'ID ', __FILE__) . init('id'));
@@ -43,12 +43,12 @@ ajaxHandle(function ()
 		return jeedom::toHumanReadable(utils::o2a($object));
 	}
 	
-	if (init('action') == 'createSummaryVirtual') {
+	if ($action == 'createSummaryVirtual') {
 		jeeObject::createSummaryToVirtual(init('key'));
 		return '';
 	}
 	
-	if (init('action') == 'all') {
+	if ($action == 'all') {
 		$objects = jeeObject::buildTree();
 		if (init('onlyHasEqLogic') != '') {
 			$return = array();
@@ -63,7 +63,7 @@ ajaxHandle(function ()
 		return utils::o2a($objects);
 	}
 	
-	if (init('action') == 'save') {
+	if ($action == 'save') {
 		unautorizedInDemo();
         ajax::checkAccess('admin');
 		$object_json = json_decode(init('object'), true);
@@ -78,7 +78,7 @@ ajaxHandle(function ()
 		return utils::o2a($object);
 	}
 	
-	if (init('action') == 'getChild') {
+	if ($action == 'getChild') {
 		$object = jeeObject::byId(init('id'));
 		if (!is_object($object)) {
 			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
@@ -87,7 +87,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 	
-	if (init('action') == 'toHtml') {
+	if ($action == 'toHtml') {
 		if (init('id') == '' || init('id') == 'all' || is_json(init('id'))) {
 			if (is_json(init('id'))) {
 				$objects = json_decode(init('id'), true);
@@ -182,7 +182,7 @@ ajaxHandle(function ()
 		}
 	}
 	
-	if (init('action') == 'setOrder') {
+	if ($action == 'setOrder') {
         ajax::checkAccess('admin');
 		$position = 1;
 		foreach (json_decode(init('objects'), true) as $id) {
@@ -196,7 +196,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'getSummaryHtml') {
+	if ($action == 'getSummaryHtml') {
 		if (init('ids') != '') {
 			$return = array();
 			foreach (json_decode(init('ids'), true) as $id => $value) {
@@ -229,7 +229,7 @@ ajaxHandle(function ()
 		}
 	}
 	
-	if (init('action') == 'removeImage') {
+	if ($action == 'removeImage') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$object = jeeObject::byId(init('id'));
@@ -243,7 +243,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'uploadImage') {
+	if ($action == 'uploadImage') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$object = jeeObject::byId(init('id'));
@@ -284,6 +284,6 @@ ajaxHandle(function ()
 		return array('filepath' => $filepath);
 	}
 	
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

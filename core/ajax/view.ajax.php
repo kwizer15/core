@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('');
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$view = view::byId(init('id'));
@@ -35,11 +35,11 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'all') {
+	if ($action == 'all') {
 		return utils::o2a(view::all());
 	}
 
-	if (init('action') == 'get') {
+	if ($action == 'get') {
 		if (init('id') == 'all' || is_json(init('id'))) {
 			if (is_json(init('id'))) {
 				$view_ajax = json_decode(init('id'), true);
@@ -64,7 +64,7 @@ ajaxHandle(function ()
 		}
 	}
 
-	if (init('action') == 'save') {
+	if ($action == 'save') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$view = view::byId(init('view_id'));
@@ -97,7 +97,7 @@ ajaxHandle(function ()
 		return utils::o2a($view);
 	}
 
-	if (init('action') == 'getEqLogicviewZone') {
+	if ($action == 'getEqLogicviewZone') {
 		$viewZone = viewZone::byId(init('viewZone_id'));
 		if (!is_object($viewZone)) {
 			throw new Exception(__('Vue non trouvée. Vérifiez l\'ID', __FILE__));
@@ -112,7 +112,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'setComponentOrder') {
+	if ($action == 'setComponentOrder') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$components = json_decode(init('components'), true);
@@ -144,7 +144,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'setOrder') {
+	if ($action == 'setOrder') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$order = 1;
@@ -159,7 +159,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'removeImage') {
+	if ($action == 'removeImage') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$view = view::byId(init('id'));
@@ -172,7 +172,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'uploadImage') {
+	if ($action == 'uploadImage') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$view = view::byId(init('id'));
@@ -207,6 +207,6 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

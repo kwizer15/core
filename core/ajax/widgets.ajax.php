@@ -21,15 +21,15 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
   ajax::checkAccess('admin');
 
-  if (init('action') == 'all') {
+  if ($action == 'all') {
     return utils::o2a(widgets::all());
   }
   
-  if (init('action') == 'byId') {
+  if ($action == 'byId') {
     $widget = widgets::byId(init('id'));
     $result = utils::o2a($widget);
     $result['usedBy'] = array();
@@ -42,7 +42,7 @@ ajaxHandle(function ()
     return $result;
   }
   
-  if (init('action') == 'remove') {
+  if ($action == 'remove') {
     $widgets = widgets::byId(init('id'));
     if(!is_object($widgets)){
       throw new Exception(__('Widgets inconnue - Vérifiez l\'id', __FILE__).init('id'));
@@ -51,7 +51,7 @@ ajaxHandle(function ()
     return '';
   }
   
-  if (init('action') == 'save') {
+  if ($action == 'save') {
     unautorizedInDemo();
     $widgets_json = json_decode(init('widgets'), true);
     if (isset($widgets_json['id'])) {
@@ -65,11 +65,11 @@ ajaxHandle(function ()
     return utils::o2a($widgets);
   }
   
-  if (init('action') == 'getTemplateConfiguration') {
+  if ($action == 'getTemplateConfiguration') {
     return widgets::getTemplateConfiguration(init('template'));
   }
   
-  if (init('action') == 'getPreview') {
+  if ($action == 'getPreview') {
     $widget = widgets::byId(init('id'));
     $usedBy = $widget->getUsedBy();
     if(!is_array($usedBy) || count($usedBy) == 0){
@@ -78,11 +78,11 @@ ajaxHandle(function ()
     return array('html' =>$usedBy[0]->getEqLogic()->toHtml('dashboard'));
   }
   
-  if (init('action') == 'replacement') {
+  if ($action == 'replacement') {
     return widgets::replacement(init('version'),init('replace'),init('by'));
   }
   
-  throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+  throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
   
   /*     * *********Catch exeption*************** */
 });

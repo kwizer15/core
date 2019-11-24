@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('');
-	if (init('action') == 'nbUpdate') {
+	if ($action == 'nbUpdate') {
 		return update::nbNeedUpdate();
 	}
 
@@ -32,7 +32,7 @@ ajaxHandle(function ()
 		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
 	}
 
-	if (init('action') == 'all') {
+	if ($action == 'all') {
 		$return = array();
 		foreach (update::all(init('filter')) as $update) {
 			$infos = utils::o2a($update);
@@ -49,13 +49,13 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'checkAllUpdate') {
+	if ($action == 'checkAllUpdate') {
 		unautorizedInDemo();
 		update::checkAllUpdate();
 		return '';
 	}
 
-	if (init('action') == 'update') {
+	if ($action == 'update') {
 		unautorizedInDemo();
 		log::clear('update');
 		$update = update::byId(init('id'));
@@ -88,7 +88,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
 		unautorizedInDemo();
 		update::findNewUpdateObject();
 		$update = update::byId(init('id'));
@@ -102,7 +102,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'checkUpdate') {
+	if ($action == 'checkUpdate') {
 		unautorizedInDemo();
 		$update = update::byId(init('id'));
 		if (!is_object($update)) {
@@ -115,13 +115,13 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'updateAll') {
+	if ($action == 'updateAll') {
 		unautorizedInDemo();
 		jeedom::update(json_decode(init('options', '{}'), true));
 		return '';
 	}
 
-	if (init('action') == 'save') {
+	if ($action == 'save') {
 		unautorizedInDemo();
 		$new = false;
 		$update_json = json_decode(init('update'), true);
@@ -151,13 +151,13 @@ ajaxHandle(function ()
 		return utils::o2a($update);
 	}
 
-	if (init('action') == 'saves') {
+	if ($action == 'saves') {
 		unautorizedInDemo();
 		utils::processJsonObject('update', init('updates'));
 		return '';
 	}
 
-	if (init('action') == 'preUploadFile') {
+	if ($action == 'preUploadFile') {
 		unautorizedInDemo();
 		$uploaddir = '/tmp';
 		if (!file_exists($uploaddir)) {
@@ -179,6 +179,6 @@ ajaxHandle(function ()
 		return $uploaddir . '/' . $filename;
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

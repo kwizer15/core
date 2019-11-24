@@ -10,7 +10,7 @@ function ajaxHandle($callback)
             header('Content-Type: application/json');
         }
 
-        echo ajax::getResponse($callback());
+        echo ajax::getResponse($callback(init('action')));
     } catch (Exception $e) {
         echo ajax::getResponse(displayException($e), $e->getCode());
     }

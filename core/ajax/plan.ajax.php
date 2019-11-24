@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('');
-	if (init('action') == 'save') {
+	if ($action == 'save') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plans = json_decode(init('plans'), true);
@@ -39,7 +39,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'execute') {
+	if ($action == 'execute') {
 		$plan = plan::byId(init('id'));
 		if (!is_object($plan)) {
 			throw new Exception(__('Aucun plan correspondant', __FILE__));
@@ -47,7 +47,7 @@ ajaxHandle(function ()
 		return $plan->execute();
 	}
 	
-	if (init('action') == 'planHeader') {
+	if ($action == 'planHeader') {
 		$return = array();
 		foreach (plan::byPlanHeaderId(init('planHeader_id')) as $plan) {
 			$result = $plan->getHtml(init('version'));
@@ -58,7 +58,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 	
-	if (init('action') == 'create') {
+	if ($action == 'create') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan = new plan();
@@ -67,7 +67,7 @@ ajaxHandle(function ()
 		return $plan->getHtml(init('version'));
 	}
 	
-	if (init('action') == 'copy') {
+	if ($action == 'copy') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan = plan::byId(init('id'));
@@ -77,7 +77,7 @@ ajaxHandle(function ()
 		return $plan->copy()->getHtml(init('version', 'dashboard'));
 	}
 	
-	if (init('action') == 'get') {
+	if ($action == 'get') {
 		$plan = plan::byId(init('id'));
 		if (!is_object($plan)) {
 			throw new Exception(__('Aucun plan correspondant', __FILE__));
@@ -85,7 +85,7 @@ ajaxHandle(function ()
 		return $plan->getHtml('dashboard');
 	}
 	
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan = plan::byId(init('id'));
@@ -95,7 +95,7 @@ ajaxHandle(function ()
 		return $plan->remove();
 	}
 	
-	if (init('action') == 'removePlanHeader') {
+	if ($action == 'removePlanHeader') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
@@ -106,7 +106,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'allHeader') {
+	if ($action == 'allHeader') {
 		$planHeaders = planHeader::all();
 		$return = array();
 		foreach ($planHeaders as $planHeader) {
@@ -117,7 +117,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 	
-	if (init('action') == 'getPlanHeader') {
+	if ($action == 'getPlanHeader') {
 		$planHeader = planHeader::byId(init('id'));
 		if (!is_object($planHeader)) {
 			throw new Exception(__('Plan header inconnu. Vérifiez l\'ID ', __FILE__) . init('id'));
@@ -130,7 +130,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 	
-	if (init('action') == 'savePlanHeader') {
+	if ($action == 'savePlanHeader') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$planHeader_ajax = json_decode(init('planHeader'), true);
@@ -146,7 +146,7 @@ ajaxHandle(function ()
 		return utils::o2a($planHeader);
 	}
 	
-	if (init('action') == 'copyPlanHeader') {
+	if ($action == 'copyPlanHeader') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
@@ -156,7 +156,7 @@ ajaxHandle(function ()
 		return utils::o2a($planHeader->copy(init('name')));
 	}
 	
-	if (init('action') == 'removeImageHeader') {
+	if ($action == 'removeImageHeader') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
@@ -170,7 +170,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'uploadImage') {
+	if ($action == 'uploadImage') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
@@ -209,7 +209,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'uploadImagePlan') {
+	if ($action == 'uploadImagePlan') {
 		ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan = plan::byId(init('id'));
@@ -243,6 +243,6 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

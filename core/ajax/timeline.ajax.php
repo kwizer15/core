@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
   ajax::checkAccess('');
-  if (init('action') == 'byFolder') {
+  if ($action == 'byFolder') {
     $return = array();
     $events = timeline::byFolder(init('folder','main'));
     foreach ($events as $event) {
@@ -36,16 +36,16 @@ ajaxHandle(function ()
     return $return;
   }
   
-  if (init('action') == 'deleteAll') {
+  if ($action == 'deleteAll') {
     unautorizedInDemo();
     return timeline::cleaning(true);
   }
   
-  if (init('action') == 'listFolder') {
+  if ($action == 'listFolder') {
     unautorizedInDemo();
     return timeline::listFolder();
   }
   
-  throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+  throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
   /*     * *********Catch exeption*************** */
 });

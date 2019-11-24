@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('');
-	if (init('action') == 'save') {
+	if ($action == 'save') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3ds = json_decode(init('plan3ds'), true);
@@ -39,7 +39,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'plan3dHeader') {
+	if ($action == 'plan3dHeader') {
 		$return = array();
 		foreach (plan3d::byPlan3dHeaderId(init('plan3dHeader_id')) as $plan3d) {
 			$info = utils::o2a($plan3d);
@@ -49,7 +49,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'create') {
+	if ($action == 'create') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3d = new plan3d();
@@ -58,7 +58,7 @@ ajaxHandle(function ()
 		return $plan3d->getHtml(init('version'));
 	}
 
-	if (init('action') == 'get') {
+	if ($action == 'get') {
 		$plan3d = plan3d::byId(init('id'));
 		if (!is_object($plan3d)) {
 			throw new Exception(__('Aucun plan3d correspondant', __FILE__));
@@ -68,7 +68,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'byName') {
+	if ($action == 'byName') {
 		$plan3d = plan3d::byName3dHeaderId(init('name'), init('plan3dHeader_id'));
 		if (!is_object($plan3d)) {
 			return '';
@@ -76,7 +76,7 @@ ajaxHandle(function ()
 		return $plan3d->getHtml();
 	}
 
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3d = plan3d::byId(init('id'));
@@ -86,7 +86,7 @@ ajaxHandle(function ()
 		return $plan3d->remove();
 	}
 
-	if (init('action') == 'removeplan3dHeader') {
+	if ($action == 'removeplan3dHeader') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3dHeader = plan3dHeader::byId(init('id'));
@@ -97,7 +97,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'allHeader') {
+	if ($action == 'allHeader') {
 		$plan3dHeaders = plan3dHeader::all();
 		$return = array();
 		foreach ($plan3dHeaders as $plan3dHeader) {
@@ -108,7 +108,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'getplan3dHeader') {
+	if ($action == 'getplan3dHeader') {
 		$plan3dHeader = plan3dHeader::byId(init('id'));
 		if (!is_object($plan3dHeader)) {
 			throw new Exception(__('plan3d header inconnu verifiez l\'id : ', __FILE__) . init('id'));
@@ -120,7 +120,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 
-	if (init('action') == 'saveplan3dHeader') {
+	if ($action == 'saveplan3dHeader') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3dHeader_ajax = json_decode(init('plan3dHeader'), true);
@@ -136,7 +136,7 @@ ajaxHandle(function ()
 		return utils::o2a($plan3dHeader);
 	}
 
-	if (init('action') == 'uploadModel') {
+	if ($action == 'uploadModel') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$plan3dHeader = plan3dHeader::byId(init('id'));
@@ -172,7 +172,7 @@ ajaxHandle(function ()
 				throw new Exception(__('Impossible de décompresser les fichiers : ', __FILE__));
 			}
 			$zip->close();
-			unlink($tmp);
+			unlink($tmp); // FIXME: variable non définie.
 		} else {
 			throw new Exception(__('Impossible de décompresser l\'archive zip : ', __FILE__) . $file . ' => ' . ZipErrorMessage($res));
 		}
@@ -189,6 +189,6 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	throw new Exception(__('Aucune methode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune methode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

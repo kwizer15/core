@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('admin');
-	if (init('action') == 'all') {
+	if ($action == 'all') {
 		$results = utils::o2a(interactDef::all());
 		foreach ($results as &$result) {
 			$result['nbInteractQuery'] = count(interactQuery::byInteractDefId($result['id']));
@@ -44,14 +44,14 @@ ajaxHandle(function ()
 		return $results;
 	}
 	
-	if (init('action') == 'byId') {
+	if ($action == 'byId') {
 		$result = utils::o2a(interactDef::byId(init('id')));
 		$result['nbInteractQuery'] = count(interactQuery::byInteractDefId($result['id']));
 		$result['nbEnableInteractQuery'] = count(interactQuery::byInteractDefId($result['id'], true));
 		return jeedom::toHumanReadable($result);
 	}
 	
-	if (init('action') == 'save') {
+	if ($action == 'save') {
 		unautorizedInDemo();
 		$interact_json = jeedom::fromHumanReadable(json_decode(init('interact'), true));
 		if (isset($interact_json['id'])) {
@@ -65,12 +65,12 @@ ajaxHandle(function ()
 		return utils::o2a($interact);
 	}
 	
-	if (init('action') == 'regenerateInteract') {
+	if ($action == 'regenerateInteract') {
 		interactDef::regenerateInteract();
 		return '';
 	}
 	
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
 		unautorizedInDemo();
 		$interact = interactDef::byId(init('id'));
 		if (!is_object($interact)) {
@@ -80,7 +80,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'changeState') {
+	if ($action == 'changeState') {
 		unautorizedInDemo();
 		$interactQuery = interactQuery::byId(init('id'));
 		if (!is_object($interactQuery)) {
@@ -91,7 +91,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'changeAllState') {
+	if ($action == 'changeAllState') {
 		unautorizedInDemo();
 		$interactQueries = interactQuery::byInteractDefId(init('id'));
 		if (is_array($interactQueries)) {
@@ -103,10 +103,10 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'execute') {
+	if ($action == 'execute') {
 		return interactQuery::tryToReply(init('query'));
 	}
 	
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

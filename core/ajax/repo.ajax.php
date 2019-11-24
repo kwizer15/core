@@ -21,35 +21,35 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('admin');
-	if (init('action') == 'uploadCloud') {
+	if ($action == 'uploadCloud') {
 		unautorizedInDemo();
 		repo_market::backup_send(init('backup'));
 		return '';
 	}
 	
-	if (init('action') == 'restoreCloud') {
+	if ($action == 'restoreCloud') {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		$class::backup_restore(init('backup'));
 		return '';
 	}
 	
-	if (init('action') == 'pullInstall') {
+	if ($action == 'pullInstall') {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		return $class::pullInstall();
 	}
 	
-	if (init('action') == 'sendReportBug') {
+	if ($action == 'sendReportBug') {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		return $class::saveTicket(json_decode(init('ticket'), true));
 	}
 	
-	if (init('action') == 'install') {
+	if ($action == 'install') {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		$repo = $class::byId(init('id'));
@@ -70,13 +70,13 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'test') {
+	if ($action == 'test') {
 		$class = 'repo_' . init('repo');
 		$class::test();
 		return '';
 	}
 	
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		$repo = $class::byId(init('id'));
@@ -98,7 +98,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'save') {
+	if ($action == 'save') {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		$repo_ajax = json_decode(init('market'), true);
@@ -112,12 +112,12 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'getInfo') {
+	if ($action == 'getInfo') {
 		$class = 'repo_' . init('repo');
 		return $class::getInfo(init('logicalId'));
 	}
 	
-	if (init('action') == 'byLogicalId') {
+	if ($action == 'byLogicalId') {
 		$class = 'repo_' . init('repo');
 		if (init('noExecption', 0) == 1) {
 			try {
@@ -130,7 +130,7 @@ ajaxHandle(function ()
 		}
 	}
 	
-	if (init('action') == 'setRating') {
+	if ($action == 'setRating') {
 		unautorizedInDemo();
 		$class = 'repo_' . init('repo');
 		$repo = $class::byId(init('id'));
@@ -141,12 +141,12 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'backupList') {
+	if ($action == 'backupList') {
 		$class = 'repo_' . init('repo');
 		return $class::backup_list();
 	}
 	
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	
 	/*     * *********Catch exeption*************** */
 });

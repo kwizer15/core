@@ -21,53 +21,53 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('admin');
-	if (init('action') == 'usbTry') {
+	if ($action == 'usbTry') {
 		$usbTry = migrate::usbTry();
 		return $usbTry;
 	}
 	
-	if (init('action') == 'backupToUsb') {
+	if ($action == 'backupToUsb') {
 		$backupToUsb = migrate::backupToUsb();
 		return $backupToUsb;
 	}
 	
-	if (init('action') == 'imageToUsb') {
+	if ($action == 'imageToUsb') {
 		$imageToUsb = migrate::imageToUsb();
 		return $imageToUsb;
 	}
 	
-	if (init('action') == 'freeSpaceUsb') {
+	if ($action == 'freeSpaceUsb') {
 		$freeSpaceUsb = migrate::freeSpaceUsb();
 		return $freeSpaceUsb;
 	}
 	
-	if (init('action') == 'getStep') {
+	if ($action == 'getStep') {
 		$valueMigrate = config::byKey('stepMigrate');
 		return $valueMigrate;
 	}
 	
-	if (init('action') == 'setStep') {
+	if ($action == 'setStep') {
 		if(init('stepValues')){
 			config::save('stepMigrate', init('stepValues'));
 			return init('stepValues');
 		}
 	}
-	if (init('action') == 'renameImage'){
+	if ($action == 'renameImage'){
 		$renameImage = migrate::renameImage();
 		return $renameImage;
 	}
-	if (init('action') == 'GoBackupInstall'){
+	if ($action == 'GoBackupInstall'){
 		$GoBackupInstall = migrate::GoBackupInstall();
 		return $GoBackupInstall;
 	}
-	if (init('action') == 'finalisation'){
+	if ($action == 'finalisation'){
 		$finalisation = migrate::finalisation();
 		return $finalisation;
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

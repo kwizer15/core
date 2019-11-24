@@ -21,10 +21,10 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
     ajax::checkAccess('');
-	if (init('action') == 'getEqLogicObject') {
+	if ($action == 'getEqLogicObject') {
 		$object = jeeObject::byId(init('object_id'));
 		
 		if (!is_object($object)) {
@@ -45,7 +45,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 	
-	if (init('action') == 'byId') {
+	if ($action == 'byId') {
 		$eqLogic = eqLogic::byId(init('id'));
 		if (!is_object($eqLogic)) {
 			throw new Exception(__('EqLogic inconnu. Vérifiez l\'ID', __FILE__));
@@ -53,7 +53,7 @@ ajaxHandle(function ()
 		return utils::o2a($eqLogic);
 	}
 	
-	if (init('action') == 'toHtml') {
+	if ($action == 'toHtml') {
 		if (init('ids') != '') {
 			$return = array();
 			foreach (json_decode(init('ids'), true) as $id => $value) {
@@ -83,7 +83,7 @@ ajaxHandle(function ()
 		}
 	}
 	
-	if (init('action') == 'htmlAlert') {
+	if ($action == 'htmlAlert') {
 		$return = array();
 		foreach (eqLogic::all() as $eqLogic) {
 			if ($eqLogic->getAlert() == '') {
@@ -99,7 +99,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 	
-	if (init('action') == 'htmlBattery') {
+	if ($action == 'htmlBattery') {
 		$return = array();
 		$list = array();
 		foreach (eqLogic::all() as $eqLogic) {
@@ -122,7 +122,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 	
-	if (init('action') == 'listByType') {
+	if ($action == 'listByType') {
 		$return = array();
 		foreach (eqLogic::byType(init('type')) as $eqLogic) {
 			$return[$eqLogic->getId()] = utils::o2a($eqLogic);
@@ -131,17 +131,17 @@ ajaxHandle(function ()
 		return array_values($return);
 	}
 	
-	if (init('action') == 'listByObjectAndCmdType') {
+	if ($action == 'listByObjectAndCmdType') {
 		$object_id = (init('object_id') != -1) ? init('object_id') : null;
 		return eqLogic::listByObjectAndCmdType($object_id, init('typeCmd'), init('subTypeCmd'));
 	}
 	
-	if (init('action') == 'listByObject') {
+	if ($action == 'listByObject') {
 		$object_id = (init('object_id') != -1) ? init('object_id') : null;
 		return utils::o2a(eqLogic::byObjectId($object_id, init('onlyEnable', true), init('onlyVisible', false), init('eqType_name', null), init('logicalId', null), init('orderByName', false)));
 	}
 	
-	if (init('action') == 'listByTypeAndCmdType') {
+	if ($action == 'listByTypeAndCmdType') {
 		$results = eqLogic::listByTypeAndCmdType(init('type'), init('typeCmd'), init('subTypeCmd'));
 		$return = array();
 		foreach ($results as $result) {
@@ -159,7 +159,7 @@ ajaxHandle(function ()
 		return $return;
 	}
 	
-	if (init('action') == 'setIsEnable') {
+	if ($action == 'setIsEnable') {
 		unautorizedInDemo();
         ajax::checkAccess('admin');
 		$eqLogic = eqLogic::byId(init('id'));
@@ -174,7 +174,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'setOrder') {
+	if ($action == 'setOrder') {
 		unautorizedInDemo();
 		$eqLogics = json_decode(init('eqLogics'), true);
 		foreach ($eqLogics as $eqLogic_json) {
@@ -191,7 +191,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'removes') {
+	if ($action == 'removes') {
 		unautorizedInDemo();
 		$eqLogics = json_decode(init('eqLogics'), true);
 		foreach ($eqLogics as $id) {
@@ -207,7 +207,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'setIsVisibles') {
+	if ($action == 'setIsVisibles') {
 		unautorizedInDemo();
 		$eqLogics = json_decode(init('eqLogics'), true);
 		foreach ($eqLogics as $id) {
@@ -224,7 +224,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'setIsEnables') {
+	if ($action == 'setIsEnables') {
 		unautorizedInDemo();
 		$eqLogics = json_decode(init('eqLogics'), true);
 		foreach ($eqLogics as $id) {
@@ -241,7 +241,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'simpleSave') {
+	if ($action == 'simpleSave') {
 		unautorizedInDemo();
         ajax::checkAccess('admin');
 		$eqLogicSave = json_decode(init('eqLogic'), true);
@@ -258,7 +258,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'copy') {
+	if ($action == 'copy') {
 		unautorizedInDemo();
         ajax::checkAccess('admin');
 		$eqLogic = eqLogic::byId(init('id'));
@@ -271,7 +271,7 @@ ajaxHandle(function ()
 		return utils::o2a($eqLogic->copy(init('name')));
 	}
 	
-	if (init('action') == 'getUseBeforeRemove') {
+	if ($action == 'getUseBeforeRemove') {
 		$used = array();
 		$eqLogic = eqLogic::byId(init('id'));
 		$data = array('node' => array(), 'link' => array());
@@ -302,7 +302,7 @@ ajaxHandle(function ()
 		return $used;
 	}
 	
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
 		unautorizedInDemo();
         ajax::checkAccess('admin');
 		$eqLogic = eqLogic::byId(init('id'));
@@ -316,7 +316,7 @@ ajaxHandle(function ()
 		return '';
 	}
 	
-	if (init('action') == 'get') {
+	if ($action == 'get') {
 		$typeEqLogic = init('type');
 		if ($typeEqLogic == '' || !class_exists($typeEqLogic)) {
 			throw new Exception(__('Type incorrect (classe équipement inexistante) : ', __FILE__) . $typeEqLogic);
@@ -330,7 +330,7 @@ ajaxHandle(function ()
 		return jeedom::toHumanReadable($return);
 	}
 	
-	if (init('action') == 'save') {
+	if ($action == 'save') {
 		unautorizedInDemo();
         ajax::checkAccess('admin');
 		
@@ -408,7 +408,7 @@ ajaxHandle(function ()
 		}
 	}
 	
-	if (init('action') == 'getAlert') {
+	if ($action == 'getAlert') {
 		$alerts = array();
 		foreach (eqLogic::all() as $eqLogic) {
 			if ($eqLogic->getAlert() == '') {
@@ -419,6 +419,6 @@ ajaxHandle(function ()
 		return $alerts;
 	}
 	
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

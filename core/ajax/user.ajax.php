@@ -21,9 +21,9 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
-	if (init('action') == 'useTwoFactorAuthentification') {
+	if ($action == 'useTwoFactorAuthentification') {
 		$user = user::byLogin(init('login'));
 		if (!is_object($user)) {
 			return 0;
@@ -34,7 +34,7 @@ ajaxHandle(function ()
 		return $user->getOptions('twoFactorAuthentification', 0);
 	}
 
-	if (init('action') == 'login') {
+	if ($action == 'login') {
 		if(!file_exists(session_save_path())){
 			try {
 				com_shell::execute(system::getCmdSudo() . ' mkdir ' .session_save_path().';'.system::getCmdSudo() . ' chmod 777 -R ' .session_save_path());
@@ -87,7 +87,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'getApikey') {
+	if ($action == 'getApikey') {
 		if (!login(init('username'), init('password'), init('twoFactorCode'))) {
 			throw new Exception('Mot de passe ou nom d\'utilisateur incorrect');
 		}
@@ -100,7 +100,7 @@ ajaxHandle(function ()
 
 	ajax::checkToken();
 
-	if (init('action') == 'validateTwoFactorCode') {
+	if ($action == 'validateTwoFactorCode') {
 		unautorizedInDemo();
 		@session_start();
 		$_SESSION['user']->refresh();
@@ -113,7 +113,7 @@ ajaxHandle(function ()
 		return $result;
 	}
 
-	if (init('action') == 'removeTwoFactorCode') {
+	if ($action == 'removeTwoFactorCode') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$user = user::byId(init('id'));
@@ -125,23 +125,23 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'isConnect') {
+	if ($action == 'isConnect') {
 		return '';
 	}
 
-	if (init('action') == 'refresh') {
+	if ($action == 'refresh') {
 		@session_start();
 		$_SESSION['user']->refresh();
 		@session_write_close();
 		return '';
 	}
 
-	if (init('action') == 'logout') {
+	if ($action == 'logout') {
 		logout();
 		return '';
 	}
 
-	if (init('action') == 'all') {
+	if ($action == 'all') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$users = array();
@@ -152,7 +152,7 @@ ajaxHandle(function ()
 		return $users;
 	}
 
-	if (init('action') == 'save') {
+	if ($action == 'save') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$users = json_decode(init('users'), true);
@@ -176,7 +176,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'remove') {
+	if ($action == 'remove') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		if (config::byKey('ldap::enable') == '1') {
@@ -193,7 +193,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'saveProfils') {
+	if ($action == 'saveProfils') {
 		unautorizedInDemo();
 		$user_json = jeedom::fromHumanReadable(json_decode(init('profils'), true));
 		if (isset($user_json['id']) && $user_json['id'] != $_SESSION['user']->getId()) {
@@ -214,11 +214,11 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'get') {
+	if ($action == 'get') {
 		return jeedom::toHumanReadable(utils::o2a($_SESSION['user']));
 	}
 
-	if (init('action') == 'removeRegisterDevice') {
+	if ($action == 'removeRegisterDevice') {
 		unautorizedInDemo();
 		if (init('key') == '' && init('user_id') == '') {
 			if (!isConnect('admin')) {
@@ -265,7 +265,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'deleteSession') {
+	if ($action == 'deleteSession') {
 		unautorizedInDemo();
 		$sessions = listSession();
 		if (isset($sessions[init('id')])) {
@@ -289,7 +289,7 @@ ajaxHandle(function ()
 		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
 	}
 
-	if (init('action') == 'testLdapConnection') {
+	if ($action == 'testLdapConnection') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$connection = user::connectToLDAP();
@@ -299,16 +299,16 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'removeBanIp') {
+	if ($action == 'removeBanIp') {
 		unautorizedInDemo();
 		return user::removeBanIp();
 	}
 
-	if (init('action') == 'supportAccess') {
+	if ($action == 'supportAccess') {
 		unautorizedInDemo();
 		return user::supportAccess(init('enable'));
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });

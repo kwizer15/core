@@ -21,9 +21,9 @@
 
 require_once __DIR__ . '/ajax.handler.inc.php';
 
-ajaxHandle(function ()
+ajaxHandle(function ($action)
 {
-	if (init('action') == 'getInfoApplication') {
+	if ($action == 'getInfoApplication') {
 		$return = jeedom::getThemeConfig();
 		$return['serverDatetime'] = getmicrotime();
 		if (!isConnect()) {
@@ -75,11 +75,11 @@ ajaxHandle(function ()
 
 	ajax::checkToken();
 
-	if (init('action') == 'version') {
+	if ($action == 'version') {
 		return jeedom::version();
 	}
 
-	if (init('action') == 'getDocumentationUrl') {
+	if ($action == 'getDocumentationUrl') {
 		$plugin = null;
 		if (init('plugin') != '' || init('plugin') == 'false') {
 			try {
@@ -111,7 +111,7 @@ ajaxHandle(function ()
 		throw new Exception(__('Aucune documentation trouvée', __FILE__), -1234);
 	}
 
-	if (init('action') == 'addWarnme') {
+	if ($action == 'addWarnme') {
 		$cmd = cmd::byId(init('cmd_id'));
 		if (!is_object($cmd)) {
 			throw new Exception(__('Commande non trouvée : ', __FILE__) . init('cmd_id'));
@@ -142,7 +142,7 @@ ajaxHandle(function ()
 		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
 	}
 
-	if (init('action') == 'ssh') {
+	if ($action == 'ssh') {
 		unautorizedInDemo();
 		$command = init('command');
 		if (strpos($command, '2>&1') === false && strpos($command, '>') === false) {
@@ -153,71 +153,71 @@ ajaxHandle(function ()
 		return implode("\n", $output);
 	}
 
-	if (init('action') == 'db') {
+	if ($action == 'db') {
 		unautorizedInDemo();
 		return DB::prepare(init('command'), array(), DB::FETCH_TYPE_ALL);
 	}
 
-	if (init('action') == 'dbcorrectTable') {
+	if ($action == 'dbcorrectTable') {
 		unautorizedInDemo();
 		DB::compareAndFix(json_decode(file_get_contents(__DIR__.'/../../install/database.json'),true),init('table'));
 		return '';
 	}
 
-	if (init('action') == 'health') {
+	if ($action == 'health') {
 		return jeedom::health();
 	}
 
-	if (init('action') == 'update') {
+	if ($action == 'update') {
 		unautorizedInDemo();
 		jeedom::update();
 		return '';
 	}
 
-	if (init('action') == 'clearDate') {
+	if ($action == 'clearDate') {
 		$cache = cache::byKey('jeedom::lastDate');
 		$cache->remove();
 		return '';
 	}
 
-	if (init('action') == 'backup') {
+	if ($action == 'backup') {
 		unautorizedInDemo();
 		jeedom::backup(true);
 		return '';
 	}
 
-	if (init('action') == 'restore') {
+	if ($action == 'restore') {
 		unautorizedInDemo();
 		jeedom::restore(init('backup'), true);
 		return '';
 	}
 
-	if (init('action') == 'removeBackup') {
+	if ($action == 'removeBackup') {
 		unautorizedInDemo();
 		jeedom::removeBackup(init('backup'));
 		return '';
 	}
 
-	if (init('action') == 'listBackup') {
+	if ($action == 'listBackup') {
 		return jeedom::listBackup();
 	}
 
-	if (init('action') == 'getConfiguration') {
+	if ($action == 'getConfiguration') {
 		return jeedom::getConfiguration(init('key'), init('default'));
 	}
 
-	if (init('action') == 'resetHwKey') {
+	if ($action == 'resetHwKey') {
 		unautorizedInDemo();
 		config::save('jeedom::installKey', '');
 		return '';
 	}
 
-	if (init('action') == 'resetHour') {
+	if ($action == 'resetHour') {
 		$cache = cache::delete('hour');
 		return '';
 	}
 
-	if (init('action') == 'backupupload') {
+	if ($action == 'backupupload') {
 		unautorizedInDemo();
 		$uploaddir = __DIR__ . '/../../backup';
 		if (!file_exists($uploaddir)) {
@@ -245,37 +245,37 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'haltSystem') {
+	if ($action == 'haltSystem') {
 		unautorizedInDemo();
 		return jeedom::haltSystem();
 	}
 
-	if (init('action') == 'rebootSystem') {
+	if ($action == 'rebootSystem') {
 		unautorizedInDemo();
 		return jeedom::rebootSystem();
 	}
 
-	if (init('action') == 'cleanDatabase') {
+	if ($action == 'cleanDatabase') {
 		unautorizedInDemo();
 		return jeedom::cleanDatabase();
 	}
 
-	if (init('action') == 'cleanFileSystemRight') {
+	if ($action == 'cleanFileSystemRight') {
 		unautorizedInDemo();
 		return jeedom::cleanFileSytemRight();
 	}
 
-	if (init('action') == 'consistency') {
+	if ($action == 'consistency') {
 		unautorizedInDemo();
 		return jeedom::consistency();
 	}
 
-	if (init('action') == 'forceSyncHour') {
+	if ($action == 'forceSyncHour') {
 		unautorizedInDemo();
 		return jeedom::forceSyncHour();
 	}
 
-	if (init('action') == 'saveCustom') {
+	if ($action == 'saveCustom') {
 		unautorizedInDemo();
 		$path = __DIR__ . '/../../';
 		if (init('version') != 'desktop' && init('version') != 'mobile') {
@@ -296,7 +296,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'getGraphData') {
+	if ($action == 'getGraphData') {
 		$return = array('node' => array(), 'link' => array());
 		$object = null;
 		$type = init('filter_type');
@@ -310,12 +310,12 @@ ajaxHandle(function ()
 		return $object->getLinkData();
 	}
 
-	if (init('action') == 'getFileFolder') {
+	if ($action == 'getFileFolder') {
 		unautorizedInDemo();
 		return ls(init('path'), '*', false, array(init('type')));
 	}
 
-	if (init('action') == 'getFileContent') {
+	if ($action == 'getFileContent') {
 		unautorizedInDemo();
 		$pathinfo = pathinfo(init('path'));
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini','html','py','css','html'))) {
@@ -324,7 +324,7 @@ ajaxHandle(function ()
 		return file_get_contents(init('path'));
 	}
 
-	if (init('action') == 'setFileContent') {
+	if ($action == 'setFileContent') {
 		unautorizedInDemo();
 		$pathinfo = pathinfo(init('path'));
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini','html','py','css','html'))) {
@@ -333,7 +333,7 @@ ajaxHandle(function ()
 		return file_put_contents(init('path'), init('content'));
 	}
 
-	if (init('action') == 'deleteFile') {
+	if ($action == 'deleteFile') {
 		unautorizedInDemo();
 		$pathinfo = pathinfo(init('path'));
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini','css','html'))) {
@@ -342,7 +342,7 @@ ajaxHandle(function ()
 		return unlink(init('path'));
 	}
 
-	if (init('action') == 'createFile') {
+	if ($action == 'createFile') {
 		unautorizedInDemo();
 		$pathinfo = pathinfo(init('name'));
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini','css','html'))) {
@@ -355,13 +355,13 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'emptyRemoveHistory') {
+	if ($action == 'emptyRemoveHistory') {
 		unautorizedInDemo();
 		unlink(__DIR__ . '/../../data/remove_history.json');
 		return '';
 	}
 
-	if (init('action') == 'uploadImageIcon') {
+	if ($action == 'uploadImageIcon') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		if (!isset($_FILES['file'])) {
@@ -386,7 +386,7 @@ ajaxHandle(function ()
 		return array('filepath' => $filepath);
 	}
 
-	if (init('action') == 'removeImageIcon') {
+	if ($action == 'removeImageIcon') {
         ajax::checkAccess('admin');
 		unautorizedInDemo();
 		$filepath = __DIR__ . '/../../data/img/' . init('filename');
@@ -400,7 +400,7 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	if (init('action') == 'massEditSave') {
+	if ($action == 'massEditSave') {
 		unautorizedInDemo();
 		$type = init('type');
 		if(!class_exists($type)){
@@ -424,6 +424,6 @@ ajaxHandle(function ()
 		return '';
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . init('action'));
+	throw new Exception(__('Aucune méthode correspondante à : ', __FILE__) . $action);
 	/*     * *********Catch exeption*************** */
 });
