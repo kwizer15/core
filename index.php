@@ -16,10 +16,13 @@
 * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 */
 
+use GuzzleHttp\Psr7\ServerRequest;
 use Jeedom\Controller\MainController;
+use function Http\Response\send;
 
 require_once 'vendor/autoload.php';
 
 $controller = new MainController(__DIR__);
-$controller();
+$response = $controller(ServerRequest::fromGlobals());
 
+send($response);
