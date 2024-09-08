@@ -15,13 +15,16 @@
 * You should have received a copy of the GNU General Public License
 * along with Jeedom. If not, see <http://www.gnu.org/licenses/>.
 */
-try {
-	//no config, install Jeedom!
-	if (!file_exists(__DIR__ . '/core/config/common.config.php')) {
-		header("location: install/setup.php");
-	}
 
-	require_once __DIR__ . "/core/php/core.inc.php";
+try {
+    //no config, install Jeedom!
+    require_once __DIR__ . '/core/config/common.config.env.php';
+} catch (\RuntimeException $e) {
+    header("location: install/setup.php");
+}
+
+try {
+    require_once __DIR__ . "/core/php/core.inc.php";
 
 	if ((!isset($_GET['ajax']) || $_GET['ajax'] != 1) && count(system::ps('install/restore.php', 'sudo')) > 0) {
 			require_once __DIR__.'/restoring.php';

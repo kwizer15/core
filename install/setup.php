@@ -42,7 +42,7 @@ if (init('log') == 1) {
 	echo file_get_contents(__DIR__ . '/../log/jeedom_installation');
 	die();
 }
-if (file_exists(__DIR__ . '/../core/config/common.config.php')) {
+if (file_exists(__DIR__ . '/../.env')) {
 	if (!headers_sent()) {
 		header("Statut: 404 Page non trouvée");
 		header('HTTP/1.0 404 Not Found');
@@ -235,15 +235,8 @@ if ($config) {
 		echo '</html>';
 		die();
 	}
-	$replace = array(
-		'#PASSWORD#' => init('password'),
-		'#DBNAME#' => init('database'),
-		'#USERNAME#' => init('username'),
-		'#PORT#' => init('port'),
-		'#HOST#' => init('hostname'),
-	);
-	$config = str_replace(array_keys($replace), $replace, file_get_contents(__DIR__ . '/../core/config/common.config.sample.php'));
-	file_put_contents(__DIR__ . '/../core/config/common.config.php', $config);
+    $config = sprintf('DATABASE_DSN=mysql://%s:%s@%s:%u/%s', init('username'), init('password'), init('hostname'), init('port'), init('database'));
+	file_put_contents(dirname(__DIR__) . '/.env', $config);
 	shell_exec('php ' . __DIR__ . '/install.php mode=force > ' . __DIR__ . '/../log/jeedom_installation 2>&1 &');
 	echo '<div id="div_alertMessage" class="alert alert-warning" style="margin:15px;">';
 	echo '<center style="font-size:1.2em;"><i class="fa fa-spinner fa-spin"></i> The installation jeedom is ongoing.</center>';
