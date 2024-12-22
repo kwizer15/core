@@ -21,6 +21,25 @@ require_once __DIR__ . '/../../core/php/core.inc.php';
 
 use Psr\Log\AbstractLogger;
 
+/**
+ * Classe de journalisation.
+ *
+ * @note Si vous avez besoin de la compatibilité PSR-3 (pour des bibliothèques externes
+ * ou des intégrations de journalisation modernes), il est recommandé d'utiliser PSR3LogAdapter :
+ *
+ * ```php
+ * // Au lieu de :
+ * $logger = log::getLogger('plugin_name');
+ *
+ * // Préférez :
+ * $logger = new PSR3LogAdapter('plugin_name');
+ * ```
+ *
+ * L'adapter fournit une implémentation plus propre de l'interface PSR-3 tout en maintenant
+ * une compatibilité complète avec les bibliothèques de journalisation externes.
+ *
+ * @see PSR3LogAdapter
+ */
 class log extends AbstractLogger {
 	/*     * *************************Constantes****************************** */
 
@@ -46,11 +65,34 @@ class log extends AbstractLogger {
 		$this->_log_name = $log_name;
 	}
 
-	/*	 * ************Methods to suport Psr\Log\AbstractLogger &  LoggerInterface  ************ */
+    /*	 * ************Methods to suport Psr\Log\AbstractLogger &  LoggerInterface  ************ */
+
+    /**
+     * Retourne une instance du logger compatible PSR-3.
+     *
+     * @note Pour une meilleure intégration PSR-3, préférez utiliser PSR3LogAdapter :
+     * ```php
+     * $logger = new PSR3LogAdapter('plugin_name');
+     * ```
+     *
+     * @param string $_logName Nom du fichier de log
+     * @return self Instance du logger
+     */
 	public static function getLogger($_logName) {
 		return new self($_logName);
 	}
 
+    /**
+     * Méthode d'implémentation de l'interface PSR-3.
+     *
+     * @not Pour une meilleure séparation des responsabilités et une intégration PSR-3 plus propre,
+     * préférez utiliser PSR3LogAdapter qui encapsule mieux cette logique.
+     *
+     * @param mixed $level   Niveau de log (debug, info, notice, warning, error, critical, alert, emergency)
+     * @param string $message Message à journaliser
+     * @param array  $context Données de contexte additionnelles (non utilisé actuellement)
+     * @return void
+     */
 	public function log($level, $message, array $context = array()) {
 		log::add($this->_log_name, $level, $message);
 	}
