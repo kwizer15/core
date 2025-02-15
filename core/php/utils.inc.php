@@ -150,6 +150,30 @@ function init($_name, $_default = '') {
 	return $_default;
 }
 
+function getRequestParameterAsString(string $parameterName, string $fallbackValue = ''): string
+{
+    $value = init($parameterName, $fallbackValue);
+
+    if (!is_scalar($value)) {
+        return $fallbackValue;
+    }
+
+    $stringValue = (string) $value;
+    return $stringValue === '' ? $fallbackValue : $stringValue;
+}
+
+function getRequestParameterAsInteger(string $parameterName, int $fallbackValue = 0): int
+{
+    $value = init($parameterName, $fallbackValue);
+
+    if (!is_scalar($value)) {
+        return $fallbackValue;
+    }
+
+    $intValue = (int) $value;
+    return $intValue === 0 ? $fallbackValue : $intValue;
+}
+
 function sendVarToJS($_varName, $_value = '') {
 	if (!is_array($_varName)) {
 		$_varName = [$_varName => $_value];
@@ -259,23 +283,54 @@ function displayException($e) {
 }
 
 function is_json($_string, $_default = null) {
-	if ($_default !== null) {
-		if (!is_string($_string)) {
-			return $_default;
-		}
-		$return = json_decode($_string, true, 512, JSON_BIGINT_AS_STRING);
-		if (!is_array($return)) {
-			return $_default;
-		}
-		return $return;
-	}
-	return ((is_string($_string) && is_array(json_decode($_string, true, 512, JSON_BIGINT_AS_STRING)))) ? true : false;
+    $potentialJson = $_string;
+    $fallbackValue = $_default;
+    if (!is_string($potentialJson)) {
+        return $fallbackValue ?? false;
+    }
+
+    if (null === $fallbackValue) {
+        return canBeDecodedAsJsonArray($potentialJson);
+    }
+
+    try {
+        return parseJsonAsArray($potentialJson);
+    } catch (DomainException $exception) {
+        return $fallbackValue;
+    }
+}
+
+function canBeDecodedAsJsonArray(string $potentialJson): bool
+{
+    try {
+        parseJsonAsArray($potentialJson);
+    } catch (DomainException $e) {
+        return false;
+    }
+
+    return true;
+}
+
+function parseJsonAsArray(string $json, bool $shouldThrowOnError = true): array
+{
+    $parsedJson = json_decode($json, true, 512, JSON_BIGINT_AS_STRING);
+
+    if (is_array($parsedJson)) {
+        return $parsedJson;
+    }
+
+    if ($shouldThrowOnError) {
+        throw new \DomainException(sprintf('Unable to parse JSON as array: %s', $json));
+    }
+
+    return [];
 }
 
 function is_sha1($_string = '') {
 	if ($_string == '') {
 		return false;
 	}
+
 	return preg_match('/^[0-9a-f]{40}$/i', $_string);
 }
 
