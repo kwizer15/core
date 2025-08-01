@@ -27,7 +27,7 @@ if (user::isBan()) {
 }
 
 if (!jeedom::apiAccess(init('apikey'), 'apitts')) {
-	echo __('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__);
+	echo new Trad('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__);
 	die();
 }
 
@@ -44,14 +44,14 @@ if (trim($engine) == '') {
 }
 $text = init('text');
 if ($text == '') {
-	echo __('Aucun texte à dire', __FILE__);
+	echo new Trad('Aucun texte à dire', __FILE__);
 	die();
 }
 if (substr(init('text'), -1) == '#' && substr(init('text'), 0, 1) == '#' && class_exists('songs')  && class_exists('songs_song')) {
-	log::add('tts', 'debug', __('Tag detécté dans le tts et plugin song présent', __FILE__));
+	log::add('tts', 'debug', new Trad('Tag detécté dans le tts et plugin song présent', __FILE__));
 	$song = songs_song::byLogicalId(strtolower(str_replace('#', '', init('text'))));
 	if (is_object($song) && file_exists($song->getPath())) {
-		log::add('tts', 'debug', __('Son trouvé path :', __FILE__) . ' ' . $song->getPath());
+		log::add('tts', 'debug', new Trad('Son trouvé path :', __FILE__) . ' ' . $song->getPath());
 		if (init('path') == 1) {
 			echo $song->getPath();
 		} else {
@@ -130,7 +130,7 @@ try {
 			}
 		}
 		if ($older['file'] == null) {
-			log::add('tts', 'error', __('Erreur aucun fichier trouvé à supprimer alors que le répertoire fait :', __FILE__) . ' ' . getDirectorySize($tts_dir));
+			log::add('tts', 'error', new Trad('Erreur aucun fichier trouvé à supprimer alors que le répertoire fait :', __FILE__) . ' ' . getDirectorySize($tts_dir));
 		}
 		unlink($older['file']);
 	}

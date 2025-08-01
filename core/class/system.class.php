@@ -494,7 +494,7 @@ class system {
 							}
 						}
 					} else {
-						$version = __('Erreur', __FILE__);
+						$version = new Trad('Erreur', __FILE__);
 					}
 					$return[$type . '::' . $package] = array(
 						'name' => $package,
@@ -507,7 +507,7 @@ class system {
 						'optional' => isset($info['optional']) ? $info['optional'] : false,
 						'reinstall' => isset($info['reinstall']) ? $info['reinstall'] : false,
 						'fix' => ($found == 0) ?  self::installPackage($type, $package) : '',
-						'remark' => isset($info['remark']) ? __($info['remark'], 'install/packages.json') : '',
+						'remark' => isset($info['remark']) ? new Trad($info['remark'], 'install/packages.json') : '',
 					);
 					continue;
 				}
@@ -523,7 +523,7 @@ class system {
 							$found = 1;
 						}
 					} else {
-						$version = __('Erreur', __FILE__);
+						$version = new Trad('Erreur', __FILE__);
 					}
 					$return[$type . '::' . $package] = array(
 						'name' => $package,
@@ -536,7 +536,7 @@ class system {
 						'optional' => isset($info['optional']) ? $info['optional'] : false,
 						'reinstall' => isset($info['reinstall']) ? $info['reinstall'] : false,
 						'fix' => ($found == 0) ?  self::installPackage($type, $package) : '',
-						'remark' => isset($info['remark']) ? __($info['remark'], 'install/composer.json') : '',
+						'remark' => isset($info['remark']) ? new Trad($info['remark'], 'install/composer.json') : '',
 					);
 					continue;
 				}
@@ -591,7 +591,7 @@ class system {
 					'optional' => isset($info['optional']) ? $info['optional'] : false,
 					'reinstall' => isset($info['reinstall']) ? $info['reinstall'] : false,
 					'fix' => ($found == 0) ? self::installPackage($type, $package, isset($info['version']) ? $info['version'] : '', $_plugin) : '',
-					'remark' => isset($info['remark']) ? __($info['remark'], 'install/packages.json') : '',
+					'remark' => isset($info['remark']) ? new Trad($info['remark'], 'install/packages.json') : '',
 				);
 			}
 		}
@@ -801,7 +801,7 @@ class system {
 
 	public static function launchScriptPackage($_plugin = '', $_force = false) {
 		if (!$_force && self::installPackageInProgress($_plugin)) {
-			throw new \Exception(__('Installation de package impossible car il y a déjà une installation en cours', __FILE__));
+			throw new \Exception(new Trad('Installation de package impossible car il y a déjà une installation en cours', __FILE__));
 		}
 		shell_exec(system::getCmdSudo() . ' chmod +x /tmp/jeedom_fix_package');
 		if (class_exists('log')) {

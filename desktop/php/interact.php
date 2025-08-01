@@ -6,7 +6,7 @@ if (!isConnect('admin')) {
 global $interacts;
 $interacts = array();
 $totalInteract = interactDef::all();
-$interacts[__('Aucun', __FILE__)] = interactDef::all(null);
+$interacts[new Trad('Aucun', __FILE__)] = interactDef::all(null);
 $interactListGroup = interactDef::listGroup();
 if (is_array($interactListGroup)) {
 	foreach ($interactListGroup as $group) {
@@ -20,7 +20,7 @@ function jeedom_displayInteractGroup($_group = '', $_index = -1) {
 	$thisDiv = '';
 
 	if ($_group == '') {
-		$groupName = __('Aucun', __FILE__);
+		$groupName = new Trad('Aucun', __FILE__);
 		$href = '#config_none';
 		$id = 'config_none';
 	} else {
@@ -106,7 +106,7 @@ function jeedom_displayInteractGroup($_group = '', $_index = -1) {
 
 			$div .= '<div class="panel-group" id="accordionInteract">';
 			//No group first:
-			if (isset($interacts[__('Aucun', __FILE__)]) && count($interacts[__('Aucun', __FILE__)]) > 0) {
+			if (isset($interacts[new Trad('Aucun', __FILE__)]) && count($interacts[new Trad('Aucun', __FILE__)]) > 0) {
 				$div .= jeedom_displayInteractGroup();
 			}
 			echo $div;

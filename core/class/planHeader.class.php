@@ -105,7 +105,7 @@ class planHeader {
 
 	public function preSave() {
 		if (trim($this->getName()) == '') {
-			throw new Exception(__('Le nom du plan ne peut pas être vide', __FILE__));
+			throw new Exception(new Trad('Le nom du plan ne peut pas être vide', __FILE__));
 		}
 		if ($this->getConfiguration('desktopSizeX') == '') {
 			$this->setConfiguration('desktopSizeX', 500);
@@ -166,7 +166,7 @@ class planHeader {
 		$icon = findCodeIcon($this->getConfiguration('icon', '<i class="fas fa-paint-brush"></i>'));
 		$_data['node']['plan' . $this->getId()] = array(
 			'id' => 'plan' . $this->getId(),
-			'type' => __('Design', __FILE__),
+			'type' => new Trad('Design', __FILE__),
 			'name' => substr($this->getName(), 0, 20),
 			'icon' => $icon['icon'],
 			'fontfamily' => $icon['fontfamily'],
@@ -174,7 +174,7 @@ class planHeader {
 			'fontweight' => ($_level == 1) ? 'bold' : 'normal',
 			'texty' => -14,
 			'textx' => 0,
-			'title' => __('Design :', __FILE__) . ' ' . $this->getName(),
+			'title' => new Trad('Design :', __FILE__) . ' ' . $this->getName(),
 			'url' => 'index.php?v=d&p=plan&plan_id=' . $this->getId(),
 		);
 	}

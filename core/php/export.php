@@ -19,7 +19,7 @@
 require_once __DIR__ . '/../../core/php/core.inc.php';
 include_file('core', 'authentification', 'php');
 if (!isConnect()) {
-	throw new Exception(__('401 - Accès non autorisé', __FILE__));
+	throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 }
 $type = init('type');
 
@@ -27,7 +27,7 @@ switch ($type) {
 	case 'cmdHistory':
 		$cmd = cmd::byId(init('id'));
 		if (!is_object($cmd)) {
-			throw new Exception(__('Commande introuvable :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Commande introuvable :', __FILE__) . ' ' . init('id'));
 		}
 		header('Content-Type: text/csv; charset=utf-8');
 		header('Content-Disposition: attachment; filename=' . str_replace(' ', '_', $cmd->getHumanName()) . '.csv');
@@ -42,7 +42,7 @@ switch ($type) {
 	case 'eqLogic':
 		$eqLogic = eqLogic::byId(init('id'));
 		if (!is_object($eqLogic)) {
-			throw new Exception(__('Commande introuvable :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Commande introuvable :', __FILE__) . ' ' . init('id'));
 		}
 		header('Content-Type: text/csv; charset=utf-8');
 		header('Content-Disposition: attachment; filename=' . $eqLogic->getHumanName() . '.json');

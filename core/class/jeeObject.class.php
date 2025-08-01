@@ -219,7 +219,7 @@ class jeeObject {
 	public static function getUISelectList($_none = true) {
 		$allObject = self::buildTree(null, false);
 		$options = '';
-		if ($_none) $options .= '<option value="">' . __('Aucun', __FILE__) . '</option>';
+		if ($_none) $options .= '<option value="">' . new Trad('Aucun', __FILE__) . '</option>';
 		foreach ($allObject as $object) {
 			$decay = $object->getConfiguration('parentNumber');
 			$options .= '<option value="' . $object->getId() . '">' . str_repeat('&nbsp;&nbsp;', $decay) . $object->getName() . '</option>';
@@ -582,16 +582,16 @@ class jeeObject {
 			$plugin->setIsEnable(1);
 		}
 		if (!is_object($plugin)) {
-			throw new Exception(__('Le plugin virtuel doit être installé', __FILE__));
+			throw new Exception(new Trad('Le plugin virtuel doit être installé', __FILE__));
 		}
 		if (!$plugin->isActive()) {
-			throw new Exception(__('Le plugin virtuel doit être actif', __FILE__));
+			throw new Exception(new Trad('Le plugin virtuel doit être actif', __FILE__));
 		}
 
 		$virtualGlobal = eqLogic::byLogicalId('summaryglobal', 'virtual');
 		if (!is_object($virtualGlobal)) {
 			$virtualGlobal = new virtual();
-			$virtualGlobal->setName(__('Résumé Global', __FILE__));
+			$virtualGlobal->setName(new Trad('Résumé Global', __FILE__));
 			$virtualGlobal->setIsVisible(0);
 			$virtualGlobal->setIsEnable(1);
 		}
@@ -628,7 +628,7 @@ class jeeObject {
 			$virtual = eqLogic::byLogicalId('summary' . $object->getId(), 'virtual');
 			if (!is_object($virtual)) {
 				$virtual = new virtual();
-				$virtual->setName(__('Résumé', __FILE__));
+				$virtual->setName(new Trad('Résumé', __FILE__));
 				$virtual->setIsVisible(0);
 				$virtual->setIsEnable(1);
 			}
@@ -720,7 +720,7 @@ class jeeObject {
 		} else {
 			$object = self::byId($_cmd->getConfiguration('summary::object_id'));
 			if (!is_object($object)) {
-				throw new Exception(__('L\'objet n\'existe pas :', __FILE__) . ' ' . $_cmd->getConfiguration('summary::object_id'));
+				throw new Exception(new Trad('L\'objet n\'existe pas :', __FILE__) . ' ' . $_cmd->getConfiguration('summary::object_id'));
 			}
 			$object->summaryAction($_cmd, $_options);
 		}
@@ -787,7 +787,7 @@ class jeeObject {
 			return;
 		}
 		if (in_array($this->getFather_id(), $_fathers)) {
-			throw new Exception(__('Problème dans l\'arbre des objets', __FILE__));
+			throw new Exception(new Trad('Problème dans l\'arbre des objets', __FILE__));
 		}
 		$_fathers[] = $this->getId();
 
@@ -796,7 +796,7 @@ class jeeObject {
 
 	public function preSave() {
 		if (is_numeric($this->getFather_id()) && $this->getFather_id() == $this->getId()) {
-			throw new Exception(__('L\'objet ne peut pas être son propre parent', __FILE__));
+			throw new Exception(new Trad('L\'objet ne peut pas être son propre parent', __FILE__));
 		}
 
 		$this->checkTreeConsistency();
@@ -1196,7 +1196,7 @@ class jeeObject {
 		$icon = findCodeIcon($this->getDisplay('icon'));
 		$_data['node']['object' . $this->getId()] = array(
 			'id' => 'object' . $this->getId(),
-			'type' => __('Objet', __FILE__),
+			'type' => new Trad('Objet', __FILE__),
 			'name' => $this->getName(),
 			'icon' => $icon['icon'],
 			'fontfamily' => $icon['fontfamily'],

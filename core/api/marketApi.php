@@ -30,11 +30,11 @@ try {
 	if (!jeedom::apiAccess(init('apikey'), 'apimarket')) {
 		user::failedLogin();
 		sleep(5);
-		throw new Exception(__('Vous n\'êtes pas autorisé à effectuer cette action, IP :', __FILE__) . ' ' . getClientIp());
+		throw new Exception(new Trad('Vous n\'êtes pas autorisé à effectuer cette action, IP :', __FILE__) . ' ' . getClientIp());
 	}
 	if (init('action') == 'resync') {
 		if (jeedom::isStarted() && config::byKey('enableCron', 'core', 1, true) == 0) {
-			die(__('Tous les crons sont actuellement désactivés', __FILE__));
+			die(new Trad('Tous les crons sont actuellement désactivés', __FILE__));
 		}
 		$cron = new cron();
 		$cron->setClass('repo_market');
@@ -47,7 +47,7 @@ try {
 
 	if (init('action') == 'pullInstall') {
 		if (jeedom::isStarted() && config::byKey('enableCron', 'core', 1, true) == 0) {
-			die(__('Tous les crons sont actuellement désactivés', __FILE__));
+			die(new Trad('Tous les crons sont actuellement désactivés', __FILE__));
 		}
 		$cron = new cron();
 		$cron->setClass('repo_market');

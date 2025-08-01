@@ -21,7 +21,7 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init(array('uploadImage'));
@@ -29,11 +29,11 @@ try {
 	if (init('action') == 'remove') {
 		unautorizedInDemo();
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$object = jeeObject::byId(init('id'));
 		if (!is_object($object)) {
-			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__));
 		}
 		$object->remove();
 		ajax::success();
@@ -42,7 +42,7 @@ try {
 	if (init('action') == 'byId') {
 		$object = jeeObject::byId(init('id'));
 		if (!is_object($object)) {
-			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
 		}
 		ajax::success(jeedom::toHumanReadable(utils::o2a($object)));
 	}
@@ -70,7 +70,7 @@ try {
 	if (init('action') == 'save') {
 		unautorizedInDemo();
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$object_json = json_decode(init('object'), true);
 		if (isset($object_json['id'])) {
@@ -87,11 +87,11 @@ try {
 	if (init('action') == 'orderEqLogicByUsage') {
 		unautorizedInDemo();
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$object = jeeObject::byId(init('id'));
 		if (!is_object($object)) {
-			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__));
 		}
 		$object->orderEqLogicByUsage();
 		ajax::success(utils::o2a($object));
@@ -100,7 +100,7 @@ try {
 	if (init('action') == 'getChild') {
 		$object = jeeObject::byId(init('id'));
 		if (!is_object($object)) {
-			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__));
 		}
 		$return = utils::o2a($object->getChild());
 		ajax::success($return);
@@ -113,7 +113,7 @@ try {
 			$virtual = eqLogic::byLogicalId('summary' . init('object_id'), 'virtual');
 		}
 		if (!is_object($virtual)) {
-			throw new Exception(__('L\'objet n\'existe pas :', __FILE__) . ' ' . init('object_id'));
+			throw new Exception(new Trad('L\'objet n\'existe pas :', __FILE__) . ' ' . init('object_id'));
 		}
 		$removeCmd = array();
 		foreach ($virtual->getCmd() as $cmd) {
@@ -131,7 +131,7 @@ try {
 	if (init('action') == 'getEqLogicsFromSummary') {
 		$object = jeeObject::byId(init('id'));
 		if (!is_object($object)) {
-			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
 		}
 		$return = $object->getEqLogicsFromSummary(init('summary'), init('onlyEnable'), init('onlyVisible'));
 		ajax::success($return);
@@ -213,7 +213,7 @@ try {
 
 	if (init('action') == 'setOrder') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$position = 1;
 		foreach (json_decode(init('objects'), true) as $id) {
@@ -229,7 +229,7 @@ try {
 
 	if (init('action') == 'getUISelectList') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(jeeObject::getUISelectList(init('none'), true));
 	}
@@ -258,7 +258,7 @@ try {
 		} else {
 			$object = jeeObject::byId(init('id'));
 			if (!is_object($object)) {
-				throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
+				throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__));
 			}
 			$info_object = array();
 			$info_object['id'] = $object->getId();
@@ -269,12 +269,12 @@ try {
 
 	if (init('action') == 'removeImage') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$object = jeeObject::byId(init('id'));
 		if (!is_object($object)) {
-			throw new Exception(__('Vue inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Vue inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
 		}
 		$object->setImage('data', '');
 		$object->setImage('sha512', '');
@@ -292,23 +292,23 @@ try {
 
 	if (init('action') == 'uploadImage') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$object = jeeObject::byId(init('id'));
 		if (!is_object($object)) {
-			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__));
 		}
 		if (init('file') == '') {
 			if (!isset($_FILES['file'])) {
-				throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
+				throw new Exception(new Trad('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 			}
 			$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
 			if (!in_array($extension, array('.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp'))) {
-				throw new Exception(__('Extension du fichier non valide (autorisé .jpg .png .gif .svg .webp) :', __FILE__) . ' ' . $extension);
+				throw new Exception(new Trad('Extension du fichier non valide (autorisé .jpg .png .gif .svg .webp) :', __FILE__) . ' ' . $extension);
 			}
 			if (filesize($_FILES['file']['tmp_name']) > 5000000) {
-				throw new Exception(__('Le fichier est trop gros (maximum 5Mo)', __FILE__));
+				throw new Exception(new Trad('Le fichier est trop gros (maximum 5Mo)', __FILE__));
 			}
 			$upfilepath = $_FILES['file']['tmp_name'];
 		} else {
@@ -328,13 +328,13 @@ try {
 		$filepath = __DIR__ . '/../../data/object/' . $filename;
 		file_put_contents($filepath, file_get_contents($upfilepath));
 		if (!file_exists($filepath)) {
-			throw new \Exception(__('Impossible de sauvegarder l\'image', __FILE__));
+			throw new \Exception(new Trad('Impossible de sauvegarder l\'image', __FILE__));
 		}
 		$object->save();
 		ajax::success(array('filepath' => $filepath));
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

@@ -108,7 +108,7 @@ class view {
 	 */
 	public function presave() {
 		if (trim($this->getName()) == '') {
-			throw new Exception(__('Le nom de la vue ne peut pas être vide', __FILE__));
+			throw new Exception(new Trad('Le nom de la vue ne peut pas être vide', __FILE__));
 		}
 	}
 
@@ -248,7 +248,7 @@ class view {
 		$icon = findCodeIcon($this->getDisplay('icon', '<i class="far fa-image"></i>'));
 		$_data['node']['view' . $this->getId()] = array(
 			'id' => 'view' . $this->getId(),
-			'type' => __('Vue', __FILE__),
+			'type' => new Trad('Vue', __FILE__),
 			'name' => substr($this->getName(), 0, 20),
 			'icon' => $icon['icon'],
 			'fontfamily' => $icon['fontfamily'],
@@ -256,7 +256,7 @@ class view {
 			'fontweight' => ($_level == 1) ? 'bold' : 'normal',
 			'texty' => -14,
 			'textx' => 0,
-			'title' => __('Vue :', __FILE__) . ' ' . $this->getName(),
+			'title' => new Trad('Vue :', __FILE__) . ' ' . $this->getName(),
 			'url' => 'index.php?v=d&p=view&view_id=' . $this->getId(),
 		);
 	}

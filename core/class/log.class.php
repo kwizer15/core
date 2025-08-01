@@ -17,7 +17,7 @@
 */
 
 /* * ***************************Includes********************************* */
-require_once __DIR__ . '/../../core/php/core.inc.php';
+// require_once __DIR__ . '/../../core/php/core.inc.php';
 
 use Psr\Log\AbstractLogger;
 
@@ -125,7 +125,7 @@ class log extends AbstractLogger {
 		fwrite($fp,'['.date('Y-m-d H:i:s').']['.strtoupper($_type).'] '.$_message."\n");  
 		fclose($fp);
 		try {
-            $action = '<a href="/index.php?v=d&p=log&logfile=' . $_log . '">' . __('Log', __FILE__) . ' ' . $_log . '</a>';
+            $action = '<a href="/index.php?v=d&p=log&logfile=' . $_log . '">' . 'Log ' . $_log . '</a>';
 			if ($level == 400 && self::getConfig('addMessageForErrorLog') == 1) {
 				@message::add($_log, $_message, $action, $_logicalId);
 			} elseif ($level >= 500 && $_log != 'update') {

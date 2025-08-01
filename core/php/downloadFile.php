@@ -23,7 +23,7 @@ try {
 	$onlyPluginId = 'all';
 
 	if (!isConnect() && !jeedom::apiAccess(init('apikey'), init('plugin'))) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	//global user created with an api key attached to a user
@@ -40,7 +40,7 @@ try {
 
 	if ($pathfile === false) {
 		log::add('api', 'debug', 'downloadFile - fichier introuvable');
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	if (!$isAdmin) {
@@ -53,12 +53,12 @@ try {
 		}
 		if (!$authorized) {
 			log::add('api', 'debug', 'downloadFile - fichier non accessible en zone blanche');
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 	}
 
 	if (strpos($pathfile, '.php') !== false) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 	$rootPath = realpath(__DIR__ . '/../../');
 	if (strpos($pathfile, $rootPath) === false) {
@@ -68,23 +68,23 @@ try {
 		$adminFiles = array('log', 'backup', '.sql', 'scenario', '.tar', '.gz');
 		foreach ($adminFiles as $adminFile) {
 			if (strpos($pathfile, $adminFile) !== false) {
-				throw new Exception(__('401 - Accès non autorisé', __FILE__));
+				throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 			}
 		}
 	}
 	if (strpos($pathfile, '*') === false) {
 		if (!file_exists($pathfile)) {
-			throw new Exception(__('Fichier non trouvé :', __FILE__) . ' ' . $pathfile);
+			throw new Exception(new Trad('Fichier non trouvé :', __FILE__) . ' ' . $pathfile);
 		}
 	} elseif (is_dir(str_replace('*', '', $pathfile))) {
 		if (!$isAdmin) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		system('cd ' . dirname($pathfile) . ';tar cfz ' . jeedom::getTmpFolder('downloads') . '/archive.tar.gz * > /dev/null 2>&1');
 		$pathfile = jeedom::getTmpFolder('downloads') . '/archive.tar.gz';
 	} else {
 		if (!$isAdmin) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$pattern = array_pop(explode('/', $pathfile));
 		system('cd ' . dirname($pathfile) . ';tar cfz ' . jeedom::getTmpFolder('downloads') . '/archive.tar.gz ' . $pattern . '> /dev/null 2>&1');

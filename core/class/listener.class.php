@@ -262,7 +262,7 @@ class listener {
 				if (class_exists($class) && method_exists($class, $function)) {
 					$class::$function($option);
 				} else {
-					log::add('listener', 'debug', __('[Erreur] Classe ou fonction non trouvée', __FILE__) . ' ' . json_encode(utils::o2a($this)));
+					log::add('listener', 'debug', new Trad('[Erreur] Classe ou fonction non trouvée', __FILE__) . ' ' . json_encode(utils::o2a($this)));
 					$this->remove();
 					return;
 				}
@@ -271,7 +271,7 @@ class listener {
 				if (function_exists($function)) {
 					$function($option);
 				} else {
-					log::add('listener', 'error', __('[Erreur] Fonction non trouvée', __FILE__) . ' ' . json_encode(utils::o2a($this)));
+					log::add('listener', 'error', new Trad('[Erreur] Fonction non trouvée', __FILE__) . ' ' . json_encode(utils::o2a($this)));
 					$this->remove();
 					return;
 				}
@@ -283,7 +283,7 @@ class listener {
 
 	public function preSave() {
 		if ($this->getFunction() == '') {
-			throw new Exception(__('La fonction ne peut pas être vide', __FILE__));
+			throw new Exception(new Trad('La fonction ne peut pas être vide', __FILE__));
 		}
 	}
 

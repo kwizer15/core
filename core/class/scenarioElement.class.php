@@ -49,7 +49,7 @@ class scenarioElement {
 			$element_db = new scenarioElement();
 		}
 		if (!isset($element_db) || !is_object($element_db)) {
-			throw new Exception(__('Elément inconnu. Vérifiez l\'ID :', __FILE__) . ' ' . $element_ajax['id']);
+			throw new Exception(new Trad('Elément inconnu. Vérifiez l\'ID :', __FILE__) . ' ' . $element_ajax['id']);
 		}
 		utils::a2o($element_db, $element_ajax);
 		$element_db->save();
@@ -63,7 +63,7 @@ class scenarioElement {
 				$subElement_db = new scenarioSubElement();
 			}
 			if (!isset($subElement_db) || !is_object($subElement_db)) {
-				throw new Exception(__('Sous-élément inconnu. Vérifiez l\'ID :', __FILE__) . ' ' . $subElement_ajax['id']);
+				throw new Exception(new Trad('Sous-élément inconnu. Vérifiez l\'ID :', __FILE__) . ' ' . $subElement_ajax['id']);
 			}
 			utils::a2o($subElement_db, $subElement_ajax);
 			$subElement_db->setScenarioElement_id($element_db->getId());
@@ -85,7 +85,7 @@ class scenarioElement {
 					$expression_db = new scenarioExpression();
 				}
 				if (!isset($expression_db) || !is_object($expression_db)) {
-					throw new Exception(__('Expression inconnue. Vérifiez l\'ID :', __FILE__) . ' ' . $expression_ajax['id']);
+					throw new Exception(new Trad('Expression inconnue. Vérifiez l\'ID :', __FILE__) . ' ' . $expression_ajax['id']);
 				}
 				$expression_db->emptyOptions();
 				utils::a2o($expression_db, $expression_ajax);
@@ -153,8 +153,8 @@ class scenarioElement {
 						$expresssion_str = $expression->getExpression();
 					}
 				}
-				$message = __('Expression non valide', __FILE__) . '  [' . $expresssion_str . '] ' . __('trouvée dans le scénario :', __FILE__) . ' ' . $_scenario->getHumanName() . __(', résultat : ', __FILE__) . $result;
-				$action = '<a href="/' . $_scenario->getLinkToConfiguration() . '">' . __('Scenario', __FILE__) . '</a>';
+				$message = new Trad('Expression non valide', __FILE__) . '  [' . $expresssion_str . '] ' . new Trad('trouvée dans le scénario :', __FILE__) . ' ' . $_scenario->getHumanName() . new Trad(', résultat : ', __FILE__) . $result;
+				$action = '<a href="/' . $_scenario->getLinkToConfiguration() . '">' . new Trad('Scenario', __FILE__) . '</a>';
 				$logicalId = 'invalidExprScenarioElement::' . $this->getId();
 				message::add('scenario', $message, $action, $logicalId);
 				return;
@@ -165,7 +165,7 @@ class scenarioElement {
 						$this->getSubElement('if')->setOptions('previousState', 1);
 						$this->getSubElement('if')->save();
 					} else {
-						$_scenario->setLog(__('Non exécution des actions pour cause de répétition', __FILE__));
+						$_scenario->setLog(new Trad('Non exécution des actions pour cause de répétition', __FILE__));
 						return;
 					}
 				}
@@ -179,7 +179,7 @@ class scenarioElement {
 					$this->getSubElement('if')->setOptions('previousState', 0);
 					$this->getSubElement('if')->save();
 				} else {
-					$_scenario->setLog(__('Non exécution des actions pour cause de répétition', __FILE__));
+					$_scenario->setLog(new Trad('Non exécution des actions pour cause de répétition', __FILE__));
 					return;
 				}
 			}
@@ -200,7 +200,7 @@ class scenarioElement {
 			}
 			$limits = intval($this->getSubElement('for')->execute($_scenario));
 			if (!is_numeric($limits)) {
-				throw new Exception(__('La condition pour une boucle doit être numérique :', __FILE__) . ' ' . $limits);
+				throw new Exception(new Trad('La condition pour une boucle doit être numérique :', __FILE__) . ' ' . $limits);
 			}
 			$return = false;
 			for ($i = 1; $i <= $limits; $i++) {
@@ -250,7 +250,7 @@ class scenarioElement {
 			}
 			$next = $this->getSubElement('at')->execute($_scenario);
 			if (!is_numeric($next) || $next < 0) {
-				throw new Exception(__('Bloc type A :', __FILE__) . ' ' . $this->getId() . $GLOBALS['JEEDOM_SCLOG_TEXT']['invalideShedule']['txt'] . $next);
+				throw new Exception(new Trad('Bloc type A :', __FILE__) . ' ' . $this->getId() . $GLOBALS['JEEDOM_SCLOG_TEXT']['invalideShedule']['txt'] . $next);
 			}
 			if ($next <= date('Gi')) {
 				$next = str_repeat('0', 4 - strlen($next)) . $next;
@@ -261,7 +261,7 @@ class scenarioElement {
 			}
 			$next = strtotime($next);
 			if ($next < strtotime('now')) {
-				throw new Exception(__('Bloc type A :', __FILE__) . ' ' . $this->getId() . $GLOBALS['JEEDOM_SCLOG_TEXT']['invalideShedule']['txt'] . date('Y-m-d H:i:00', $next));
+				throw new Exception(new Trad('Bloc type A :', __FILE__) . ' ' . $this->getId() . $GLOBALS['JEEDOM_SCLOG_TEXT']['invalideShedule']['txt'] . date('Y-m-d H:i:00', $next));
 			}
 			$crons = cron::searchClassAndFunction('scenario', 'doIn', '"scenarioElement_id":' . $this->getId() . ',');
 			if (is_array($crons)) {
@@ -411,31 +411,31 @@ class scenarioElement {
 			$return .= "\n";
 			switch ($subElement->getType()) {
 				case 'if':
-					$return .= __('SI', __FILE__);
+					$return .= new Trad('SI', __FILE__);
 					break;
 				case 'then':
-					$return .= __('ALORS', __FILE__);
+					$return .= new Trad('ALORS', __FILE__);
 					break;
 				case 'else':
-					$return .= __('SINON', __FILE__);
+					$return .= new Trad('SINON', __FILE__);
 					break;
 				case 'for':
-					$return .= __('POUR', __FILE__);
+					$return .= new Trad('POUR', __FILE__);
 					break;
 				case 'do':
-					$return .= __('FAIRE', __FILE__);
+					$return .= new Trad('FAIRE', __FILE__);
 					break;
 				case 'code':
-					$return .= __('CODE', __FILE__);
+					$return .= new Trad('CODE', __FILE__);
 					break;
 				case 'action':
-					$return .= __('ACTION', __FILE__);
+					$return .= new Trad('ACTION', __FILE__);
 					break;
 				case 'in':
-					$return .= __('DANS', __FILE__);
+					$return .= new Trad('DANS', __FILE__);
 					break;
 				case 'at':
-					$return .= __('A', __FILE__);
+					$return .= new Trad('A', __FILE__);
 					break;
 				default:
 					$return .= $subElement->getType();

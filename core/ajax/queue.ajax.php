@@ -21,7 +21,7 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect('admin')) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init();
@@ -36,7 +36,7 @@ try {
 		unautorizedInDemo();
 		$queue = queue::byId(init('id'));
 		if (!is_object($queue)) {
-			throw new Exception(__('Queue id inconnu', __FILE__));
+			throw new Exception(new Trad('Queue id inconnu', __FILE__));
 		}
 		$queue->remove();
 		ajax::success();
@@ -53,7 +53,7 @@ try {
 	if (init('action') == 'start') {
 		$queue = queue::byId(init('id'));
 		if (!is_object($queue)) {
-			throw new Exception(__('Queue id inconnu', __FILE__));
+			throw new Exception(new Trad('Queue id inconnu', __FILE__));
 		}
 		$queue->run();
 		sleep(1);
@@ -63,14 +63,14 @@ try {
 	if (init('action') == 'stop') {
 		$queue = queue::byId(init('id'));
 		if (!is_object($queue)) {
-			throw new Exception(__('Queue id inconnu', __FILE__));
+			throw new Exception(new Trad('Queue id inconnu', __FILE__));
 		}
 		$queue->halt();
 		sleep(1);
 		ajax::success();
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

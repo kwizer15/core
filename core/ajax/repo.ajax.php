@@ -21,7 +21,7 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect('admin')) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init();
@@ -56,14 +56,14 @@ try {
 		$class = 'repo_' . init('repo');
 		$repo = $class::byId(init('id'));
 		if (!is_object($repo)) {
-			throw new Exception(__('Impossible de trouver l\'objet associé :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Impossible de trouver l\'objet associé :', __FILE__) . ' ' . init('id'));
 		}
 		$update = update::byTypeAndLogicalId($repo->getType(), $repo->getLogicalId());
 		if (!is_object($update)) {
 			$update = new update();
 		}
 		if ($update->getConfiguration('doNotUpdate') == 1) {
-			throw new Exception(__('Mise à jour et réinstallation désactivées sur ', __FILE__) . ' ' . $repo->getLogicalId());
+			throw new Exception(new Trad('Mise à jour et réinstallation désactivées sur ', __FILE__) . ' ' . $repo->getLogicalId());
 		}		
 		$update->setSource(init('repo'));
 		$update->setLogicalId($repo->getLogicalId());
@@ -86,7 +86,7 @@ try {
 		$class = 'repo_' . init('repo');
 		$repo = $class::byId(init('id'));
 		if (!is_object($market)) {
-			throw new Exception(__('Impossible de trouver l\'objet associé :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Impossible de trouver l\'objet associé :', __FILE__) . ' ' . init('id'));
 		}
 		$update = update::byTypeAndLogicalId($repo->getType(), $repo->getLogicalId());
 		try {
@@ -140,7 +140,7 @@ try {
 		$class = 'repo_' . init('repo');
 		$repo = $class::byId(init('id'));
 		if (!is_object($repo)) {
-			throw new Exception(__('Impossible de trouver l\'objet associé :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Impossible de trouver l\'objet associé :', __FILE__) . ' ' . init('id'));
 		}
 		$repo->setRating(init('rating'));
 		ajax::success();
@@ -151,7 +151,7 @@ try {
 		ajax::success($class::backup_list());
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

@@ -21,37 +21,37 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init(array('uploadImage'));
 
 	if (init('action') == 'copy') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$view = view::byId(init('id'));
 		if (!is_object($view)) {
-			throw new Exception(__('Vue non trouvée. Vérifiez l\'iD', __FILE__));
+			throw new Exception(new Trad('Vue non trouvée. Vérifiez l\'iD', __FILE__));
 		}
 		if (!$view->hasRight('w')) {
-			throw new Exception(__('Vous n\'avez pas le droit de modifier cette vue', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de modifier cette vue', __FILE__));
 		}
 		ajax::success(utils::o2a($view->copy(init('name'))));
 	}
 
 	if (init('action') == 'remove') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$view = view::byId(init('id'));
 		if (!is_object($view)) {
-			throw new Exception(__('Vue non trouvée. Vérifiez l\'iD', __FILE__));
+			throw new Exception(new Trad('Vue non trouvée. Vérifiez l\'iD', __FILE__));
 		}
 		if (!$view->hasRight('w')) {
-			throw new Exception(__('Vous n\'avez pas le droit de modifier cette vue', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de modifier cette vue', __FILE__));
 		}
 		$view->remove();
 		ajax::success();
@@ -91,10 +91,10 @@ try {
 		} else {
 			$view = view::byId(init('id'));
 			if (!is_object($view)) {
-				throw new Exception(__('Vue non trouvée. Vérifiez l\'ID', __FILE__));
+				throw new Exception(new Trad('Vue non trouvée. Vérifiez l\'ID', __FILE__));
 			}
 			if (!$view->hasRight('r')) {
-				throw new Exception(__('Vous n\'avez pas le droit de voir cette vue', __FILE__));
+				throw new Exception(new Trad('Vous n\'avez pas le droit de voir cette vue', __FILE__));
 			}
 			ajax::success($view->toAjax(init('version', 'dashboard'), init('html')));
 		}
@@ -102,7 +102,7 @@ try {
 
 	if (init('action') == 'save') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$view = view::byId(init('view_id'));
@@ -110,11 +110,11 @@ try {
 			$view = new view();
 		}
 		if (!$view->hasRight('w')) {
-			throw new Exception(__('Vous n\'avez pas le droit de modifier cette vue', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de modifier cette vue', __FILE__));
 		}
 		$view_ajax = json_decode(init('view'), true);
 		if (!is_array($view_ajax) || count($view_ajax) == 0) {
-			throw new Exception(__('Erreur dans le decodage json veuiller réessaye : ', __FILE__) . init('view'));
+			throw new Exception(new Trad('Erreur dans le decodage json veuiller réessaye : ', __FILE__) . init('view'));
 		}
 		utils::a2o($view, $view_ajax);
 		$view->save();
@@ -146,7 +146,7 @@ try {
 	if (init('action') == 'getEqLogicviewZone') {
 		$viewZone = viewZone::byId(init('viewZone_id'));
 		if (!is_object($viewZone)) {
-			throw new Exception(__('Vue non trouvée. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Vue non trouvée. Vérifiez l\'ID', __FILE__));
 		}
 		$return = utils::o2a($viewZone);
 		$return['eqLogic'] = array();
@@ -160,7 +160,7 @@ try {
 
 	if (init('action') == 'setComponentOrder') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$components = json_decode(init('components'), true);
@@ -196,7 +196,7 @@ try {
 
 	if (init('action') == 'setOrder') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$order = 1;
@@ -213,12 +213,12 @@ try {
 
 	if (init('action') == 'removeImage') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$view = view::byId(init('id'));
 		if (!is_object($view)) {
-			throw new Exception(__('Vue inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Vue inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
 		}
 		$view->setImage('sha512', '');
 		$view->save();
@@ -228,22 +228,22 @@ try {
 
 	if (init('action') == 'uploadImage') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$view = view::byId(init('id'));
 		if (!is_object($view)) {
-			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__));
 		}
 		if (!isset($_FILES['file'])) {
-			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
+			throw new Exception(new Trad('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
 		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
 		if (!in_array($extension, array('.jpg', '.png'))) {
-			throw new Exception(__('Extension du fichier non valide (autorisé .jpg .png) :', __FILE__) . ' ' . $extension);
+			throw new Exception(new Trad('Extension du fichier non valide (autorisé .jpg .png) :', __FILE__) . ' ' . $extension);
 		}
 		if (filesize($_FILES['file']['tmp_name']) > 5000000) {
-			throw new Exception(__('Le fichier est trop gros (maximum 5Mo)', __FILE__));
+			throw new Exception(new Trad('Le fichier est trop gros (maximum 5Mo)', __FILE__));
 		}
 		$files = ls(__DIR__ . '/../../data/view/', 'view' . $view->getId() . '*');
 		if (count($files)  > 0) {
@@ -257,13 +257,13 @@ try {
 		$filepath = __DIR__ . '/../../data/view/' . $filename;
 		file_put_contents($filepath, file_get_contents($_FILES['file']['tmp_name']));
 		if (!file_exists($filepath)) {
-			throw new \Exception(__('Impossible de sauvegarder l\'image', __FILE__));
+			throw new \Exception(new Trad('Impossible de sauvegarder l\'image', __FILE__));
 		}
 		$view->save();
 		ajax::success();
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

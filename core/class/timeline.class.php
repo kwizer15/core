@@ -224,7 +224,7 @@ class timeline {
       $name = str_replace('<span class="label"', '<span class="label-sm"',  $name);
       if ($cmd->getType() == 'action') {
         $return['html'] = '<div class="tml-cmd" data-id="' . $this->getLink_id() . '">';
-        $return['html'] .= '<span>' . $name . ' <i class="fas fa-cogs pull-right cursor bt_configureCmd" title="'.__('Configuration de la commande',__FILE__).'"></i></span>';
+        $return['html'] .= '<span>' . $name . ' <i class="fas fa-cogs pull-right cursor bt_configureCmd" title="'.new Trad('Configuration de la commande', __FILE__).'"></i></span>';
 
         $return['html'] .= '<i class="icon-blank pull-right"></i>';
         if ($return['folder'] != 'main') $return['html'] .= ' <span class="tml-folder pull-right">' . $return['folder'] . '</span>';
@@ -235,8 +235,8 @@ class timeline {
           $class = ($this->getOptions('value') == 0 ? 'success' : 'warning');
         }
         $return['html'] = '<div class="tml-cmd" data-id="' .$this->getLink_id() . '">';
-        $return['html'] .= ' <i class="fas fa-cogs pull-right cursor bt_configureCmd" title="'.__('Configuration de la commande',__FILE__).'"></i>';
-        $return['html'] .= '<span>' . $name . '<i class="fas fa-chart-line pull-right cursor bt_historicCmd" title="'.__('Historique',__FILE__).'"></i>';
+        $return['html'] .= ' <i class="fas fa-cogs pull-right cursor bt_configureCmd" title="'.new Trad('Configuration de la commande', __FILE__).'"></i>';
+        $return['html'] .= '<span>' . $name . '<i class="fas fa-chart-line pull-right cursor bt_historicCmd" title="'.new Trad('Historique', __FILE__).'"></i>';
         $return['html'] .= ' <span class="label-sm label-'.$class.'">' .$this->getOptions('value') . '</span>';
         if ($return['folder'] != 'main') $return['html'] .= ' <span class="tml-folder pull-right">' . $return['folder'] . '</span>';
         $return['html'] .= '</span>';
@@ -254,9 +254,9 @@ class timeline {
       $name = str_replace('<span class="label"', '<span class="label-sm"',  $name);
       $return['html'] = '<div class="tml-scenario" data-id="' . $this->getLink_id() . '">';
       $return['html'] .= '<div>' . $name;
-      $return['html'] .= ' <span class="label-sm label-info" title="'.__('Scénario déclenché par',__FILE__).'">' . $this->getOptions('trigger'). '</span>';
-      $return['html'] .= ' <i class="fas fa-share pull-right cursor bt_gotoScenario" title="'.__('Aller au scénario',__FILE__).'"></i> ';
-      $return['html'] .= ' <i class="fas fa-file-alt pull-right cursor bt_scenarioLog" title="'.__('Log du scénario',__FILE__).'"></i> ';
+      $return['html'] .= ' <span class="label-sm label-info" title="'.new Trad('Scénario déclenché par', __FILE__).'">' . $this->getOptions('trigger'). '</span>';
+      $return['html'] .= ' <i class="fas fa-share pull-right cursor bt_gotoScenario" title="'.new Trad('Aller au scénario', __FILE__).'"></i> ';
+      $return['html'] .= ' <i class="fas fa-file-alt pull-right cursor bt_scenarioLog" title="'.new Trad('Log du scénario', __FILE__).'"></i> ';
       if ($return['folder'] != 'main') $return['html'] .= ' <span class="tml-folder pull-right">' . $return['folder'] . '</span>';
       $return['html'] .= '</div>';
       $return['html'] .= '</div>';

@@ -113,7 +113,7 @@ $date = array(
 							$_echo .= '<span class="label cursor displayObject labelObjectHuman" data-object_id="o' . $eqLogic->getObject_id() . '">' . $object->getName() . ' <i class="fas fa-arrow-circle-right"></i></span>';
 						}
 					} else {
-						$_echo .= '<span class="label label-default cursor displayObject" data-object_id="o' . $eqLogic->getObject_id() . '>' . __('Aucun', __FILE__) . ' <i class="fas fa-arrow-circle-right"></i></span>';
+						$_echo .= '<span class="label label-default cursor displayObject" data-object_id="o' . $eqLogic->getObject_id() . '>' . new Trad('Aucun', __FILE__) . ' <i class="fas fa-arrow-circle-right"></i></span>';
 					}
 					$_echo .= '<br/>';
 					$_echo .= '<div class="cmdList" data-object_id="o' . $eqLogic->getObject_id() . '" style="display:none;margin-left : 20px;">';

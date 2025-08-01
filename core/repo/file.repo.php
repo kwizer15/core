@@ -35,10 +35,10 @@ class repo_file {
 
 	public static function getConfigurationOption(){
 		return array(
-          	'translate_name' => __('Fichier',__FILE__),
+          	'translate_name' => new Trad('Fichier', __FILE__),
 			'parameters_for_add' => array(
 				'path' => array(
-					'name' =>  __('Chemin',__FILE__),
+					'name' =>  new Trad('Chemin', __FILE__),
 					'type' => 'file',
 				),
 			),

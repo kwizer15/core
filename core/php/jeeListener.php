@@ -36,11 +36,11 @@ if (init('listener_id') == '') {
 	try {
 		$listener_id = init('listener_id');
 		if ($listener_id == '') {
-			throw new Exception(__('Le listener ID ne peut être vide', __FILE__));
+			throw new Exception(new Trad('Le listener ID ne peut être vide', __FILE__));
 		}
 		$listener = listener::byId($listener_id);
 		if (!is_object($listener)) {
-			throw new Exception(__('Listener non trouvé :', __FILE__) . ' ' . $listener_id);
+			throw new Exception(new Trad('Listener non trouvé :', __FILE__) . ' ' . $listener_id);
 		}
 	} catch (Exception $e) {
 		log::add(init('plugin_id', 'plugin'), 'error', log::exception($e));

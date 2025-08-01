@@ -43,20 +43,20 @@ try {
 	$jsonrpc = new jsonrpc($request);
 
 	if ($jsonrpc->getJsonrpc() != '2.0') {
-		throw new Exception(__('Requête invalide. Version JSON-RPC invalide :', __FILE__) . ' ' . $jsonrpc->getJsonrpc(), -32001);
+		throw new Exception(new Trad('Requête invalide. Version JSON-RPC invalide :', __FILE__) . ' ' . $jsonrpc->getJsonrpc(), -32001);
 	}
 
 	$params = $jsonrpc->getParams();
 
 	if (!isset($params['proapi'])) {
-		throw new Exception(__('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__), -32001);
+		throw new Exception(new Trad('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__), -32001);
 	}
 
 	if (!jeedom::apiAccess($params['proapi'], 'apipro')) {
-		throw new Exception(__('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__), -32001);
+		throw new Exception(new Trad('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__), -32001);
 	}
 
-	log::add('api', 'info', __('connexion valide et verifiée :', __FILE__) . ' ' . $jsonrpc->getMethod());
+	log::add('api', 'info', new Trad('connexion valide et verifiée :', __FILE__) . ' ' . $jsonrpc->getMethod());
 
 	/*             * ************************config*************************** */
 	if ($jsonrpc->getMethod() == 'config::byKey') {
@@ -101,7 +101,7 @@ try {
 			if (config::byKey('enableCron', 'core', 1, true) == 0) {
 				$defaut = 1;
 				$result = 'NOK';
-				$advice = __('Erreur cron : les crons sont désactivés. Allez dans Administration -> Moteur de tâches pour les réactiver', __FILE__);
+				$advice = new Trad('Erreur cron : les crons sont désactivés. Allez dans Administration -> Moteur de tâches pour les réactiver', __FILE__);
 			}
 			$health[] = array('plugin' => 'core', 'type' => 'Cron actif', 'defaut' => $defaut, 'result' => $result, 'advice' => $advice);
 
@@ -111,7 +111,7 @@ try {
 			if (config::byKey('enableScenario') == 0 && count(scenario::all()) > 0) {
 				$defaut = 1;
 				$result = 'NOK';
-				$advice = __('Erreur scénario : tous les scénarios sont désactivés. Allez dans Outils -> Scénarios pour les réactiver', __FILE__);
+				$advice = new Trad('Erreur scénario : tous les scénarios sont désactivés. Allez dans Outils -> Scénarios pour les réactiver', __FILE__);
 			}
 			$health[] = array('plugin' => 'core', 'type' => 'Scénario actif', 'defaut' => $defaut, 'result' => $result, 'advice' => $advice);
 
@@ -154,7 +154,7 @@ try {
 			$advice = '';
 			if (version_compare(phpversion(), '5.5', '<')) {
 				$defaut = 1;
-				$advice = __('Si vous êtes en version 5.4.x, on vous indiquera quand la version 5.5 sera obligatoire', __FILE__);
+				$advice = new Trad('Si vous êtes en version 5.4.x, on vous indiquera quand la version 5.5 sera obligatoire', __FILE__);
 			}
 			$health[] = array('plugin' => 'core', 'type' => 'Version PHP', 'defaut' => $defaut, 'result' => $result, 'advice' => $advice);
 
@@ -178,7 +178,7 @@ try {
 			if (!network::test('internal')) {
 				$defaut = 1;
 				$result = 'NOK';
-				$advice = __('Allez sur Administration -> Configuration -> Réseaux, puis configurez correctement la partie réseau', __FILE__);
+				$advice = new Trad('Allez sur Administration -> Configuration -> Réseaux, puis configurez correctement la partie réseau', __FILE__);
 			}
 			$health[] = array('plugin' => 'core', 'type' => 'Configuration réseau interne', 'defaut' => $defaut, 'result' => $result, 'advice' => $advice);
 
@@ -188,7 +188,7 @@ try {
 			if (!network::test('external')) {
 				$defaut = 1;
 				$result = 'NOK';
-				$advice = __('Allez sur Administration -> Configuration -> Réseaux, puis configurez correctement la partie réseau', __FILE__);
+				$advice = new Trad('Allez sur Administration -> Configuration -> Réseaux, puis configurez correctement la partie réseau', __FILE__);
 			}
 			$health[] = array('plugin' => 'core', 'type' => 'Configuration réseau externe', 'defaut' => $defaut, 'result' => $result, 'advice' => $advice);
 
@@ -204,7 +204,7 @@ try {
 			} else {
 				$result = 'NOK';
 				$defaut = 1;
-				$advice = __('Votre cache n\'est pas sauvegardé. En cas de redémarrage, certaines informations peuvent être perdues. Essayez de lancer (à partir du moteur de tâches) la tâche cache::persist.', __FILE__);
+				$advice = new Trad('Votre cache n\'est pas sauvegardé. En cas de redémarrage, certaines informations peuvent être perdues. Essayez de lancer (à partir du moteur de tâches) la tâche cache::persist.', __FILE__);
 			}
 			$health[] = array('plugin' => 'core', 'type' => 'Persistance du cache', 'defaut' => $defaut, 'result' => $result, 'advice' => $advice);
 
@@ -403,7 +403,7 @@ try {
 			$typeEqLogic = $params['eqType_name'];
 			$typeCmd = $typeEqLogic . 'Cmd';
 			if ($typeEqLogic == '' || !class_exists($typeEqLogic) || !class_exists($typeCmd)) {
-				throw new Exception(__('Type incorrect (classe commande inexistante)', __FILE__) . secureXSS($typeCmd));
+				throw new Exception(new Trad('Type incorrect (classe commande inexistante)', __FILE__) . secureXSS($typeCmd));
 			}
 			$eqLogic = null;
 			if (isset($params['id'])) {
@@ -498,7 +498,7 @@ try {
 		if ($jsonrpc->getMethod() == 'cmd::byId') {
 			$cmd = cmd::byId($params['id']);
 			if (!is_object($cmd)) {
-				throw new Exception(__('Commande introuvable :', __FILE__) . ' ' . secureXSS($params['id']), -32701);
+				throw new Exception(new Trad('Commande introuvable :', __FILE__) . ' ' . secureXSS($params['id']), -32701);
 			}
 			$jsonrpc->makeSuccess(utils::o2a($cmd));
 		}
@@ -509,14 +509,14 @@ try {
 				foreach ($params['id'] as $id) {
 					$cmd = cmd::byId($id);
 					if (!is_object($cmd)) {
-						throw new Exception(__('Commande introuvable :', __FILE__) . ' ' . secureXSS($id), -32702);
+						throw new Exception(new Trad('Commande introuvable :', __FILE__) . ' ' . secureXSS($id), -32702);
 					}
 					$return[$id] = array('value' => $cmd->execCmd($params['options']), 'collectDate' => $cmd->getCollectDate());
 				}
 			} else {
 				$cmd = cmd::byId($params['id']);
 				if (!is_object($cmd)) {
-					throw new Exception(__('Commande introuvable :', __FILE__) . ' ' . secureXSS($params['id']), -32702);
+					throw new Exception(new Trad('Commande introuvable :', __FILE__) . ' ' . secureXSS($params['id']), -32702);
 				}
 				$return = array('value' => $cmd->execCmd($params['options']), 'collectDate' => $cmd->getCollectDate());
 			}
@@ -526,7 +526,7 @@ try {
 		if ($jsonrpc->getMethod() == 'cmd::getStatistique') {
 			$cmd = cmd::byId($params['id']);
 			if (!is_object($cmd)) {
-				throw new Exception(__('Commande introuvable :', __FILE__) . ' ' . secureXSS($params['id']), -32702);
+				throw new Exception(new Trad('Commande introuvable :', __FILE__) . ' ' . secureXSS($params['id']), -32702);
 			}
 			$jsonrpc->makeSuccess($cmd->getStatistique($params['startTime'], $params['endTime']));
 		}
@@ -534,7 +534,7 @@ try {
 		if ($jsonrpc->getMethod() == 'cmd::getTendance') {
 			$cmd = cmd::byId($params['id']);
 			if (!is_object($cmd)) {
-				throw new Exception(__('Commande introuvable :', __FILE__) . ' ' . secureXSS($params['id']), -32702);
+				throw new Exception(new Trad('Commande introuvable :', __FILE__) . ' ' . secureXSS($params['id']), -32702);
 			}
 			$jsonrpc->makeSuccess($cmd->getTendance($params['startTime'], $params['endTime']));
 		}
@@ -570,7 +570,7 @@ try {
 			}
 			if ($params['state'] == 'run') {
 				$scenario->addTag('trigger','api');
-				$scenario->addTag('trigger_message',__('Scénario exécuté sur appel API', __FILE__));
+				$scenario->addTag('trigger_message',new Trad('Scénario exécuté sur appel API', __FILE__));
 				$jsonrpc->makeSuccess($scenario->launch());
 			}
 			if ($params['state'] == 'enable') {
@@ -581,13 +581,13 @@ try {
 				$scenario->setIsActive(0);
 				$jsonrpc->makeSuccess($scenario->save());
 			}
-			throw new Exception(__('Le paramètre "state" ne peut être vide et doit avoir pour valeur [run,stop,enable,disable]', __FILE__));
+			throw new Exception(new Trad('Le paramètre "state" ne peut être vide et doit avoir pour valeur [run, stop,enable,disable]', __FILE__));
 		}
 
 		/*             * ************************JeeNetwork*************************** */
 		if ($jsonrpc->getMethod() == 'jeeNetwork::handshake') {
 			if (config::byKey('jeeNetwork::mode') != 'slave') {
-				throw new Exception(__('Impossible d\'ajouter une box Jeedom non esclave à un réseau Jeedom', __FILE__));
+				throw new Exception(new Trad('Impossible d\'ajouter une box Jeedom non esclave à un réseau Jeedom', __FILE__));
 			}
 			$auiKey = config::byKey('auiKey');
 			if ($auiKey == '') {
@@ -654,11 +654,11 @@ try {
 
 		if ($jsonrpc->getMethod() == 'jeeNetwork::receivedBackup') {
 			if (config::byKey('jeeNetwork::mode') == 'slave') {
-				throw new Exception(__('Seul un maître peut recevoir une sauvegarde', __FILE__));
+				throw new Exception(new Trad('Seul un maître peut recevoir une sauvegarde', __FILE__));
 			}
 			$jeeNetwork = jeeNetwork::byId($params['slave_id']);
 			if (!is_object($jeeNetwork)) {
-				throw new Exception(__('Aucun esclave correspondant à l\'ID :', __FILE__) . ' ' . secureXSS($params['slave_id']));
+				throw new Exception(new Trad('Aucun esclave correspondant à l\'ID :', __FILE__) . ' ' . secureXSS($params['slave_id']));
 			}
 			if (substr(config::byKey('backup::path'), 0, 1) != '/') {
 				$backup_dir = __DIR__ . '/../../' . config::byKey('backup::path');
@@ -670,19 +670,19 @@ try {
 				mkdir($uploaddir);
 			}
 			if (!file_exists($uploaddir)) {
-				throw new Exception(__('Répertoire de téléversement non trouvé :', __FILE__) . ' ' . secureXSS($uploaddir));
+				throw new Exception(new Trad('Répertoire de téléversement non trouvé :', __FILE__) . ' ' . secureXSS($uploaddir));
 			}
 			$_file = $_FILES['file'];
 			$extension = strtolower(strrchr($_file['name'], '.'));
 			if (!in_array($extension, array('.tar.gz', '.gz', '.tar'))) {
-				throw new Exception(__('Extension du fichier non valide (autorisé .tar.gz, .tar et .gz) :', __FILE__) . ' ' . secureXSS($extension));
+				throw new Exception(new Trad('Extension du fichier non valide (autorisé .tar.gz, .tar et .gz) :', __FILE__) . ' ' . secureXSS($extension));
 			}
 			if (filesize($_file['tmp_name']) > 50000000) {
-				throw new Exception(__('La taille du fichier est trop importante (maximum 50Mo)', __FILE__));
+				throw new Exception(new Trad('La taille du fichier est trop importante (maximum 50Mo)', __FILE__));
 			}
 			$uploadfile = $uploaddir . $jeeNetwork->getId() . '-' . $jeeNetwork->getName() . '-' . $jeeNetwork->getConfiguration('version') . '-' . date('Y-m-d_H\hi') . '.tar' . $extension;
 			if (!move_uploaded_file($_file['tmp_name'], $uploadfile)) {
-				throw new Exception(__('Impossible de téléverser le fichier', __FILE__));
+				throw new Exception(new Trad('Impossible de téléverser le fichier', __FILE__));
 			}
 			system('find ' . $uploaddir . $jeeNetwork->getId() . '*' . ' -mtime +' . config::byKey('backup::keepDays') . ' -print | xargs -r rm');
 			$jsonrpc->makeSuccess('ok');
@@ -690,7 +690,7 @@ try {
 
 		if ($jsonrpc->getMethod() == 'jeeNetwork::restoreBackup') {
 			if (config::byKey('jeeNetwork::mode') != 'slave') {
-				throw new Exception(__('Seul un esclave peut restaurer une sauvegarde', __FILE__));
+				throw new Exception(new Trad('Seul un esclave peut restaurer une sauvegarde', __FILE__));
 			}
 			if (substr(config::byKey('backup::path'), 0, 1) != '/') {
 				$uploaddir = __DIR__ . '/../../' . config::byKey('backup::path');
@@ -701,20 +701,20 @@ try {
 				mkdir($uploaddir);
 			}
 			if (!file_exists($uploaddir)) {
-				throw new Exception(__('Répertoire de téléversement non trouvé :', __FILE__) . ' ' . secureXSS($uploaddir));
+				throw new Exception(new Trad('Répertoire de téléversement non trouvé :', __FILE__) . ' ' . secureXSS($uploaddir));
 			}
 			$_file = $_FILES['file'];
 			$extension = strtolower(strrchr($_file['name'], '.'));
 			if (!in_array($extension, array('.tar.gz', '.gz', '.tar'))) {
-				throw new Exception(__('Extension du fichier non valide (autorisé .tar.gz, .tar et .gz) :', __FILE__) . ' ' . secureXSS($extension));
+				throw new Exception(new Trad('Extension du fichier non valide (autorisé .tar.gz, .tar et .gz) :', __FILE__) . ' ' . secureXSS($extension));
 			}
 			if (filesize($_file['tmp_name']) > 50000000) {
-				throw new Exception(__('La taille du fichier est trop importante (maximum 50Mo)', __FILE__));
+				throw new Exception(new Trad('La taille du fichier est trop importante (maximum 50Mo)', __FILE__));
 			}
 			$backup_name = 'backup-' . jeedom::version() . '-' . date("d-m-Y-H\hi") . '.tar.gz';
 			$uploadfile = $uploaddir . '/' . $backup_name;
 			if (!move_uploaded_file($_file['tmp_name'], $uploadfile)) {
-				throw new Exception(__('Impossible de téléverser le fichier', __FILE__));
+				throw new Exception(new Trad('Impossible de téléverser le fichier', __FILE__));
 			}
 			jeedom::restore($uploadfile, true);
 			$jsonrpc->makeSuccess('ok');
@@ -819,7 +819,7 @@ try {
 				$market = market::byLogicalId($params['plugin_id']);
 			}
 			if (!is_object($market)) {
-				throw new Exception(__('Impossible de trouver l\'objet associé :', __FILE__) . ' ' . secureXSS($params['plugin_id']));
+				throw new Exception(new Trad('Impossible de trouver l\'objet associé :', __FILE__) . ' ' . secureXSS($params['plugin_id']));
 			}
 			if (!isset($params['version'])) {
 				$params['version'] = 'stable';
@@ -831,7 +831,7 @@ try {
 		if ($jsonrpc->getMethod() == 'plugin::remove') {
 			$market = market::byId($params['plugin_id']);
 			if (!is_object($market)) {
-				throw new Exception(__('Impossible de trouver l\'objet associé :', __FILE__) . ' ' . secureXSS($params['plugin_id']));
+				throw new Exception(new Trad('Impossible de trouver l\'objet associé :', __FILE__) . ' ' . secureXSS($params['plugin_id']));
 			}
 			if (!isset($params['version'])) {
 				$params['version'] = 'stable';
@@ -905,7 +905,7 @@ try {
 
 		/*             * ************************************************************************ */
 	}
-	throw new Exception(__('Aucune méthode correspondante :', __FILE__) . ' ' . secureXSS($jsonrpc->getMethod()), -32500);
+	throw new Exception(new Trad('Aucune méthode correspondante :', __FILE__) . ' ' . secureXSS($jsonrpc->getMethod()), -32500);
 	/*         * *********Catch exeption*************** */
 } catch (Exception $e) {
 	$message = $e->getMessage();

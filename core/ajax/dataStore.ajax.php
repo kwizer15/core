@@ -21,7 +21,7 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init();
@@ -29,7 +29,7 @@ try {
 	if (init('action') == 'remove') {
 		$dataStore = dataStore::byId(init('id'));
 		if (!is_object($dataStore)) {
-			throw new Exception(__('Dépôt de données inconnu. Vérifiez l\'ID :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Dépôt de données inconnu. Vérifiez l\'ID :', __FILE__) . ' ' . init('id'));
 		}
 		$dataStore->remove();
 		ajax::success();
@@ -45,7 +45,7 @@ try {
 			$dataStore = dataStore::byId(init('id'));
 		}
 		if (!is_object($dataStore)) {
-			throw new Exception(__('Dépôt de données inconnu. Vérifiez l\'ID :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Dépôt de données inconnu. Vérifiez l\'ID :', __FILE__) . ' ' . init('id'));
 		}
 		$dataStore->setValue(init('value'));
 		$dataStore->save();
@@ -88,7 +88,7 @@ try {
 		$key = trim(init('key'));
 		$dataStore = dataStore::byTypeLinkIdKey(init('type'), init('linkId'), $key);
 		if (!is_object($dataStore)) {
-			throw new Exception(__('Dépôt de données inconnu.', __FILE__) . $key);
+			throw new Exception(new Trad('Dépôt de données inconnu.', __FILE__) . $key);
 		}
 		$return = jeeAjax_datastoreReturn($dataStore, init('usedBy'));
 		ajax::success($return);
@@ -99,7 +99,7 @@ try {
 		ajax::success($return);
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

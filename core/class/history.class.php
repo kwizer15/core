@@ -71,7 +71,7 @@ class history {
 		if (!is_array($histories)) {
 			$histories = array($histories);
 		}
-		$return = '"' . __('Commande', __FILE__) . '";"' . '"' . __('Date', __FILE__) . '";"' . __('Valeur', __FILE__) . '"' . "\n";
+		$return = '"' . new Trad('Commande', __FILE__) . '";"' . '"' . new Trad('Date', __FILE__) . '";"' . new Trad('Valeur', __FILE__) . '"' . "\n";
 		foreach ($histories as $history) {
 			$return .=  '"' . $history->getCmd()->getHumanName() . '";"' . '"' . $history->getDatetime() . '";"' . $history->getValue() . '"' . "\n";
 		}
@@ -81,23 +81,23 @@ class history {
 	public static function copyHistoryToCmd($_source_id, $_target_id) {
 		$source_cmd = cmd::byId(str_replace('#', '', $_source_id));
 		if (!is_object($source_cmd)) {
-			throw new Exception(__('La commande source n\'existe pas :', __FILE__) . ' ' . $_source_id);
+			throw new Exception(new Trad('La commande source n\'existe pas :', __FILE__) . ' ' . $_source_id);
 		}
 		if ($source_cmd->getIsHistorized() != 1) {
-			throw new Exception(__('La commande source n\'est pas historisée', __FILE__));
+			throw new Exception(new Trad('La commande source n\'est pas historisée', __FILE__));
 		}
 		if ($source_cmd->getType() != 'info') {
-			throw new Exception(__('La commande source n\'est pas de type info', __FILE__));
+			throw new Exception(new Trad('La commande source n\'est pas de type info', __FILE__));
 		}
 		$target_cmd = cmd::byId(str_replace('#', '', $_target_id));
 		if (!is_object($target_cmd)) {
-			throw new Exception(__('La commande cible n\'existe pas :', __FILE__) . ' ' . $_target_id);
+			throw new Exception(new Trad('La commande cible n\'existe pas :', __FILE__) . ' ' . $_target_id);
 		}
 		if ($target_cmd->getType() != 'info') {
-			throw new Exception(__('La commande cible n\'est pas de type info', __FILE__));
+			throw new Exception(new Trad('La commande cible n\'est pas de type info', __FILE__));
 		}
 		if ($target_cmd->getSubType() != $source_cmd->getSubType()) {
-			throw new Exception(__('Le sous-type de la commande cible n\'est pas le même que celui de la commande source', __FILE__));
+			throw new Exception(new Trad('Le sous-type de la commande cible n\'est pas le même que celui de la commande source', __FILE__));
 		}
 		if ($target_cmd->getIsHistorized() != 1) {
 			$target_cmd->setIsHistorized(1);
@@ -341,7 +341,7 @@ class history {
 				try {
 					DB::Prepare($sql, $values, DB::FETCH_TYPE_ROW);
 				} catch (Exception $e) {
-					log::add('history', 'error', __('Erreur l\'archivage des historiques :', __FILE__) . ' ' . json_encode($values) . '  => ' . log::exception($e));
+					log::add('history', 'error', new Trad('Erreur l\'archivage des historiques :', __FILE__) . ' ' . json_encode($values) . '  => ' . log::exception($e));
 					continue;
 				}
 				$values = array('cmd_id' => $sensors['cmd_id'], 'archiveTime' => $archiveDatetime);
@@ -731,7 +731,7 @@ class history {
 	public static function stateDuration($_cmd_id, $_value = null) {
 		$cmd = cmd::byId($_cmd_id);
 		if (!is_object($cmd)) {
-			throw new Exception(__('Commande introuvable :', __FILE__) . ' ' . $_cmd_id);
+			throw new Exception(new Trad('Commande introuvable :', __FILE__) . ' ' . $_cmd_id);
 		}
 		if ($cmd->getIsHistorized() != 1) {
 			return -2;
@@ -756,7 +756,7 @@ class history {
 	public static function lastStateDuration($_cmd_id, $_value = null) {
 		$cmd = cmd::byId($_cmd_id);
 		if (!is_object($cmd)) {
-			throw new Exception(__('Commande introuvable :', __FILE__) . ' ' . $_cmd_id);
+			throw new Exception(new Trad('Commande introuvable :', __FILE__) . ' ' . $_cmd_id);
 		}
 		if ($cmd->getIsHistorized() != 1) {
 			return -2;
@@ -815,7 +815,7 @@ class history {
 	public static function lastChangeStateDuration($_cmd_id, $_value) {
 		$cmd = cmd::byId($_cmd_id);
 		if (!is_object($cmd)) {
-			throw new Exception(__('Commande introuvable :', __FILE__) . ' ' . $_cmd_id);
+			throw new Exception(new Trad('Commande introuvable :', __FILE__) . ' ' . $_cmd_id);
 		}
 		if ($cmd->getIsHistorized() != 1) {
 			return -2;
@@ -879,7 +879,7 @@ class history {
 	public static function stateChanges($_cmd_id, $_value = null, $_startTime = null, $_endTime = null) {
 		$cmd = cmd::byId($_cmd_id);
 		if (!is_object($cmd)) {
-			throw new Exception(__('Commande introuvable :', __FILE__) . ' ' . $_cmd_id);
+			throw new Exception(new Trad('Commande introuvable :', __FILE__) . ' ' . $_cmd_id);
 		}
 		if ($_value === null) {
 			$_value = $cmd->execCmd();

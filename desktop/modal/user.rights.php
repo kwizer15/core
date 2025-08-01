@@ -21,7 +21,7 @@ if (!isConnect('admin')) {
 $user = user::byId(init('id'));
 
 if (!is_object($user)) {
-  throw new Exception(__('Impossible de trouver l\'utilisateur :', __FILE__) . ' ' . init('id'));
+  throw new Exception(new Trad('Impossible de trouver l\'utilisateur :', __FILE__) . ' ' . init('id'));
 }
 sendVarToJs('jeephp2js.md_userRights_rights', utils::o2a($user));
 ?>
@@ -265,17 +265,17 @@ sendVarToJs('jeephp2js.md_userRights_rights', utils::o2a($user));
         <tbody>
         <?php
           $menus = array(
-            'overview' => __('Synthèse',__FILE__),
-            'dashboard' => __('Dashboard',__FILE__),
-            'view' => __('Vue',__FILE__),
-            'plan' => __('Design',__FILE__),
-            'plan3d' => __('Design 3D',__FILE__),
-            'analyze' => __('[Globale] Analyse',__FILE__),
-            'timeline' => __('Timeline',__FILE__),
-            'history' => __('Historique',__FILE__),
-            'settings' => __('[Globale] Réglages',__FILE__),
-            'profils' => __('Préférences',__FILE__),
-            'mobile' => __('Version mobile',__FILE__),
+            'overview' => new Trad('Synthèse', __FILE__),
+            'dashboard' => new Trad('Dashboard', __FILE__),
+            'view' => new Trad('Vue', __FILE__),
+            'plan' => new Trad('Design', __FILE__),
+            'plan3d' => new Trad('Design 3D', __FILE__),
+            'analyze' => new Trad('[Globale] Analyse', __FILE__),
+            'timeline' => new Trad('Timeline', __FILE__),
+            'history' => new Trad('Historique', __FILE__),
+            'settings' => new Trad('[Globale] Réglages', __FILE__),
+            'profils' => new Trad('Préférences', __FILE__),
+            'mobile' => new Trad('Version mobile', __FILE__),
           );
           $html = '';
           foreach ($menus as $key => $value) {

@@ -44,15 +44,15 @@ try {
 					@session_start();
 					$_SESSION['user'] = $user;
 					@session_write_close();
-					log::add('connection', 'info', __('Connexion de l\'utilisateur par REMOTE_USER :', __FILE__) . ' ' . $_SESSION['user']->getLogin());
+					log::add('connection', 'info', new Trad('Connexion de l\'utilisateur par REMOTE_USER :', __FILE__) . ' ' . $_SESSION['user']->getLogin());
 				}
 			}
 			$user = user::connect(init('username'), init('password'));
 			if (is_object($user) && network::getUserLocation() != 'internal' && $user->getOptions('twoFactorAuthentification', 0) == 1 && $user->getOptions('twoFactorAuthentificationSecret') != '' && init('twoFactorCode') == '') {
-				throw new Exception(__('Double authentification requise', __FILE__), -32012);
+				throw new Exception(new Trad('Double authentification requise', __FILE__), -32012);
 			}
 			if (!login(init('username'), init('password'), init('twoFactorCode'))) {
-				throw new Exception(__('Mot de passe ou nom d\'utilisateur incorrect', __FILE__));
+				throw new Exception(new Trad('Mot de passe ou nom d\'utilisateur incorrect', __FILE__));
 			}
 		}
 
@@ -83,13 +83,13 @@ try {
 
 	if (init('action') == 'getApikey') {
 		if (!login(init('username'), init('password'), init('twoFactorCode'))) {
-			throw new Exception(__('Mot de passe ou nom d\'utilisateur incorrect', __FILE__));
+			throw new Exception(new Trad('Mot de passe ou nom d\'utilisateur incorrect', __FILE__));
 		}
 		ajax::success($_SESSION['user']->getHash());
 	}
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
 	}
 
 	ajax::init();
@@ -109,7 +109,7 @@ try {
 
 	if (init('action') == 'removeTwoFactorCode') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$user = user::byId(init('id'));
@@ -139,7 +139,7 @@ try {
 
 	if (init('action') == 'all') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$users = array();
@@ -152,7 +152,7 @@ try {
 
 	if (init('action') == 'save') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$users = jeedom::fromHumanReadable(json_decode(init('users'), true));
@@ -163,7 +163,7 @@ try {
 			}
 			if (!is_object($user)) {
 				if (config::byKey('ldap::enable') == '1') {
-					throw new Exception(__('Vous devez désactiver l\'authentification LDAP pour pouvoir ajouter un utilisateur', __FILE__));
+					throw new Exception(new Trad('Vous devez désactiver l\'authentification LDAP pour pouvoir ajouter un utilisateur', __FILE__));
 				}
 				$user = new user();
 			}
@@ -186,12 +186,12 @@ try {
 
 	if (init('action') == 'copyRights') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$from = user::byId(init('from'));
 		$to = user::byId(init('to'));
 		if (!is_object($from) || !is_object($to)) {
-			throw new Exception(__('Utilisateur invalide', __FILE__));
+			throw new Exception(new Trad('Utilisateur invalide', __FILE__));
 		}
 		$rights = $from->getRights();
 		foreach ($rights as $key => $value) {
@@ -203,18 +203,18 @@ try {
 
 	if (init('action') == 'remove') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		if (config::byKey('ldap::enable') == '1') {
-			throw new Exception(__('Vous devez désactiver l\'authentification LDAP pour pouvoir supprimer un utilisateur', __FILE__));
+			throw new Exception(new Trad('Vous devez désactiver l\'authentification LDAP pour pouvoir supprimer un utilisateur', __FILE__));
 		}
 		if (init('id') == $_SESSION['user']->getId()) {
-			throw new Exception(__('Vous ne pouvez pas supprimer le compte avec lequel vous êtes connecté', __FILE__));
+			throw new Exception(new Trad('Vous ne pouvez pas supprimer le compte avec lequel vous êtes connecté', __FILE__));
 		}
 		$user = user::byId(init('id'));
 		if (!is_object($user)) {
-			throw new Exception(__('User ID inconnu', __FILE__));
+			throw new Exception(new Trad('User ID inconnu', __FILE__));
 		}
 		$user->remove();
 		ajax::success();
@@ -224,7 +224,7 @@ try {
 		unautorizedInDemo();
 		$user_json = jeedom::fromHumanReadable(json_decode(init('profils'), true));
 		if (isset($user_json['id']) && $user_json['id'] != $_SESSION['user']->getId()) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		@session_start();
 		$_SESSION['user']->refresh();
@@ -243,11 +243,11 @@ try {
 	if (init('action') == 'get') {
 		if (init('id') > 0) {
 			if (!isConnect('admin')) {
-				throw new Exception(__('401 - Accès non autorisé', __FILE__));
+				throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 			}
 			$user = user::byId(init('id'));
 			if (!is_object($user)) {
-				throw new Exception(__('Utilisateur non trouvé :', __FILE__) . ' ' . init('id'));
+				throw new Exception(new Trad('Utilisateur non trouvé :', __FILE__) . ' ' . init('id'));
 			}
 			ajax::success(jeedom::toHumanReadable(utils::o2a($user)));
 		}
@@ -258,7 +258,7 @@ try {
 		unautorizedInDemo();
 		if (init('key') == '' && init('user_id') == '') {
 			if (!isConnect('admin')) {
-				throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+				throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
 			}
 			foreach ((user::all()) as $user) {
 				if ($user->getId() == $_SESSION['user']->getId()) {
@@ -276,11 +276,11 @@ try {
 		}
 		if (init('user_id') != '') {
 			if (!isConnect('admin')) {
-				throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+				throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
 			}
 			$user = user::byId(init('user_id'));
 			if (!is_object($user)) {
-				throw new Exception(__('Utilisateur non trouvé :', __FILE__) . ' ' . init('user_id'));
+				throw new Exception(new Trad('Utilisateur non trouvé :', __FILE__) . ' ' . init('user_id'));
 			}
 			$registerDevice = $user->getOptions('registerDevice', array());
 		} else {
@@ -326,12 +326,12 @@ try {
 	}
 
 	if (!isConnect('admin')) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
 	}
 
 	if (init('action') == 'testLdapConnection') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$connection = user::connectToLDAP();
@@ -351,7 +351,7 @@ try {
 		ajax::success(user::supportAccess(init('enable')));
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

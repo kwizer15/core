@@ -21,7 +21,7 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init(array('templateupload'));
@@ -29,15 +29,15 @@ try {
 	if (init('action') == 'changeState') {
 		$scenario = scenario::byId(init('id'));
 		if (!is_object($scenario)) {
-			throw new Exception(__('Scénario ID inconnu :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Scénario ID inconnu :', __FILE__) . ' ' . init('id'));
 		}
 		if (!$scenario->hasRight('x')) {
-			throw new Exception(__('Vous n\'êtes pas autorisé à faire cette action', __FILE__));
+			throw new Exception(new Trad('Vous n\'êtes pas autorisé à faire cette action', __FILE__));
 		}
 		switch (init('state')) {
 			case 'start':
 				if (!$scenario->getIsActive()) {
-					throw new Exception(__('Impossible de lancer le scénario car il est désactivé. Veuillez l\'activer', __FILE__));
+					throw new Exception(new Trad('Impossible de lancer le scénario car il est désactivé. Veuillez l\'activer', __FILE__));
 				}
 				$scenario->addTag('trigger','user');
 				$scenario->addTag('trigger_value',$_SESSION['user']->getLogin());
@@ -106,19 +106,19 @@ try {
 	if (init('action') == 'convertToTemplate') {
 		$scenario = scenario::byId(init('id'));
 		if (!is_object($scenario)) {
-			throw new Exception(__('Scénario ID inconnu :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Scénario ID inconnu :', __FILE__) . ' ' . init('id'));
 		}
 		$path = __DIR__ . '/../../data/scenario';
 		if (!file_exists($path)) {
 			mkdir($path);
 		}
 		if (trim(init('template')) == '' || trim(init('template')) == '.json') {
-			throw new Exception(__('Le nom du template ne peut être vide', __FILE__) . ' ');
+			throw new Exception(new Trad('Le nom du template ne peut être vide', __FILE__) . ' ');
 		}
 		$name = init('template');
 		file_put_contents($path . '/' . $name, json_encode($scenario->export('array'), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 		if (!file_exists($path . '/' . $name)) {
-			throw new Exception(__('Impossible de créer le template, vérifiez les droits :', __FILE__) . ' ' . $path . '/' . $name);
+			throw new Exception(new Trad('Impossible de créer le template, vérifiez les droits :', __FILE__) . ' ' . $path . '/' . $name);
 		}
 		ajax::success();
 	}
@@ -135,7 +135,7 @@ try {
 	if (init('action') == 'loadTemplateDiff') {
 		$path = __DIR__ . '/../../data/scenario';
 		if (!file_exists($path . '/' . init('template'))) {
-			throw new Exception(__('Fichier non trouvé :', __FILE__) . ' ' . $path . '/' . init('template'));
+			throw new Exception(new Trad('Fichier non trouvé :', __FILE__) . ' ' . $path . '/' . init('template'));
 		}
 		$return = array();
 		$fileContent = file_get_contents($path . '/' . init('template'));
@@ -184,11 +184,11 @@ try {
 		unautorizedInDemo();
 		$path = __DIR__ . '/../../data/scenario';
 		if (!file_exists($path . '/' . init('template'))) {
-			throw new Exception(__('Fichier non trouvé :', __FILE__) . ' ' . $path . '/' . init('template'));
+			throw new Exception(new Trad('Fichier non trouvé :', __FILE__) . ' ' . $path . '/' . init('template'));
 		}
 		foreach (json_decode(init('convert'), true) as $value) {
 			if (trim($value['end']) == '') {
-				throw new Exception(__('La conversion suivante ne peut être vide :', __FILE__) . ' ' . $value['begin']);
+				throw new Exception(new Trad('La conversion suivante ne peut être vide :', __FILE__) . ' ' . $value['begin']);
 			}
 			$converts[$value['begin']] = $value['end'];
 		}
@@ -203,10 +203,10 @@ try {
 		}
 		$scenario_db = scenario::byId(init('id'));
 		if (!is_object($scenario_db)) {
-			throw new Exception(__('Scénario ID inconnu :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Scénario ID inconnu :', __FILE__) . ' ' . init('id'));
 		}
 		if (!$scenario_db->hasRight('w')) {
-			throw new Exception(__('Vous n\'êtes pas autorisé à faire cette action', __FILE__));
+			throw new Exception(new Trad('Vous n\'êtes pas autorisé à faire cette action', __FILE__));
 		}
 		$scenario_db->setTrigger(array());
 		$scenario_db->setSchedule(array());
@@ -237,7 +237,7 @@ try {
 	if (init('action') == 'byId') {
 		$scenario = scenario::byId(init('id'));
 		if (!is_object($scenario)) {
-			throw new Exception(__('Scénario ID inconnu', __FILE__));
+			throw new Exception(new Trad('Scénario ID inconnu', __FILE__));
 		}
 		ajax::success(utils::o2a($scenario));
 	}
@@ -284,7 +284,7 @@ try {
 
 	if (init('action') == 'autoCompleteGroup') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$return = array();
 		foreach (scenario::listGroup(init('term')) as $group) {
@@ -320,15 +320,15 @@ try {
 
 	if (init('action') == 'remove') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$scenario = scenario::byId(init('id'));
 		if (!is_object($scenario)) {
-			throw new Exception(__('Scénario ID inconnu', __FILE__));
+			throw new Exception(new Trad('Scénario ID inconnu', __FILE__));
 		}
 		if (!$scenario->hasRight('w')) {
-			throw new Exception(__('Vous n\'êtes pas autorisé à faire cette action', __FILE__));
+			throw new Exception(new Trad('Vous n\'êtes pas autorisé à faire cette action', __FILE__));
 		}
 		$scenario->remove();
 		ajax::success();
@@ -336,7 +336,7 @@ try {
 
 	if (init('action') == 'clearAllLogs') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$scenarios = scenario::all();
 		foreach ($scenarios as $scenario) {
@@ -349,11 +349,11 @@ try {
 
 	if (init('action') == 'emptyLog') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$scenario = scenario::byId(init('id'));
 		if (!is_object($scenario)) {
-			throw new Exception(__('Scénario ID inconnu', __FILE__));
+			throw new Exception(new Trad('Scénario ID inconnu', __FILE__));
 		}
 		if (file_exists(__DIR__ . '/../../log/scenarioLog/scenario' . $scenario->getId() . '.log')) {
 			unlink(__DIR__ . '/../../log/scenarioLog/scenario' . $scenario->getId() . '.log');
@@ -363,12 +363,12 @@ try {
 
 	if (init('action') == 'copy') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$scenario = scenario::byId(init('id'));
 		if (!is_object($scenario)) {
-			throw new Exception(__('Scénario ID inconnu', __FILE__));
+			throw new Exception(new Trad('Scénario ID inconnu', __FILE__));
 		}
 		ajax::success(utils::o2a($scenario->copy(init('name'))));
 	}
@@ -376,7 +376,7 @@ try {
 	if (init('action') == 'get') {
 		$scenario = scenario::byId(init('id'));
 		if (!is_object($scenario)) {
-			throw new Exception(__('Scénario ID inconnu', __FILE__));
+			throw new Exception(new Trad('Scénario ID inconnu', __FILE__));
 		}
 		$return = utils::o2a($scenario);
 		$return['trigger'] = jeedom::toHumanReadable($return['trigger']);
@@ -456,10 +456,10 @@ try {
 
 	if (init('action') == 'save') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		if (!is_json(init('scenario'))) {
-			throw new Exception(__('Champs json invalide', __FILE__));
+			throw new Exception(new Trad('Champs json invalide', __FILE__));
 		}
 		unautorizedInDemo();
 		$time_dependance = 0;
@@ -485,7 +485,7 @@ try {
 		if (!isset($scenario_db) || !is_object($scenario_db)) {
 			$scenario_db = new scenario();
 		} elseif (!$scenario_db->hasRight('w')) {
-			throw new Exception(__('Vous n\'êtes pas autorisé à faire cette action', __FILE__));
+			throw new Exception(new Trad('Vous n\'êtes pas autorisé à faire cette action', __FILE__));
 		}
 		if (isset($scenario_ajax['trigger'])) {
 			$scenario_db->setTrigger(array());
@@ -536,28 +536,28 @@ try {
 			mkdir($uploaddir);
 		}
 		if (!file_exists($uploaddir)) {
-			throw new Exception(__('Répertoire de téléversement non trouvé :', __FILE__) . ' ' . $uploaddir);
+			throw new Exception(new Trad('Répertoire de téléversement non trouvé :', __FILE__) . ' ' . $uploaddir);
 		}
 		if (!isset($_FILES['file'])) {
-			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
+			throw new Exception(new Trad('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
 		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
 		if (!in_array($extension, array('.json'))) {
-			throw new Exception(__('Extension du fichier non valide (autorisé .json) :', __FILE__) . ' ' . $extension);
+			throw new Exception(new Trad('Extension du fichier non valide (autorisé .json) :', __FILE__) . ' ' . $extension);
 		}
 		if (filesize($_FILES['file']['tmp_name']) > 10000000) {
-			throw new Exception(__('Le fichier est trop gros (maximum 10Mo)', __FILE__));
+			throw new Exception(new Trad('Le fichier est trop gros (maximum 10Mo)', __FILE__));
 		}
 		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $_FILES['file']['name'])) {
-			throw new Exception(__('Impossible de déplacer le fichier temporaire', __FILE__));
+			throw new Exception(new Trad('Impossible de déplacer le fichier temporaire', __FILE__));
 		}
 		if (!file_exists($uploaddir . '/' . $_FILES['file']['name'])) {
-			throw new Exception(__('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
+			throw new Exception(new Trad('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
 		}
 		ajax::success();
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

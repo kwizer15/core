@@ -49,7 +49,7 @@ class note {
 
 	public function preSave() {
 		if (trim($this->getName()) == '') {
-			throw new Exception(__('Le nom de la note ne peut être vide', __FILE__));
+			throw new Exception(new Trad('Le nom de la note ne peut être vide', __FILE__));
 		}
 	}
 

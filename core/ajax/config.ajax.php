@@ -21,14 +21,14 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
 	}
 
 	ajax::init(array('uploadImage'));
 
 	if (init('action') == 'genApiKey') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		if (init('plugin') == 'core') {
@@ -52,7 +52,7 @@ try {
 	if (init('action') == 'getKey') {
 		$keys = init('key');
 		if ($keys == '') {
-			throw new Exception(__('Aucune clef demandée', __FILE__));
+			throw new Exception(new Trad('Aucune clef demandée', __FILE__));
 		}
 		if (is_json($keys)) {
 			$keys = json_decode($keys, true);
@@ -68,7 +68,7 @@ try {
 
 	if (init('action') == 'addKey') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$values = json_decode(init('value'), true);
@@ -82,7 +82,7 @@ try {
 		unautorizedInDemo();
 		$keys = init('key');
 		if ($keys == '') {
-			throw new Exception(__('Aucune clef demandée', __FILE__));
+			throw new Exception(new Trad('Aucune clef demandée', __FILE__));
 		}
 		if (is_json($keys)) {
 			$keys = json_decode($keys, true);
@@ -98,7 +98,7 @@ try {
 
 	if (init('action') == 'uploadImage') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 
@@ -107,14 +107,14 @@ try {
 		config::save($key, config::getDefaultConfiguration()['core'][$key]);
 
 		if (!isset($_FILES['file'])) {
-			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
+			throw new Exception(new Trad('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
 		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
 		if (!in_array($extension, array('.jpg', '.png'))) {
-			throw new Exception(__('Extension du fichier non valide (autorisé .jpg .png) :', __FILE__) . ' ' . $extension);
+			throw new Exception(new Trad('Extension du fichier non valide (autorisé .jpg .png) :', __FILE__) . ' ' . $extension);
 		}
 		if (filesize($_FILES['file']['tmp_name']) > 5000000) {
-			throw new Exception(__('Le fichier est trop gros (maximum 5Mo)', __FILE__));
+			throw new Exception(new Trad('Le fichier est trop gros (maximum 5Mo)', __FILE__));
 		}
 
 		$uploaddir = realpath(__DIR__ . '/../../data/backgrounds');
@@ -127,7 +127,7 @@ try {
 		@unlink($filepath);
 		file_put_contents($filepath, file_get_contents($_FILES['file']['tmp_name']));
 		if (!file_exists($filepath)) {
-			throw new Exception(__('Impossible de sauvegarder l\'image', __FILE__));
+			throw new Exception(new Trad('Impossible de sauvegarder l\'image', __FILE__));
 		}
 
 		config::save($key, '/data/backgrounds/config_' . $page . $extension);
@@ -136,7 +136,7 @@ try {
 
 	if (init('action') == 'removeImage') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 
@@ -149,7 +149,7 @@ try {
 		ajax::success();
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

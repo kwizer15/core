@@ -73,7 +73,7 @@ function include_file($_folder, $_fn, $_type, $_plugin = '') {
 	}
 	$path = __DIR__ . '/../../' . $_folder . '/' . $_fn;
 	if (!file_exists($path) && $type == 'php') {
-		throw new Exception(__('Fichier introuvable :', __FILE__) . ' ' . secureXSS($path), 35486);
+		throw new Exception(new Trad('Fichier introuvable :', __FILE__) . ' ' . secureXSS($path), 35486);
 	}
 	if ($type == 'php') {
 		if ($_type != 'class') {
@@ -1583,7 +1583,7 @@ function listSession() {
 	$return = array();
 	$sessions = explode("\n", com_shell::execute(system::getCmdSudo() . ' ls -t ' . session_save_path()));
 	if (count($sessions) > 100) {
-		throw new Exception(__('Trop de sessions, je ne peux pas lister :', __FILE__) . ' ' . count($sessions) . __('. Faire, pour les nettoyer :', __FILE__) . ' ' . '"sudo rm -rf ' . session_save_path() . ';sudo mkdir ' . session_save_path() . ';sudo chmod 777 ' . session_save_path() . '"');
+		throw new Exception(new Trad('Trop de sessions, je ne peux pas lister :', __FILE__) . ' ' . count($sessions) . new Trad('. Faire, pour les nettoyer :', __FILE__) . ' ' . '"sudo rm -rf ' . session_save_path() . ';sudo mkdir ' . session_save_path() . ';sudo chmod 777 ' . session_save_path() . '"');
 	}
 	foreach ($sessions as $session) {
 		try {
@@ -1628,7 +1628,7 @@ function unautorizedInDemo($_user = null) {
 		return;
 	}
 	if ($_user->getLogin() == 'demo') {
-		throw new Exception(__('Cette action n\'est pas autorisée en mode démo', __FILE__));
+		throw new Exception(new Trad('Cette action n\'est pas autorisée en mode démo', __FILE__));
 	}
 }
 
@@ -1694,82 +1694,82 @@ function getTZoffsetMin() {
 function pageTitle($_page) {
 	switch ($_page) {
 		case 'overview':
-			$return = __('Synthèse', __FILE__);
+			$return = new Trad('Synthèse', __FILE__);
 			break;
 		case 'view':
-			$return = __('Vues', __FILE__);
+			$return = new Trad('Vues', __FILE__);
 			break;
 		case 'plan':
-			$return = __('Designs', __FILE__);
+			$return = new Trad('Designs', __FILE__);
 			break;
 		case 'plan3d':
-			$return = __('Designs 3D', __FILE__);
+			$return = new Trad('Designs 3D', __FILE__);
 			break;
 		case 'eqAnalyse':
-			$return = __('Equipements', __FILE__);
+			$return = new Trad('Equipements', __FILE__);
 			break;
 		case 'display':
-			$return = __('Résumé', __FILE__);
+			$return = new Trad('Résumé', __FILE__);
 			break;
 		case 'history':
-			$return = __('Historique', __FILE__);
+			$return = new Trad('Historique', __FILE__);
 			break;
 		case 'timeline':
-			$return = __('Timeline', __FILE__);
+			$return = new Trad('Timeline', __FILE__);
 			break;
 		case 'report':
-			$return = __('Rapports', __FILE__);
+			$return = new Trad('Rapports', __FILE__);
 			break;
 		case 'replace':
-			$return = __('Remplacement', __FILE__);
+			$return = new Trad('Remplacement', __FILE__);
 			break;
 		case 'health':
-			$return = __('Santé', __FILE__);
+			$return = new Trad('Santé', __FILE__);
 			break;
 		case 'object':
-			$return = __('Objets', __FILE__);
+			$return = new Trad('Objets', __FILE__);
 			break;
 		case 'scenario':
-			$return = __('Scénarios', __FILE__);
+			$return = new Trad('Scénarios', __FILE__);
 			break;
 		case 'interact':
-			$return = __('Interactions', __FILE__);
+			$return = new Trad('Interactions', __FILE__);
 			break;
 		case 'widgets':
-			$return = __('Widgets', __FILE__);
+			$return = new Trad('Widgets', __FILE__);
 			break;
 		case 'plugin':
-			$return = __('Gestion Plugins', __FILE__);
+			$return = new Trad('Gestion Plugins', __FILE__);
 			break;
 		case 'backup':
-			$return = __('Sauvegardes', __FILE__);
+			$return = new Trad('Sauvegardes', __FILE__);
 			break;
 		case 'administration':
-			$return = __('Configuration', __FILE__);
+			$return = new Trad('Configuration', __FILE__);
 			break;
 		case 'database':
-			$return = __('Base de données', __FILE__);
+			$return = new Trad('Base de données', __FILE__);
 			break;
 		case 'massedit':
-			$return = __('Editeur en masse', __FILE__);
+			$return = new Trad('Editeur en masse', __FILE__);
 			break;
 		case 'cron':
-			$return = __('Moteur de tâches', __FILE__);
+			$return = new Trad('Moteur de tâches', __FILE__);
 			break;
 		case 'custom':
-			$return = __('Personnalisation', __FILE__);
+			$return = new Trad('Personnalisation', __FILE__);
 			break;
 		case 'user':
-			$return = __('Utilisateurs', __FILE__);
+			$return = new Trad('Utilisateurs', __FILE__);
 			break;
 		case 'profils':
-			$return = __('Préférences', __FILE__);
+			$return = new Trad('Préférences', __FILE__);
 			break;
 		case 'log':
-			$return = __('Logs', __FILE__);
+			$return = new Trad('Logs', __FILE__);
 			break;
 		case 'update':
-			$return = __('Mises à jour', __FILE__);
+			$return = new Trad('Mises à jour', __FILE__);
 			break;
 		case 'panel':
 			try {
@@ -1777,13 +1777,13 @@ function pageTitle($_page) {
 					$url = $_SERVER['REQUEST_URI'];
 					$plugin = explode('m=', $url)[1];
 					$plugin = explode('&', $plugin)[0];
-					$return = __('Panel', __FILE__) . ' ' . ucfirst($plugin);
+					$return = new Trad('Panel', __FILE__) . ' ' . ucfirst($plugin);
 				} else {
-					$return = __('Panel', __FILE__);
+					$return = new Trad('Panel', __FILE__);
 				}
 				break;
 			} catch (Exception $e) {
-				$return = __('Panel', __FILE__);
+				$return = new Trad('Panel', __FILE__);
 				break;
 			}
 		default:
@@ -1841,7 +1841,8 @@ function implode_recursive($_array, $_separator, $_key = '') {
 }
 
 /**
- * alias for translate::sentence
+ * @deprecated : alias for translate::sentence
+ * use: `new Trad( 'content, __FILE__)`
  */
 function __($_content, $_name, $_backslash = false) {
 	return translate::sentence(str_replace("\'", "'", $_content), $_name, $_backslash);

@@ -38,17 +38,17 @@ class repo_url {
 		return array(
 			'parameters_for_add' => array(
 				'url' => array(
-					'name' => __('URL du fichier ZIP',__FILE__),
+					'name' => new Trad('URL du fichier ZIP', __FILE__),
 					'type' => 'input',
 				),
 			),
 			'configuration' => array(
 				'core::url' => array(
-					'name' => __('URL core Jeedom',__FILE__),
+					'name' => new Trad('URL core Jeedom', __FILE__),
 					'type' => 'input',
 				),
 				'core::version' => array(
-					'name' => __('URL version core Jeedom',__FILE__),
+					'name' => new Trad('URL version core Jeedom', __FILE__),
 					'type' => 'input',
 				),
 			),
@@ -69,7 +69,7 @@ class repo_url {
 			exec(system::getCmdSudo() . 'chmod 777 -R ' . $tmp);
 		}
 		if (!is_writable($tmp_dir)) {
-			throw new Exception(__('Impossible d\'écrire dans le répertoire :', __FILE__) . ' ' . $tmp . __('. Exécuter la commande suivante en SSH : sudo chmod 777 -R', __FILE__) . ' ' . $tmp_dir);
+			throw new Exception(new Trad('Impossible d\'écrire dans le répertoire :', __FILE__) . ' ' . $tmp . new Trad('. Exécuter la commande suivante en SSH : sudo chmod 777 -R', __FILE__) . ' ' . $tmp_dir);
 		}
 		$result = exec('wget --no-check-certificate --progress=dot --dot=mega ' . $_update->getConfiguration('url') . ' -O ' . $tmp);
 		log::add('update', 'alert', $result);

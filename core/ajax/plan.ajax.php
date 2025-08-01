@@ -21,14 +21,14 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init(array('uploadImagePlan', 'uploadImage'));
 
 	if (init('action') == 'save') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plans = json_decode(init('plans'), true);
@@ -46,7 +46,7 @@ try {
 	if (init('action') == 'execute') {
 		$plan = plan::byId(init('id'));
 		if (!is_object($plan)) {
-			throw new Exception(__('Aucun plan correspondant', __FILE__));
+			throw new Exception(new Trad('Aucun plan correspondant', __FILE__));
 		}
 		ajax::success($plan->execute());
 	}
@@ -65,7 +65,7 @@ try {
 
 	if (init('action') == 'create') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plan = new plan();
@@ -76,12 +76,12 @@ try {
 
 	if (init('action') == 'copy') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plan = plan::byId(init('id'));
 		if (!is_object($plan)) {
-			throw new Exception(__('Aucun plan correspondant', __FILE__));
+			throw new Exception(new Trad('Aucun plan correspondant', __FILE__));
 		}
 		ajax::success($plan->copy()->getHtml(init('version', 'dashboard')));
 	}
@@ -89,34 +89,34 @@ try {
 	if (init('action') == 'get') {
 		$plan = plan::byId(init('id'));
 		if (!is_object($plan)) {
-			throw new Exception(__('Aucun plan correspondant', __FILE__));
+			throw new Exception(new Trad('Aucun plan correspondant', __FILE__));
 		}
 		ajax::success($plan->getHtml('dashboard'));
 	}
 
 	if (init('action') == 'remove') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plan = plan::byId(init('id'));
 		if (!is_object($plan)) {
-			throw new Exception(__('Aucun plan correspondant', __FILE__));
+			throw new Exception(new Trad('Aucun plan correspondant', __FILE__));
 		}
 		ajax::success($plan->remove());
 	}
 
 	if (init('action') == 'removePlanHeader') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
 		if (!is_object($planHeader)) {
-			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__));
 		}
 		if (!$planHeader->hasRight('w')) {
-			throw new Exception(__('Vous n\'avez pas le droit de modifier ce design', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de modifier ce design', __FILE__));
 		}
 		$planHeader->remove();
 		ajax::success();
@@ -139,13 +139,13 @@ try {
 	if (init('action') == 'getPlanHeader') {
 		$planHeader = planHeader::byId(init('id'));
 		if (!is_object($planHeader)) {
-			throw new Exception(__('Plan header inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Plan header inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
 		}
 		if (!$planHeader->hasRight('r')) {
-			throw new Exception(__('Vous n\'avez pas le droit de voir ce design', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de voir ce design', __FILE__));
 		}
 		if (trim($planHeader->getConfiguration('accessCode', '')) != '' && $planHeader->getConfiguration('accessCode', '') != sha512(init('code'))) {
-			throw new Exception(__('Code d\'accès invalide', __FILE__), -32005);
+			throw new Exception(new Trad('Code d\'accès invalide', __FILE__), -32005);
 		}
 		$return = utils::o2a($planHeader);
 		$return['image'] = $planHeader->displayImage();
@@ -154,7 +154,7 @@ try {
 
 	if (init('action') == 'savePlanHeader') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$planHeader_ajax = json_decode(init('planHeader'), true);
@@ -166,7 +166,7 @@ try {
 			$planHeader = new planHeader();
 		}
 		if (!$planHeader->hasRight('w')) {
-			throw new Exception(__('Vous n\'avez pas le droit de modifier ce design', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de modifier ce design', __FILE__));
 		}
 		utils::a2o($planHeader, $planHeader_ajax);
 		$planHeader->save();
@@ -175,30 +175,30 @@ try {
 
 	if (init('action') == 'copyPlanHeader') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
 		if (!is_object($planHeader)) {
-			throw new Exception(__('Plan header inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Plan header inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
 		}
 		if (!$planHeader->hasRight('w')) {
-			throw new Exception(__('Vous n\'avez pas le droit de modifier ce design', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de modifier ce design', __FILE__));
 		}
 		ajax::success(utils::o2a($planHeader->copy(init('name'))));
 	}
 
 	if (init('action') == 'removeImageHeader') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
 		if (!is_object($planHeader)) {
-			throw new Exception(__('Plan header inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Plan header inconnu. Vérifiez l\'ID', __FILE__) . ' ' . init('id'));
 		}
 		if (!$planHeader->hasRight('w')) {
-			throw new Exception(__('Vous n\'avez pas le droit de modifier ce design', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de modifier ce design', __FILE__));
 		}
 		$filename = 'planHeader' . $planHeader->getId() . '-' . $planHeader->getImage('sha512') . '.' . $planHeader->getImage('type');
 		$planHeader->setImage('sha512', '');
@@ -209,25 +209,25 @@ try {
 
 	if (init('action') == 'uploadImage') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$planHeader = planHeader::byId(init('id'));
 		if (!is_object($planHeader)) {
-			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__));
 		}
 		if (!$planHeader->hasRight('w')) {
-			throw new Exception(__('Vous n\'avez pas le droit de modifier ce design', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de modifier ce design', __FILE__));
 		}
 		if (!isset($_FILES['file'])) {
-			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
+			throw new Exception(new Trad('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
 		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
 		if (!in_array($extension, array('.jpg', '.png', '.gif'))) {
-			throw new Exception(__('Extension du fichier non valide (autorisé .jpg .png .gif) :', __FILE__) . ' ' . $extension);
+			throw new Exception(new Trad('Extension du fichier non valide (autorisé .jpg .png .gif) :', __FILE__) . ' ' . $extension);
 		}
 		if (filesize($_FILES['file']['tmp_name']) > 5000000) {
-			throw new Exception(__('Le fichier est trop gros (maximum 5Mo)', __FILE__));
+			throw new Exception(new Trad('Le fichier est trop gros (maximum 5Mo)', __FILE__));
 		}
 		$files = ls(__DIR__ . '/../../data/plan/', 'planHeader' . $planHeader->getId() . '*');
 		if (count($files)  > 0) {
@@ -243,7 +243,7 @@ try {
 		$filepath = __DIR__ . '/../../data/plan/' . $filename;
 		file_put_contents($filepath, file_get_contents($_FILES['file']['tmp_name']));
 		if (!file_exists($filepath)) {
-			throw new \Exception(__('Impossible de sauvegarder l\'image', __FILE__));
+			throw new \Exception(new Trad('Impossible de sauvegarder l\'image', __FILE__));
 		}
 		$planHeader->save();
 		ajax::success(array('filepath' => $filepath));
@@ -251,22 +251,22 @@ try {
 
 	if (init('action') == 'uploadImagePlan') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plan = plan::byId(init('id'));
 		if (!is_object($plan)) {
-			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__));
 		}
 		if (!isset($_FILES['file'])) {
-			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
+			throw new Exception(new Trad('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
 		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
 		if (!in_array($extension, array('.jpg', '.png'))) {
-			throw new Exception(__('Extension du fichier non valide (autorisé .jpg .png) :', __FILE__) . ' ' . $extension);
+			throw new Exception(new Trad('Extension du fichier non valide (autorisé .jpg .png) :', __FILE__) . ' ' . $extension);
 		}
 		if (filesize($_FILES['file']['tmp_name']) > 5000000) {
-			throw new Exception(__('Le fichier est trop gros (maximum 5Mo)', __FILE__));
+			throw new Exception(new Trad('Le fichier est trop gros (maximum 5Mo)', __FILE__));
 		}
 		$uploaddir = __DIR__ . '/../../data/plan/plan_' . $plan->getId();
 		if (!file_exists($uploaddir)) {
@@ -277,7 +277,7 @@ try {
 		$filePath = $uploaddir . '/' . $fileName;
 		$img_size = getimagesize($_FILES['file']['tmp_name']);
 		if (!move_uploaded_file($_FILES['file']['tmp_name'], $filePath)) {
-			throw new Exception(__('Impossible de déplacer le fichier temporaire dans :', __FILE__) . ' ' . $uploaddir . '/' . $fileName);
+			throw new Exception(new Trad('Impossible de déplacer le fichier temporaire dans :', __FILE__) . ' ' . $uploaddir . '/' . $fileName);
 		}
 		$plan->setDisplay('width', $img_size[0]);
 		$plan->setDisplay('height', $img_size[1]);
@@ -286,7 +286,7 @@ try {
 		ajax::success(array('filepath' => $filePath));
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

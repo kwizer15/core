@@ -21,14 +21,14 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init(array('uploadModel'));
 
 	if (init('action') == 'save') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plan3ds = json_decode(init('plan3ds'), true);
@@ -55,7 +55,7 @@ try {
 
 	if (init('action') == 'create') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plan3d = new plan3d();
@@ -67,7 +67,7 @@ try {
 	if (init('action') == 'get') {
 		$plan3d = plan3d::byId(init('id'));
 		if (!is_object($plan3d)) {
-			throw new Exception(__('Aucun plan3d correspondant', __FILE__));
+			throw new Exception(new Trad('Aucun plan3d correspondant', __FILE__));
 		}
 		$return = jeedom::toHumanReadable(utils::o2a($plan3d));
 		$return['additionalData'] = $plan3d->additionalData();
@@ -84,27 +84,27 @@ try {
 
 	if (init('action') == 'remove') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plan3d = plan3d::byId(init('id'));
 		if (!is_object($plan3d)) {
-			throw new Exception(__('Aucun plan3d correspondant', __FILE__));
+			throw new Exception(new Trad('Aucun plan3d correspondant', __FILE__));
 		}
 		ajax::success($plan3d->remove());
 	}
 
 	if (init('action') == 'removeplan3dHeader') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plan3dHeader = plan3dHeader::byId(init('id'));
 		if (!is_object($plan3dHeader)) {
-			throw new Exception(__('Objet inconnu vérifiez l\'id', __FILE__));
+			throw new Exception(new Trad('Objet inconnu vérifiez l\'id', __FILE__));
 		}
 		if (!$plan3dHeader->hasRight('w')) {
-			throw new Exception(__('Vous n\'avez pas le droit de modifier ce design 3d', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de modifier ce design 3d', __FILE__));
 		}
 		$plan3dHeader->remove();
 		ajax::success();
@@ -124,13 +124,13 @@ try {
 	if (init('action') == 'getplan3dHeader') {
 		$plan3dHeader = plan3dHeader::byId(init('id'));
 		if (!is_object($plan3dHeader)) {
-			throw new Exception(__('plan3d header inconnu vérifiez l\'id :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('plan3d header inconnu vérifiez l\'id :', __FILE__) . ' ' . init('id'));
 		}
 		if (!$plan3dHeader->hasRight('r')) {
-			throw new Exception(__('Vous n\'avez pas le droit de voir ce design 3d', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de voir ce design 3d', __FILE__));
 		}
 		if (trim($plan3dHeader->getConfiguration('accessCode', '')) != '' && $plan3dHeader->getConfiguration('accessCode', '') != sha512(init('code'))) {
-			throw new Exception(__('Code d\'accès invalide', __FILE__), -32005);
+			throw new Exception(new Trad('Code d\'accès invalide', __FILE__), -32005);
 		}
 		$return = utils::o2a($plan3dHeader);
 		ajax::success($return);
@@ -138,7 +138,7 @@ try {
 
 	if (init('action') == 'saveplan3dHeader') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plan3dHeader_ajax = json_decode(init('plan3dHeader'), true);
@@ -150,7 +150,7 @@ try {
 			$plan3dHeader = new plan3dHeader();
 		}
 		if (!$plan3dHeader->hasRight('w')) {
-			throw new Exception(__('Vous n\'avez pas le droit de modifier ce design 3d', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de modifier ce design 3d', __FILE__));
 		}
 		utils::a2o($plan3dHeader, $plan3dHeader_ajax);
 		$plan3dHeader->save();
@@ -159,32 +159,32 @@ try {
 
 	if (init('action') == 'uploadModel') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plan3dHeader = plan3dHeader::byId(init('id'));
 		if (!is_object($plan3dHeader)) {
-			throw new Exception(__('Objet inconnu. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Objet inconnu. Vérifiez l\'ID', __FILE__));
 		}
 		if (!$plan3dHeader->hasRight('w')) {
-			throw new Exception(__('Vous n\'avez pas le droit de modifier ce design 3d', __FILE__));
+			throw new Exception(new Trad('Vous n\'avez pas le droit de modifier ce design 3d', __FILE__));
 		}
 		if (!isset($_FILES['file'])) {
-			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
+			throw new Exception(new Trad('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
 		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
 		if (!in_array($extension, array('.zip'))) {
-			throw new Exception(__('Extension du fichier non valide (autorisé .zip) :', __FILE__) . ' ' . $extension);
+			throw new Exception(new Trad('Extension du fichier non valide (autorisé .zip) :', __FILE__) . ' ' . $extension);
 		}
 		if (filesize($_FILES['file']['tmp_name']) > 150000000) {
-			throw new Exception(__('Le fichier est trop gros (maximum 150Mo)', __FILE__));
+			throw new Exception(new Trad('Le fichier est trop gros (maximum 150Mo)', __FILE__));
 		}
 		$uploaddir = '/tmp';
 		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $_FILES['file']['name'])) {
-			throw new Exception(__('Impossible de déplacer le fichier temporaire', __FILE__));
+			throw new Exception(new Trad('Impossible de déplacer le fichier temporaire', __FILE__));
 		}
 		if (!file_exists($uploaddir . '/' . $_FILES['file']['name'])) {
-			throw new Exception(__('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
+			throw new Exception(new Trad('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
 		}
 		if ($plan3dHeader->getConfiguration('path') == '') {
 			$plan3dHeader->setConfiguration('path', 'data/3d/' . config::genKey() . '/');
@@ -195,16 +195,16 @@ try {
 		$res = $zip->open($file);
 		if ($res === TRUE) {
 			if (!$zip->extractTo($cibDir . '/')) {
-				throw new Exception(__('Impossible de décompresser les fichiers :', __FILE__) . ' ');
+				throw new Exception(new Trad('Impossible de décompresser les fichiers :', __FILE__) . ' ');
 			}
 			$zip->close();
 			unlink($file);
 		} else {
-			throw new Exception(__('Impossible de décompresser l\'archive zip :', __FILE__) . ' ' . $file . ' => ' . ZipErrorMessage($res));
+			throw new Exception(new Trad('Impossible de décompresser l\'archive zip :', __FILE__) . ' ' . $file . ' => ' . ZipErrorMessage($res));
 		}
 		$objfile = ls($cibDir, '*.obj', false, array('files'));
 		if (count($objfile) != 1) {
-			throw new Exception(__('Il faut un seul et unique fichier .obj', __FILE__));
+			throw new Exception(new Trad('Il faut un seul et unique fichier .obj', __FILE__));
 		}
 		$plan3dHeader->setConfiguration('objfile', $objfile[0]);
 		$mtlfile = ls($cibDir, '*.mtl', false, array('files'));
@@ -215,7 +215,7 @@ try {
 		ajax::success();
 	}
 
-	throw new Exception(__('Aucune méthode correspondant à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondant à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

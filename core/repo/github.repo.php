@@ -39,40 +39,40 @@ class repo_github {
 		return array(
 			'parameters_for_add' => array(
 				'user' => array(
-					'name' =>  __('Utilisateur ou organisation du dépôt',__FILE__),
+					'name' =>  new Trad('Utilisateur ou organisation du dépôt', __FILE__),
 					'type' => 'input',
 				),
 				'repository' => array(
-					'name' =>  __('Nom du dépôt',__FILE__),
+					'name' =>  new Trad('Nom du dépôt', __FILE__),
 					'type' => 'input',
 				),
 				'token' => array(
-					'name' =>  __('Token (facultatif)',__FILE__),
+					'name' =>  new Trad('Token (facultatif)', __FILE__),
 					'type' => 'input'
 				),
 				'version' => array(
-					'name' =>  __('Branche',__FILE__),
+					'name' =>  new Trad('Branche', __FILE__),
 					'type' => 'input',
 					'default' => 'master',
 				),
 			),
 			'configuration' => array(
 				'token' => array(
-					'name' =>  __('Token (facultatif)',__FILE__),
+					'name' =>  new Trad('Token (facultatif)', __FILE__),
 					'type' => 'input',
 				),
 				'core::user' => array(
-					'name' =>  __('Utilisateur ou organisation du dépôt pour le core Jeedom',__FILE__),
+					'name' =>  new Trad('Utilisateur ou organisation du dépôt pour le core Jeedom', __FILE__),
 					'type' => 'input',
 					'default' => 'jeedom',
 				),
 				'core::repository' => array(
-					'name' =>  __('Nom du dépôt pour le core Jeedom',__FILE__),
+					'name' =>  new Trad('Nom du dépôt pour le core Jeedom', __FILE__),
 					'type' => 'input',
 					'default' => 'core',
 				),
 				'core::branch' => array(
-					'name' =>  __('Branche pour le core Jeedom',__FILE__),
+					'name' =>  new Trad('Branche pour le core Jeedom', __FILE__),
 					'type' => 'input',
 					'default' => 'stable',
 				),
@@ -136,10 +136,10 @@ class repo_github {
 			exec(system::getCmdSudo() . 'chmod 777 -R ' . $tmp);
 		}
 		if (!is_writable($tmp_dir)) {
-			throw new Exception(__('Impossible d\'écrire dans le répertoire :', __FILE__) . ' ' . $tmp . __('. Exécuter la commande suivante en SSH : sudo chmod 777 -R', __FILE__) . ' ' . $tmp_dir);
+			throw new Exception(new Trad('Impossible d\'écrire dans le répertoire :', __FILE__) . ' ' . $tmp . new Trad('. Exécuter la commande suivante en SSH : sudo chmod 777 -R', __FILE__) . ' ' . $tmp_dir);
 		}
 		$url = 'https://api.github.com/repos/' . $_update->getConfiguration('user') . '/' . $_update->getConfiguration('repository') . '/zipball/' . $_update->getConfiguration('version', 'master');
-		log::add('update', 'alert', __('Téléchargement de', __FILE__) . ' ' . $_update->getLogicalId() . '...');
+		log::add('update', 'alert', new Trad('Téléchargement de', __FILE__) . ' ' . $_update->getLogicalId() . '...');
 		if ($token == '') {
 			$result = shell_exec('curl -s -L ' . $url . ' > ' . $tmp);
 		} else {
@@ -166,7 +166,7 @@ class repo_github {
 	
 	public static function downloadCore($_path) {
 		$url = 'https://api.github.com/repos/' . config::byKey('github::core::user', 'core', 'jeedom') . '/' . config::byKey('github::core::repository', 'core', 'core') . '/zipball/' . config::byKey('github::core::branch', 'core', 'stable');
-		echo __('Téléchargement de', __FILE__) . ' ' . $url . '...';
+		echo new Trad('Téléchargement de', __FILE__) . ' ' . $url . '...';
 		if (config::byKey('github::token') == '') {
 			echo shell_exec('curl -s -L ' . $url . ' > ' . $_path);
 		} else {

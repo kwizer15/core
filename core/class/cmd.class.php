@@ -534,7 +534,7 @@ class cmd {
 			'cmd_name' => (html_entity_decode($_cmd_name) != '') ? html_entity_decode($_cmd_name) : $_cmd_name,
 		);
 
-		if ($_object_name == __('Aucun', __FILE__)) {
+		if ($_object_name == new Trad('Aucun', __FILE__)) {
 			$sql = 'SELECT ' . DB::buildField(__CLASS__, 'c') . '
 			FROM cmd c
 			INNER JOIN eqLogic el ON c.eqLogic_id=el.id
@@ -772,7 +772,7 @@ class cmd {
 		if (isset($colors[$_color])) {
 			return $colors[$_color];
 		}
-		throw new Exception(__('Impossible de traduire la couleur en code hexadécimal :', __FILE__) . $_color);
+		throw new Exception(new Trad('Impossible de traduire la couleur en code hexadécimal :', __FILE__) . $_color);
 	}
 
 	public static function availableWidget($_version) {
@@ -888,7 +888,7 @@ class cmd {
 
 	public static function getSelectOptionsByTypeAndSubtype($_type = false, $_subtype = false, $_version = 'dashboard', $_availWidgets = false) {
 		if ($_type === false || $_subtype === false) {
-			throw new Exception(__('Type ou sous-type de commande invalide', __FILE__));
+			throw new Exception(new Trad('Type ou sous-type de commande invalide', __FILE__));
 		}
 		if (!$_availWidgets) {
 			$_availWidgets = self::availableWidget($_version);
@@ -1074,19 +1074,19 @@ class cmd {
 
 	public function save($_direct = false) {
 		if ($this->getName() == '') {
-			throw new Exception(__('Le nom de la commande ne peut pas être vide :', __FILE__) . print_r($this, true));
+			throw new Exception(new Trad('Le nom de la commande ne peut pas être vide :', __FILE__) . print_r($this, true));
 		}
 		if ($this->getType() == '') {
-			throw new Exception($this->getHumanName() . ' ' . __('Le type de la commande ne peut pas être vide :', __FILE__) . print_r($this, true));
+			throw new Exception($this->getHumanName() . ' ' . new Trad('Le type de la commande ne peut pas être vide :', __FILE__) . print_r($this, true));
 		}
 		if ($this->getSubType() == '') {
-			throw new Exception($this->getHumanName() . ' ' . __('Le sous-type de la commande ne peut pas être vide :', __FILE__) . print_r($this, true));
+			throw new Exception($this->getHumanName() . ' ' . new Trad('Le sous-type de la commande ne peut pas être vide :', __FILE__) . print_r($this, true));
 		}
 		if ($this->getEqLogic_id() == '') {
-			throw new Exception($this->getHumanName() . ' ' . __('Vous ne pouvez pas créer une commande sans la rattacher à un équipement', __FILE__));
+			throw new Exception($this->getHumanName() . ' ' . new Trad('Vous ne pouvez pas créer une commande sans la rattacher à un équipement', __FILE__));
 		}
 		if ($this->getConfiguration('maxValue') != '' && $this->getConfiguration('minValue') != '' && $this->getConfiguration('minValue') > $this->getConfiguration('maxValue')) {
-			throw new Exception($this->getHumanName() . ' ' . __('La valeur minimum de la commande ne peut être supérieure à la valeur maximum', __FILE__));
+			throw new Exception($this->getHumanName() . ' ' . new Trad('La valeur minimum de la commande ne peut être supérieure à la valeur maximum', __FILE__));
 		}
 		if ($this->getEqType() == '') {
 			$this->setEqType($this->getEqLogic()->getEqType_name());
@@ -1163,10 +1163,10 @@ class cmd {
 		$message = '';
 		switch ($_type) {
 			case 'jeedomPreExecCmd':
-				$message = '. ' . __('Sur preExec de la commande', __FILE__);
+				$message = '. ' . new Trad('Sur preExec de la commande', __FILE__);
 				break;
 			case 'jeedomPostExecCmd':
-				$message = '. ' . __('Sur postExec de la commande', __FILE__);
+				$message = '. ' . new Trad('Sur postExec de la commande', __FILE__);
 				break;
 		}
 
@@ -1188,7 +1188,7 @@ class cmd {
 				}
 				scenarioExpression::createAndExec('action', $action['cmd'], $options);
 			} catch (Exception $e) {
-				log::add('cmd', 'error', __('Erreur lors de l\'exécution de', __FILE__) . ' ' . $action['cmd'] . ': ' . $message . '. ' . $this->getHumanName() . __('Détails :', __FILE__) . ' ' . log::exception($e));
+				log::add('cmd', 'error', new Trad('Erreur lors de l\'exécution de', __FILE__) . ' ' . $action['cmd'] . ': ' . $message . '. ' . $this->getHumanName() . new Trad('Détails :', __FILE__) . ' ' . log::exception($e));
 			}
 		}
 	}
@@ -1314,14 +1314,14 @@ class cmd {
 			}
 			if ($this->isAlreadyInStateAllow() && $this->alreadyInState($options)) {
 				if (is_array($options) && ((count($options) > 1 && isset($options['uid'])) || count($options) > 0)) {
-					log::add('event', 'info', $GLOBALS['JEEDOM_SCLOG_TEXT']['execCmd']['txt'] . $this->getHumanName() . ' ' . __('avec les paramètres', __FILE__) . ' ' . json_encode($options) . ' ' . __('(ignorée)', __FILE__));
+					log::add('event', 'info', $GLOBALS['JEEDOM_SCLOG_TEXT']['execCmd']['txt'] . $this->getHumanName() . ' ' . new Trad('avec les paramètres', __FILE__) . ' ' . json_encode($options) . ' ' . new Trad('(ignorée)', __FILE__));
 				} else {
-					log::add('event', 'info', $GLOBALS['JEEDOM_SCLOG_TEXT']['execCmd']['txt'] . $this->getHumanName() . ' ' . __('(ignorée)', __FILE__));
+					log::add('event', 'info', $GLOBALS['JEEDOM_SCLOG_TEXT']['execCmd']['txt'] . $this->getHumanName() . ' ' . new Trad('(ignorée)', __FILE__));
 				}
 				return;
 			}
 			if (is_array($options) && ((count($options) > 1 && isset($options['uid'])) || count($options) > 0)) {
-				log::add('event', 'info', $GLOBALS['JEEDOM_SCLOG_TEXT']['execCmd']['txt'] . $this->getHumanName() . ' ' . __('avec les paramètres', __FILE__) . ' ' . json_encode($options));
+				log::add('event', 'info', $GLOBALS['JEEDOM_SCLOG_TEXT']['execCmd']['txt'] . $this->getHumanName() . ' ' . new Trad('avec les paramètres', __FILE__) . ' ' . json_encode($options));
 			} else {
 				log::add('event', 'info', $GLOBALS['JEEDOM_SCLOG_TEXT']['execCmd']['txt'] . $this->getHumanName());
 			}
@@ -1348,14 +1348,14 @@ class cmd {
 				$numberTryWithoutSuccess = $eqLogic->getStatus('numberTryWithoutSuccess', 0);
 				$eqLogic->setStatus('numberTryWithoutSuccess', $numberTryWithoutSuccess);
 				if ($numberTryWithoutSuccess >= config::byKey('numberOfTryBeforeEqLogicDisable')) {
-					$message = __('Désactivation de', __FILE__) . ' <a href="' . $eqLogic->getLinkToConfiguration() . '"> ' . $eqLogic->getName() . '</a> ' . __('car il n\'a pas répondu ou mal répondu lors des 3 derniers essais', __FILE__);
-					$action = '<a href="/' . $eqLogic->getLinkToConfiguration() . '">' . __('Equipement', __FILE__) . '</a>';
+					$message = new Trad('Désactivation de', __FILE__) . ' <a href="' . $eqLogic->getLinkToConfiguration() . '"> ' . $eqLogic->getName() . '</a> ' . new Trad('car il n\'a pas répondu ou mal répondu lors des 3 derniers essais', __FILE__);
+					$action = '<a href="/' . $eqLogic->getLinkToConfiguration() . '">' . new Trad('Equipement', __FILE__) . '</a>';
 					message::add($type, $message, $action);
 					$eqLogic->setIsEnable(0);
 					$eqLogic->save();
 				}
 			}
-			log::add($type, 'error', __('Erreur exécution de la commande', __FILE__) . ' ' . $this->getHumanName() . ' : ' . log::exception($e));
+			log::add($type, 'error', new Trad('Erreur exécution de la commande', __FILE__) . ' ' . $this->getHumanName() . ' : ' . log::exception($e));
 			throw $e;
 		}
 		if ($options !== null && $this->getValue() == '') {
@@ -1401,7 +1401,7 @@ class cmd {
 			$this->setTemplate($_version, 'core::default');
 			$this->save(true);
 		}
-		$display = '<option value="core::default">' . __('Défaut', __FILE__) . '</option>';
+		$display = '<option value="core::default">' . new Trad('Défaut', __FILE__) . '</option>';
 		return $display .= self::getSelectOptionsByTypeAndSubtype($this->getType(), $this->getSubType(), $_version, $_availWidgets);
 	}
 
@@ -1450,7 +1450,7 @@ class cmd {
 			$widgetHelp = explode('</template>', $widgetCode)[0];
 			$widgetHelp = explode('<template>', $widgetHelp)[1];
 			if ($widgetHelp == '') {
-				return '<em>' . __('Aucun paramètre optionnel disponible.', __FILE__) . '</em>';
+				return '<em>' . new Trad('Aucun paramètre optionnel disponible.', __FILE__) . '</em>';
 			} else {
 				$widgetHelp = strip_tags($widgetHelp, '<div>');
 				if ($isCorewidget) {
@@ -1460,7 +1460,7 @@ class cmd {
 				}
 			}
 		} else {
-			return '<em>' . __('Aucune description trouvée pour ce Widget.', __FILE__) . '</em>';
+			return '<em>' . new Trad('Aucune description trouvée pour ce Widget.', __FILE__) . '</em>';
 		}
 	}
 
@@ -1813,15 +1813,15 @@ class cmd {
 				return $html;
 			}
 
-			$replace['#title_placeholder#'] = $this->getDisplay('title_placeholder', __('Titre', __FILE__));
-			$replace['#message_placeholder#'] = $this->getDisplay('message_placeholder', __('Message', __FILE__));
+			$replace['#title_placeholder#'] = $this->getDisplay('title_placeholder', new Trad('Titre', __FILE__));
+			$replace['#message_placeholder#'] = $this->getDisplay('message_placeholder', new Trad('Message', __FILE__));
 			$replace['#message_cmd_type#'] = $this->getDisplay('message_cmd_type', 'info');
 			$replace['#message_cmd_subtype#'] = $this->getDisplay('message_cmd_subtype', '');
 			$replace['#message_disable#'] = $this->getDisplay('message_disable', 0);
 			$replace['#title_disable#'] = $this->getDisplay('title_disable', 0);
 			$replace['#title_color#'] = $this->getDisplay('title_color', 0);
 			$replace['#title_possibility_list#'] = str_replace("'", "\'", $this->getDisplay('title_possibility_list', ''));
-			$replace['#slider_placeholder#'] = $this->getDisplay('slider_placeholder', __('Valeur', __FILE__));
+			$replace['#slider_placeholder#'] = $this->getDisplay('slider_placeholder', new Trad('Valeur', __FILE__));
 			$replace['#other_tooltips#'] = ($replace['#name#'] != $this->getName()) ? $this->getName() : '';
 
 			$parameters = $this->getDisplay('parameters');
@@ -1872,7 +1872,7 @@ class cmd {
 		$value = $this->formatValue($_value);
 
 		if ($this->getSubType() == 'numeric' && ($value > $this->getConfiguration('maxValue', $value) || $value < $this->getConfiguration('minValue', $value)) && strpos($value, 'error') === false) {
-			log::add('cmd', 'info', __('La commande n\'est pas dans la plage de valeur autorisée :', __FILE__) . ' ' . $this->getHumanName() . ' => ' . $value);
+			log::add('cmd', 'info', new Trad('La commande n\'est pas dans la plage de valeur autorisée :', __FILE__) . ' ' . $this->getHumanName() . ' => ' . $value);
 			return;
 		}
 		if ($this->getConfiguration('denyValues') != '' && in_array($value, explode(';', $this->getConfiguration('denyValues')))) {
@@ -1911,7 +1911,7 @@ class cmd {
 		if ($repeat && $this->getConfiguration('repeatEventManagement', 'never') == 'always') {
 			$repeat = false;
 		}
-		$message = __('Evènement sur la commande', __FILE__) . ' ' . $this->getHumanName() . ' ' . __('valeur :', __FILE__) . ' ' . $value . $this->getUnite();
+		$message = new Trad('Evènement sur la commande', __FILE__) . ' ' . $this->getHumanName() . ' ' . new Trad('valeur :', __FILE__) . ' ' . $value . $this->getUnite();
 		if ($repeat) {
 			$message .= ' (répétition)';
 		}
@@ -2046,7 +2046,7 @@ class cmd {
 				$options['source'] = $this->getHumanName();
 				scenarioExpression::createAndExec('action', $action['cmd'], $options);
 			} catch (Exception $e) {
-				log::add('cmd', 'error', __('Erreur lors de l\'exécution de', __FILE__) . ' ' . $action['cmd'] . __('. Détails :', __FILE__) . ' ' . log::exception($e));
+				log::add('cmd', 'error', new Trad('Erreur lors de l\'exécution de', __FILE__) . ' ' . $action['cmd'] . new Trad('. Détails :', __FILE__) . ' ' . log::exception($e));
 			}
 		}
 	}
@@ -2145,14 +2145,14 @@ class cmd {
 			$_value = $this->execCmd();
 		}
 		if ($_level != 'none') {
-			$message = __('Alerte sur la commande', __FILE__) . ' ' . $this->getHumanName() . ' ' . __('niveau', __FILE__) . ' ' . $_level . ' ' . __('valeur :', __FILE__) . ' ' . $_value . trim(' ' . $this->getUnite());
+			$message = new Trad('Alerte sur la commande', __FILE__) . ' ' . $this->getHumanName() . ' ' . new Trad('niveau', __FILE__) . ' ' . $_level . ' ' . new Trad('valeur :', __FILE__) . ' ' . $_value . trim(' ' . $this->getUnite());
 			if ($this->getAlert($_level . 'during') != '' && $this->getAlert($_level . 'during') > 0) {
-				$message .= ' ' . __('pendant plus de', __FILE__) . ' ' . $this->getAlert($_level . 'during') . ' ' . __('minute(s)', __FILE__);
+				$message .= ' ' . new Trad('pendant plus de', __FILE__) . ' ' . $this->getAlert($_level . 'during') . ' ' . new Trad('minute(s)', __FILE__);
 			}
 			$message .= ' => ' . jeedom::toHumanReadable(str_replace('#value#', $_value, $this->getAlert($_level . 'if')));
 			log::add('event', 'info', $message);
 			if (config::byKey('alert::addMessageOn' . ucfirst($_level)) == 1) {
-				$action = '<a href="/' . $eqLogic->getLinkToConfiguration() . '">' . __('Equipement', __FILE__) . '</a>';
+				$action = '<a href="/' . $eqLogic->getLinkToConfiguration() . '">' . new Trad('Equipement', __FILE__) . '</a>';
 				message::add($eqLogic->getEqType_name(), $message, $action, 'alert_' . $this->getId() . '_' . strtotime('now') . '_' . rand(0, 999), true, 'alerting');
 			}
 			$cmds = explode(('&&'), config::byKey('alert::' . $_level . 'Cmd'));
@@ -2166,15 +2166,15 @@ class cmd {
 								'message' => config::byKey('name', 'core', 'JEEDOM') . ' : ' . $message,
 							));
 						} catch (Exception $e) {
-							log::add('jeedomAlert', 'error', __('Erreur lors de l\'envoi de l\'alerte : ', __FILE__) . ' ' . $cmd->getHumanName() . '  => ' . log::exception($e));
+							log::add('jeedomAlert', 'error', new Trad('Erreur lors de l\'envoi de l\'alerte : ', __FILE__) . ' ' . $cmd->getHumanName() . '  => ' . log::exception($e));
 						}
 					}
 				}
 			}
 		} elseif ($this->getConfiguration('alert::messageReturnBack') == 1) {
-			$message = __('Retour à la normale de ', __FILE__) . ' ' . $this->getHumanName() . ' ' . __('valeur :', __FILE__) . ' ' . $_value . trim(' ' . $this->getUnite());
+			$message = new Trad('Retour à la normale de ', __FILE__) . ' ' . $this->getHumanName() . ' ' . new Trad('valeur :', __FILE__) . ' ' . $_value . trim(' ' . $this->getUnite());
 			log::add('event', 'info', $message);
-			$action = '<a href="/' . $this->getEqLogic()->getLinkToConfiguration() . '">' . __('Equipement', __FILE__) . '</a>';
+			$action = '<a href="/' . $this->getEqLogic()->getLinkToConfiguration() . '">' . new Trad('Equipement', __FILE__) . '</a>';
 			message::add($this->getEqLogic()->getEqType_name(), $message, $action, 'alertReturnBack_' . $this->getId() . '_' . strtotime('now') . '_' . rand(0, 999), true, 'alertingReturnBack');
 		}
 
@@ -2208,15 +2208,15 @@ class cmd {
 			'"' => ''
 		);
 		$url = str_replace(array_keys($replace), $replace, scenarioExpression::setTags($url));
-		log::add('event', 'info', __('Appels de l\'URL de push pour la commande', __FILE__) . ' ' . $this->getHumanName() . ' : ' . $url);
+		log::add('event', 'info', new Trad('Appels de l\'URL de push pour la commande', __FILE__) . ' ' . $this->getHumanName() . ' : ' . $url);
 		$http = new com_http($url);
 		$http->setLogError(false);
 		try {
 			$http->exec();
 		} catch (Exception $e) {
-			log::add('cmd', 'error', __('Erreur push sur :', __FILE__) . ' ' . $url . ' commande : ' . $this->getHumanName() . ' => ' . log::exception($e));
+			log::add('cmd', 'error', new Trad('Erreur push sur :', __FILE__) . ' ' . $url . ' commande : ' . $this->getHumanName() . ' => ' . log::exception($e));
 		} catch (Error $e) {
-			log::add('cmd', 'error', __('Erreur push sur :', __FILE__) . ' ' . $url . ' commande : ' . $this->getHumanName() . ' => ' . log::exception($e));
+			log::add('cmd', 'error', new Trad('Erreur push sur :', __FILE__) . ' ' . $url . ' commande : ' . $this->getHumanName() . ' => ' . log::exception($e));
 		}
 	}
 
@@ -2272,7 +2272,7 @@ class cmd {
 			}
 			log::add('cmd', 'debug', 'Push influx for ' . $this->getHumanName() . ' : ' .  json_encode($tagArray, true));
 		} catch (Exception $e) {
-			log::add('cmd', 'error', __('Erreur computing influx sur :', __FILE__) . ' ' . ' commande : ' . $this->getHumanName() . ' => ' . log::exception($e));
+			log::add('cmd', 'error', new Trad('Erreur computing influx sur :', __FILE__) . ' ' . ' commande : ' . $this->getHumanName() . ' => ' . log::exception($e));
 		}
 		return $point;
 	}
@@ -2308,7 +2308,7 @@ class cmd {
 			}
 			return $database;
 		} catch (Exception $e) {
-			log::add('cmd', 'error', __('Erreur get influx database :', __FILE__) . ' ' . ' => ' . log::exception($e));
+			log::add('cmd', 'error', new Trad('Erreur get influx database :', __FILE__) . ' ' . ' => ' . log::exception($e));
 		}
 		return '';
 	}
@@ -2325,7 +2325,7 @@ class cmd {
 			$point = $this->computeInfluxData($_value);
 			$result = $database->writePoints(array($point), 's');
 		} catch (Exception $e) {
-			log::add('cmd', 'error', __('Erreur push influx sur :', __FILE__) . ' ' . ' commande : ' . $this->getHumanName() . ' => ' . log::exception($e));
+			log::add('cmd', 'error', new Trad('Erreur push influx sur :', __FILE__) . ' ' . ' commande : ' . $this->getHumanName() . ' => ' . log::exception($e));
 		}
 		return;
 	}
@@ -2338,7 +2338,7 @@ class cmd {
 			}
 			$database->drop();
 		} catch (Exception $e) {
-			log::add('cmd', 'error', __('Erreur delete influx sur :', __FILE__) . ' ' . ' => ' . log::exception($e));
+			log::add('cmd', 'error', new Trad('Erreur delete influx sur :', __FILE__) . ' ' . ' => ' . log::exception($e));
 		}
 		return;
 	}
@@ -2353,7 +2353,7 @@ class cmd {
 			$result = $database->query($query);
 			log::add('cmd', 'debug', 'Delete influx for ' . $this->getHumanName());
 		} catch (Exception $e) {
-			log::add('cmd', 'error', __('Erreur delete influx sur :', __FILE__) . ' ' . ' commande : ' . $this->getHumanName() . ' => ' . log::exception($e));
+			log::add('cmd', 'error', new Trad('Erreur delete influx sur :', __FILE__) . ' ' . ' commande : ' . $this->getHumanName() . ' => ' . log::exception($e));
 		}
 		return;
 	}
@@ -2375,7 +2375,7 @@ class cmd {
 		}
 		try {
 			foreach ($cmds as $cmd) {
-				log::add('cmd', 'info', __('Envoie de l\'historique à influx :', __FILE__) . ' ' . ' commande : ' . $cmd->getHumanName());
+				log::add('cmd', 'info', new Trad('Envoie de l\'historique à influx :', __FILE__) . ' ' . ' commande : ' . $cmd->getHumanName());
 				$database = cmd::getInflux($cmd->getId());
 				if ($database == '') {
 					return;
@@ -2404,7 +2404,7 @@ class cmd {
 				}
 			}
 		} catch (Exception $e) {
-			log::add('cmd', 'error', __('Erreur history influx sur :', __FILE__) . ' ' . ' commande : ' . $cmd->getHumanName() . ' => ' . log::exception($e));
+			log::add('cmd', 'error', new Trad('Erreur history influx sur :', __FILE__) . ' ' . ' commande : ' . $cmd->getHumanName() . ' => ' . log::exception($e));
 		}
 	}
 
@@ -2613,11 +2613,11 @@ class cmd {
 	public static function migrateCmd($_sourceId, $_targetId) {
 		$sourceCmd = cmd::byId($_sourceId);
 		if (!is_object($sourceCmd)) {
-			throw new Exception(__('La commande source n\'existe pas', __FILE__));
+			throw new Exception(new Trad('La commande source n\'existe pas', __FILE__));
 		}
 		$targetCmd = cmd::byId($_targetId);
 		if (!is_object($targetCmd)) {
-			throw new Exception(__('La commande cible n\'existe pas', __FILE__));
+			throw new Exception(new Trad('La commande cible n\'existe pas', __FILE__));
 		}
 
 		$migrateDisplayValues = [
@@ -2739,7 +2739,7 @@ class cmd {
 			$targetCmd->save();
 			return $targetCmd;
 		} catch (Exception $e) {
-			throw new Exception(__('Erreur lors de la migration de commande', __FILE__) . ' : ' . log::exception($e));
+			throw new Exception(new Trad('Erreur lors de la migration de commande', __FILE__) . ' : ' . log::exception($e));
 		}
 	}
 
@@ -2831,7 +2831,7 @@ class cmd {
 		$_data['node']['cmd' . $this->getId()] = array(
 			'id' => 'cmd' . $this->getId(),
 			'name' => $this->getName(),
-			'type' => __('Commande', __FILE__),
+			'type' => new Trad('Commande', __FILE__),
 			'icon' => $icon['icon'],
 			'fontfamily' => $icon['fontfamily'],
 			'fontsize' => '1.5em',

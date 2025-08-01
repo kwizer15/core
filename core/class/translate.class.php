@@ -17,7 +17,7 @@
 */
 
 /* * ***************************Includes********************************* */
-require_once __DIR__ . '/../php/core.inc.php';
+// require_once __DIR__ . '/../php/core.inc.php';
 
 /*
 //DEBUG ONLY
@@ -51,7 +51,7 @@ class translate {
 			try {
 				self::$config = config::byKeys(array('language'));
 			} catch (Exception $e) {
-				log::add('jeedom', 'warning', $e->getMessage());
+				// log::add('jeedom', 'warning', $e->getMessage());
 				self::$config = array();
 			}
 		}

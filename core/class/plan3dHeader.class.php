@@ -76,7 +76,7 @@ class plan3dHeader {
 
 	public function preSave() {
 		if (trim($this->getName()) == '') {
-			throw new Exception(__('Le nom du l\'objet ne peut pas être vide', __FILE__));
+			throw new Exception(new Trad('Le nom du l\'objet ne peut pas être vide', __FILE__));
 		}
 	}
 
@@ -111,7 +111,7 @@ class plan3dHeader {
 		$icon = findCodeIcon($this->getConfiguration('icon', '<i class="fas fa-paint-brush"></i>'));
 		$_data['node']['plan3d' . $this->getId()] = array(
 			'id' => 'plan3d' . $this->getId(),
-			'type' => __('Design 3d', __FILE__),
+			'type' => new Trad('Design 3d', __FILE__),
 			'name' => substr($this->getName(), 0, 20),
 			'icon' => $icon['icon'],
 			'fontfamily' => $icon['fontfamily'],
@@ -119,7 +119,7 @@ class plan3dHeader {
 			'fontweight' => ($_level == 1) ? 'bold' : 'normal',
 			'texty' => -14,
 			'textx' => 0,
-			'title' => __('Design 3d :', __FILE__) . ' ' . $this->getName(),
+			'title' => new Trad('Design 3d :', __FILE__) . ' ' . $this->getName(),
 			'url' => 'index.php?v=d&p=plan3d&plan3d_id=' . $this->getId(),
 		);
 	}

@@ -21,14 +21,14 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init();
 
 	if (init('action') == 'getConf') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$plugin = plugin::byId(init('id'),init('full',0));
 		$update = update::byLogicalId(init('id'));
@@ -45,11 +45,11 @@ try {
 	if (init('action') == 'toggle') {
 		unautorizedInDemo();
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$plugin = plugin::byId(init('id'));
 		if (!is_object($plugin)) {
-			throw new Exception(__('Plugin introuvable :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Plugin introuvable :', __FILE__) . ' ' . init('id'));
 		}
 		$plugin->setIsEnable(init('state'));
 		ajax::success();
@@ -57,14 +57,14 @@ try {
 
 	if (init('action') == 'all') {
 		if (!isConnect()) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(utils::o2a(plugin::listPlugin(init('activateOnly', false))));
 	}
 
 	if (init('action') == 'getDependancyInfo') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 
 		$return = array('state' => 'nok', 'log' => 'nok');
@@ -77,7 +77,7 @@ try {
 
 	if (init('action') == 'dependancyInstall') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plugin = plugin::byId(init('id'));
@@ -89,7 +89,7 @@ try {
 
 	if (init('action') == 'dependancyChangeAutoMode') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plugin = plugin::byId(init('id'));
@@ -101,7 +101,7 @@ try {
 
 	if (init('action') == 'getDeamonInfo') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$plugin_id = init('id');
 		$return = array('launchable_message' => '', 'launchable' => 'nok', 'state' => 'nok', 'log' => 'nok', 'auto' => 0);
@@ -115,7 +115,7 @@ try {
 
 	if (init('action') == 'deamonStart') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plugin_id = init('id');
@@ -128,7 +128,7 @@ try {
 
 	if (init('action') == 'deamonStop') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plugin = plugin::byId(init('id'));
@@ -140,7 +140,7 @@ try {
 
 	if (init('action') == 'deamonChangeAutoMode') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$plugin = plugin::byId(init('id'));
@@ -151,9 +151,9 @@ try {
 	}
 
 	if (init('action') == 'createCommunityPost') {
-		$header = __('Remplacez ce texte par votre demande en prenant soin de ne pas effacer les informations renseignées ci-dessous.', __FILE__) . '<br><br><br><br>';
+		$header = new Trad('Remplacez ce texte par votre demande en prenant soin de ne pas effacer les informations renseignées ci-dessous.', __FILE__) . '<br><br><br><br>';
 		$header .= '<br>---<br>';
-		$header .= '**' . __('Informations', __FILE__) . ' ' . config::byKey('product_name') . '**';
+		$header .= '**' . new Trad('Informations', __FILE__) . ' ' . config::byKey('product_name') . '**';
 		$header .= '<br>```<br>';
 		$footer = '<br>```<br>';
 
@@ -172,17 +172,17 @@ try {
 			$isBeta = ($version && $version != 'stable');
 		}
 
-		$infoPost .= __('Version', __FILE__) . ' : ' . $update->getLocalVersion() . ' (' . ($isBeta ? 'beta' : 'stable') . ')';
+		$infoPost .= new Trad('Version', __FILE__) . ' : ' . $update->getLocalVersion() . ' (' . ($isBeta ? 'beta' : 'stable') . ')';
 
 		if ($plugin->getHasOwnDeamon()) {
 			$daemon_info = $plugin->deamon_info();
-			$infoPost .= '<br>' . __('Statut Démon', __FILE__) . ' : ' . ($daemon_info['state'] == 'ok' ?  __('Démarré', __FILE__) :  __('Stoppé', __FILE__));
-			$infoPost .= ' - (' . ($daemon_info['last_launch'] ?? __('Inconnue', __FILE__)) . ')';
+			$infoPost .= '<br>' . new Trad('Statut Démon', __FILE__) . ' : ' . ($daemon_info['state'] == 'ok' ?  new Trad('Démarré', __FILE__) :  new Trad('Stoppé', __FILE__));
+			$infoPost .= ' - (' . ($daemon_info['last_launch'] ?? new Trad('Inconnue', __FILE__)) . ')';
 		}
 
 		$infoPlugin = '';
 		if (method_exists($plugin_id, 'getConfigForCommunity')) {
-			$infoPlugin .= '**' . __('Informations complémentaires', __FILE__) .  '**<br>';
+			$infoPlugin .= '**' . new Trad('Informations complémentaires', __FILE__) .  '**<br>';
 			$infoPlugin .= $plugin_id::getConfigForCommunity();
 		}
 
@@ -203,7 +203,7 @@ try {
 		ajax::success(array('url' => $url, 'plugin' => $plugin->getName()));
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

@@ -22,28 +22,28 @@ try {
 	include_file('core', 'authentification', 'php');
 	
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 	
 	ajax::init();
 	
 	if (init('action') == 'all') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(utils::o2a(note::all()));
 	}
 	
 	if (init('action') == 'byId') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(utils::o2a(note::byId(init('id'))));
 	}
 	
 	if (init('action') == 'save') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$note_json = json_decode(init('note'), true);
 		if (isset($note_json['id'])) {
@@ -59,11 +59,11 @@ try {
 	
 	if (init('action') == 'remove') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$note = note::byId(init('id'));
 		if (!is_object($note)) {
-			throw new Exception(__('Note inconnue. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Note inconnue. Vérifiez l\'ID', __FILE__));
 		}
 		$note->remove();
 		ajax::success();
@@ -71,7 +71,7 @@ try {
 	
 	ajax::init();
 	
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

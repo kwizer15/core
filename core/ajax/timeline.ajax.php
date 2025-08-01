@@ -21,7 +21,7 @@ try {
   include_file('core', 'authentification', 'php');
   
   if (!isConnect()) {
-    throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+    throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
   }
   
   ajax::init();
@@ -61,7 +61,7 @@ try {
     ajax::success(timeline::removeEventInFutur());
   }
   
-  throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+  throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
   /*     * *********Catch exeption*************** */
 } catch (Exception $e) {
   ajax::error(displayException($e), $e->getCode());

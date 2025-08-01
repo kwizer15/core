@@ -1,6 +1,6 @@
 <?php
 if (!isConnect('admin')) {
-	throw new Exception(__('401 - Accès non autorisé', __FILE__));
+	throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 }
 ?>
 

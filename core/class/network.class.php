@@ -329,14 +329,14 @@ class network {
 			$plugin = plugin::byId('openvpn');
 		}
 		if (!is_object($plugin)) {
-			throw new Exception(__('Le plugin OpenVPN doit être installé', __FILE__));
+			throw new Exception(new Trad('Le plugin OpenVPN doit être installé', __FILE__));
 		}
 		if (!$plugin->isActive()) {
 			$plugin->setIsEnable(1);
 			$plugin->dependancy_install();
 		}
 		if (!$plugin->isActive()) {
-			throw new Exception(__('Le plugin OpenVPN doit être actif', __FILE__));
+			throw new Exception(new Trad('Le plugin OpenVPN doit être actif', __FILE__));
 		}
 		$openvpn = eqLogic::byLogicalId('dnsjeedom', 'openvpn');
 		$direct = true;
@@ -376,7 +376,7 @@ class network {
 		}
 		copy(__DIR__ . '/../../resources/ca_dns.crt', $path_ca);
 		if (!file_exists($path_ca)) {
-			throw new Exception(__('Impossible de créer le fichier  :', __FILE__) . ' ' . $path_ca);
+			throw new Exception(new Trad('Impossible de créer le fichier  :', __FILE__) . ' ' . $path_ca);
 		}
 		return $openvpn;
 	}
@@ -392,7 +392,7 @@ class network {
 		$vpn = self::dns_create();
 		$cmd = $vpn->getCmd('action', 'start');
 		if (!is_object($cmd)) {
-			throw new Exception(__('La commande de démarrage du DNS est introuvable', __FILE__));
+			throw new Exception(new Trad('La commande de démarrage du DNS est introuvable', __FILE__));
 		}
 		$cmd->execCmd();
 	}
@@ -411,7 +411,7 @@ class network {
 		}
 		$cmd = $vpn->getCmd('info', 'state');
 		if (!is_object($cmd)) {
-			throw new Exception(__('La commande de statut du DNS est introuvable', __FILE__));
+			throw new Exception(new Trad('La commande de statut du DNS est introuvable', __FILE__));
 		}
 		return $cmd->execCmd();
 	}
@@ -423,7 +423,7 @@ class network {
 		$vpn = self::dns_create();
 		$cmd = $vpn->getCmd('action', 'stop');
 		if (!is_object($cmd)) {
-			throw new Exception(__('La commande d\'arrêt du DNS est introuvable', __FILE__));
+			throw new Exception(new Trad('La commande d\'arrêt du DNS est introuvable', __FILE__));
 		}
 		$cmd->execCmd();
 	}
@@ -449,7 +449,7 @@ class network {
 			if (!network::test('external')) {
 				sleep(rand(20, 60));
 				if (!network::test('external')) {
-					log::add('network', 'warning', __('Accès externe non ok, redémarrage du dns Jeedom', __FILE__));
+					log::add('network', 'warning', new Trad('Accès externe non ok, redémarrage du dns Jeedom', __FILE__));
 					self::dns_stop();
 					self::dns_start();
 				}
@@ -467,7 +467,7 @@ class network {
 		}
 		$gw = shell_exec("ip route show default | awk '/default/ {print $3}'");
 		if ($gw == '') {
-			log::add('network', 'error', __('Souci réseau détecté, redémarrage du réseau. Aucune gateway de trouvée', __FILE__));
+			log::add('network', 'error', new Trad('Souci réseau détecté, redémarrage du réseau. Aucune gateway de trouvée', __FILE__));
 			exec(system::getCmdSudo() . 'service networking restart');
 			return;
 		}
@@ -479,7 +479,7 @@ class network {
 		if ($return_val == 0) {
 			return;
 		}
-		log::add('network', 'error', __('Souci réseau détecté, redémarrage du réseau. La gateway ne répond pas au ping :', __FILE__) . ' ' . $gw);
+		log::add('network', 'error', new Trad('Souci réseau détecté, redémarrage du réseau. La gateway ne répond pas au ping :', __FILE__) . ' ' . $gw);
 		exec(system::getCmdSudo() . 'service networking restart');
 	}
 }

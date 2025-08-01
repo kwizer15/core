@@ -20,7 +20,7 @@ if (!isConnect()) {
 }
 $scenario = scenario::byId(init('scenario_id'));
 if (!is_object($scenario)) {
-  throw new Exception(__('Aucun scénario ne correspondant à :', __FILE__) . ' ' . init('scenario_id'));
+  throw new Exception(new Trad('Aucun scénario ne correspondant à :', __FILE__) . ' ' . init('scenario_id'));
 }
 sendVarToJs('jeephp2js.md_scenarioLog_scId', init('scenario_id'));
 ?>

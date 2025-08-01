@@ -205,11 +205,11 @@ class scenario {
 			$scenarioGroupedList = array();
 			foreach ($scenarioListGroup as $group) {
 				$groupName = $group['group'];
-				if ($groupName == '') $groupName = __('Aucun', __FILE__);
+				if ($groupName == '') $groupName = new Trad('Aucun', __FILE__);
 				$scenarioGroupedList[$groupName] = array();
 				foreach ($scenarioList as $scenario) {
 					$scGroup = $scenario->getGroup();
-					if ($scGroup == '') $scGroup = __('Aucun', __FILE__);
+					if ($scGroup == '') $scGroup = new Trad('Aucun', __FILE__);
 					if ($scGroup != $groupName) continue;
 					array_push($scenarioGroupedList[$groupName], $scenario);
 				}
@@ -476,7 +476,7 @@ class scenario {
 		$scenario->setLog($GLOBALS['JEEDOM_SCLOG_TEXT']['startSubTask']['txt']);
 		if (isset($_options['tags']) && is_array($_options['tags']) && count($_options['tags']) > 0) {
 			$scenario->setTags($_options['tags']);
-			$scenario->setLog(__('Tags :', __FILE__) . ' ' . json_encode($scenario->getTags(), JSON_UNESCAPED_UNICODE));
+			$scenario->setLog(new Trad('Tags :', __FILE__) . ' ' . json_encode($scenario->getTags(), JSON_UNESCAPED_UNICODE));
 		}
 		if (!is_object($scenarioElement) || !is_object($scenario)) {
 			$scenario->setLog($GLOBALS['JEEDOM_SCLOG_TEXT']['toStartUnfound']['txt']);
@@ -535,7 +535,7 @@ class scenario {
 		$scenarios = self::all();
 		foreach ($scenarios as $scenario) {
 			if ($scenario->getGroup() == '') {
-				$group = __('Aucun', __FILE__);
+				$group = new Trad('Aucun', __FILE__);
 			} else {
 				$group = $scenario->getGroup();
 			}
@@ -556,11 +556,11 @@ class scenario {
 						if ($_needsReturn) {
 							$return[] = array(
 								'detail' => '<a href="/index.php?v=d&p=scenario&id=' . $scenario->getId() . '">' . $scenario->getHumanName() . '</a>',
-								'help' => __('Déclencheur', __FILE__),
+								'help' => new Trad('Déclencheur', __FILE__),
 								'who' => '#' . $cmd_id . '#'
 							);
 						} else {
-							log::add('scenario', 'error', __('Un déclencheur du scénario :', __FILE__) . ' ' . $scenario->getHumanName() . ' ' . __('est introuvable', __FILE__));
+							log::add('scenario', 'error', new Trad('Un déclencheur du scénario :', __FILE__) . ' ' . $scenario->getHumanName() . ' ' . new Trad('est introuvable', __FILE__));
 						}
 					}
 				}
@@ -577,11 +577,11 @@ class scenario {
 					if ($_needsReturn) {
 						$return[] = array(
 							'detail' => '<a href="/index.php?v=d&p=scenario&id=' . $scenario->getId() . '">' . $scenario->getHumanName() . '</a>',
-							'help' => __('Expression', __FILE__),
+							'help' => new Trad('Expression', __FILE__),
 							'who' => '#' . $cmd_id . '#'
 						);
 					} else {
-						log::add('scenario', 'error', __('Une commande du scénario :', __FILE__) . ' ' . $scenario->getHumanName() . ' ' . __('est introuvable', __FILE__));
+						log::add('scenario', 'error', new Trad('Une commande du scénario :', __FILE__) . ' ' . $scenario->getHumanName() . ' ' . new Trad('est introuvable', __FILE__));
 					}
 				}
 			}
@@ -602,8 +602,8 @@ class scenario {
 			'scenario_name' => html_entity_decode($_scenario_name),
 		);
 
-		if ($_object_name == __('Aucun', __FILE__)) {
-			if ($_group_name == __('Aucun', __FILE__)) {
+		if ($_object_name == new Trad('Aucun', __FILE__)) {
+			if ($_group_name == new Trad('Aucun', __FILE__)) {
 				$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
 				FROM scenario s
 				WHERE s.name=:scenario_name
@@ -619,7 +619,7 @@ class scenario {
 			}
 		} else {
 			$values['object_name'] = $_object_name;
-			if ($_group_name == __('Aucun', __FILE__)) {
+			if ($_group_name == new Trad('Aucun', __FILE__)) {
 				$sql = 'SELECT ' . DB::buildField(__CLASS__, 's') . '
 				FROM scenario s
 				INNER JOIN object ob ON s.object_id=ob.id
@@ -841,8 +841,8 @@ class scenario {
 		if ($state == 'starting') {
 			//Scenario stuck into starting state. May be too much sql connections, refused connection, or scenario hangs.
 			if (strtotime('now') - $this->getCache('startingTime') > 5) {
-				log::add('scenario', 'error', __('La dernière exécution du scénario ne s\'est pas lancée. Vérifiez le log scenario_execution, ainsi que le log du scénario', __FILE__) . " \"" . $this->getName() . "\".");
-				$this->setLog(__('La dernière exécution du scénario ne s\'est pas lancée. Vérifiez le log scenario_execution pour l\'exécution à', __FILE__) . ' ' . date('Y-m-d H:i:s', $this->getCache('startingTime')) . ".");
+				log::add('scenario', 'error', new Trad('La dernière exécution du scénario ne s\'est pas lancée. Vérifiez le log scenario_execution, ainsi que le log du scénario', __FILE__) . " \"" . $this->getName() . "\".");
+				$this->setLog(new Trad('La dernière exécution du scénario ne s\'est pas lancée. Vérifiez le log scenario_execution pour l\'exécution à', __FILE__) . ' ' . date('Y-m-d H:i:s', $this->getCache('startingTime')) . ".");
 				$this->persistLog();
 			}
 			//Delay scenario start if another instance ever starting.
@@ -857,8 +857,8 @@ class scenario {
 					}
 				}
 				if ($state == 'starting') {
-					log::add('scenario', 'error', __('Trop d\'appels simultanés du scénario, il ne peut-être exécuté une nouvelle fois. Il est conseillé de réduire les appels au scénario', __FILE__) . " \"" . $this->getName() . "\".");
-					$this->setLog(__('Trop d\'appels simultanés du scénario, il ne peut-être exécuté une nouvelle fois. Il est conseillé de réduire les appels à ce scénario', __FILE__) . ".");
+					log::add('scenario', 'error', new Trad('Trop d\'appels simultanés du scénario, il ne peut-être exécuté une nouvelle fois. Il est conseillé de réduire les appels au scénario', __FILE__) . " \"" . $this->getName() . "\".");
+					$this->setLog(new Trad('Trop d\'appels simultanés du scénario, il ne peut-être exécuté une nouvelle fois. Il est conseillé de réduire les appels à ce scénario', __FILE__) . ".");
 					$this->persistLog();
 					return false;
 				}
@@ -897,7 +897,7 @@ class scenario {
 			cache::byKey('scenarioInstanceAttr'.$this->getId().'::'.$instance_id)->remove();
 		}
 		if ($this->getIsActive() != 1) {
-			$this->setLog($GLOBALS['JEEDOM_SCLOG_TEXT']['disableScenario']['txt']  . $this->getHumanName() . ' ' . __('sur :', __FILE__) . ' ' . $this->getTag('message') . ' ' . __('car il est désactivé', __FILE__));
+			$this->setLog($GLOBALS['JEEDOM_SCLOG_TEXT']['disableScenario']['txt']  . $this->getHumanName() . ' ' . new Trad('sur :', __FILE__) . ' ' . $this->getTag('message') . ' ' . new Trad('car il est désactivé', __FILE__));
 			$this->setState('stop');
 			$this->setPID();
 			$this->persistLog();
@@ -905,7 +905,7 @@ class scenario {
 		}
 		if ($this->getConfiguration('timeDependency', 0) == 1) {
 			if (!jeedom::isDateOk() || (((new DateTime('today midnight +1 day'))->format('I') - (new DateTime('today midnight'))->format('I')) == -1  && date('I') == 1 && date('Gi') > 159)) {
-				$this->setLog($GLOBALS['JEEDOM_SCLOG_TEXT']['launchScenario']['txt'] . $this->getHumanName() . ' ' . __('annulé car il utilise une condition de type temporelle et que la date système n\'est pas OK (ou que l\'on est en changement d\'heure négatif)', __FILE__));
+				$this->setLog($GLOBALS['JEEDOM_SCLOG_TEXT']['launchScenario']['txt'] . $this->getHumanName() . ' ' . new Trad('annulé car il utilise une condition de type temporelle et que la date système n\'est pas OK (ou que l\'on est en changement d\'heure négatif)', __FILE__));
 				$this->setState('stop');
 				$this->setPID();
 				$this->persistLog();
@@ -914,7 +914,7 @@ class scenario {
 		}
 		$cmd = cmd::byId(str_replace('#', '', $this->getTag('trigger_id')));
 		if (is_object($cmd)) {
-			log::add('event', 'info', __('Exécution du scénario', __FILE__) . ' ' . $this->getHumanName() . ' ' . __('déclenché par :', __FILE__) . ' ' . $cmd->getHumanName());
+			log::add('event', 'info', new Trad('Exécution du scénario', __FILE__) . ' ' . $this->getHumanName() . ' ' . new Trad('déclenché par :', __FILE__) . ' ' . $cmd->getHumanName());
 			if ($this->getConfiguration('timeline::enable')) {
 				$timeline = new timeline();
 				$timeline->setType('scenario');
@@ -925,7 +925,7 @@ class scenario {
 				$timeline->save();
 			}
 		} else {
-			log::add('event', 'info', __('Exécution du scénario', __FILE__) . ' ' . $this->getHumanName() . ' ' . __('déclenché par :', __FILE__) . ' ' . $this->getTag('trigger'));
+			log::add('event', 'info', new Trad('Exécution du scénario', __FILE__) . ' ' . $this->getHumanName() . ' ' . new Trad('déclenché par :', __FILE__) . ' ' . $this->getTag('trigger'));
 			if ($this->getConfiguration('timeline::enable')) {
 				$timeline = new timeline();
 				$timeline->setType('scenario');
@@ -1082,7 +1082,7 @@ class scenario {
 			throw new Exception('Le nom du scénario ne peut pas être vide.');
 		}
 		if (($this->getMode() == 'schedule' || $this->getMode() == 'all') && $this->getSchedule() == '') {
-			throw new Exception(__('Le scénario est de type programmé mais la programmation est vide', __FILE__));
+			throw new Exception(new Trad('Le scénario est de type programmé mais la programmation est vide', __FILE__));
 		}
 		if ($this->getConfiguration('has_return', 0) == 1) {
 			$this->setConfiguration('syncmode', 1);
@@ -1273,7 +1273,7 @@ class scenario {
 						$cron->halt();
 						$cron->remove();
 					} catch (Exception $e) {
-						log::add('scenario', 'info', __('Impossible d\'arrêter la sous tâche :', __FILE__) . ' ' . json_encode($cron->getOption(), JSON_UNESCAPED_UNICODE));
+						log::add('scenario', 'info', new Trad('Impossible d\'arrêter la sous tâche :', __FILE__) . ' ' . json_encode($cron->getOption(), JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
@@ -1298,7 +1298,7 @@ class scenario {
 				}
 			}
 			if ($this->running()) {
-				throw new Exception(__('Impossible d\'arrêter le scénario :', __FILE__) . ' ' . $this->getHumanName() . '. ' . __('PID :', __FILE__) . ' ' . $this->getPID());
+				throw new Exception(new Trad('Impossible d\'arrêter le scénario :', __FILE__) . ' ' . $this->getHumanName() . '. ' . new Trad('PID :', __FILE__) . ' ' . $this->getPID());
 			}
 		}
 		$this->setState('stop');
@@ -1451,7 +1451,7 @@ class scenario {
 		//$_tag: html label with custom color
 		$name = '';
 		if (!$_noGroup) {
-			$groupName = $this->getGroup() != '' ? $this->getGroup() : __('Aucun', __FILE__);
+			$groupName = $this->getGroup() != '' ? $this->getGroup() : new Trad('Aucun', __FILE__);
 			if ($_tag) {
 				$name .= '<span class="label label-info">' . $groupName . '</span> ';
 			} else {
@@ -1472,9 +1472,9 @@ class scenario {
 		} else {
 			if ($_complete) {
 				if ($_tag) {
-					$name .= '<span class="label labelObjectHuman">' . __('Aucun', __FILE__) . '</span>';
+					$name .= '<span class="label labelObjectHuman">' . new Trad('Aucun', __FILE__) . '</span>';
 				} else {
-					$name .= '[' . __('Aucun', __FILE__) . ']';
+					$name .= '[' . new Trad('Aucun', __FILE__) . ']';
 				}
 			}
 		}
@@ -1564,7 +1564,7 @@ class scenario {
 		$_data['node']['scenario' . $this->getId()] = array(
 			'id' => 'scenario' . $this->getId(),
 			'name' => $this->getName(),
-			'type' => __('Scénario', __FILE__),
+			'type' => new Trad('Scénario', __FILE__),
 			'fontweight' => ($_level == 1) ? 'bold' : 'normal',
 			'shape' => 'rect',
 			'width' => 40,

@@ -157,7 +157,7 @@ class jeedom {
 		$cmd = config::byKey('interact::warnme::defaultreturncmd', 'core', '');
 		if ($cmd != '') {
 			if (!cmd::byId(str_replace('#', '', $cmd))) {
-				$return[] = array('detail' => __('Administration', __FILE__), 'help' => __('Commande retour interactions', __FILE__), 'who' => $cmd);
+				$return[] = array('detail' => new Trad('Administration', __FILE__), 'help' => new Trad('Commande retour interactions', __FILE__), 'who' => $cmd);
 			}
 		}
 		foreach ($JEEDOM_INTERNAL_CONFIG['alerts'] as $level => $value) {
@@ -165,7 +165,7 @@ class jeedom {
 			preg_match_all("/#([0-9]*)#/", $cmds, $matches);
 			foreach ($matches[1] as $cmd_id) {
 				if (!cmd::byId($cmd_id)) {
-					$return[] = array('detail' => __('Administration', __FILE__), 'help' => __('Commande sur', __FILE__) . ' ' . $value['name'], 'who' => '#' . $cmd_id . '#');
+					$return[] = array('detail' => new Trad('Administration', __FILE__), 'help' => new Trad('Commande sur', __FILE__) . ' ' . $value['name'], 'who' => '#' . $cmd_id . '#');
 				}
 			}
 		}
@@ -175,7 +175,7 @@ class jeedom {
 	public static function health() {
 		$return = array();
 		$return[] = array(
-			'name' => __('Matériel', __FILE__),
+			'name' => new Trad('Matériel', __FILE__),
 			'state' => true,
 			'result' => jeedom::getHardwareName(),
 			'comment' => '',
@@ -185,36 +185,36 @@ class jeedom {
 		$nbNeedUpdate = update::nbNeedUpdate();
 		$state = ($nbNeedUpdate == 0) ? true : false;
 		$return[] = array(
-			'name' => __('Système à jour', __FILE__),
+			'name' => new Trad('Système à jour', __FILE__),
 			'state' => $state,
-			'result' => ($state) ? __('OK', __FILE__) : $nbNeedUpdate,
+			'result' => ($state) ? new Trad('OK', __FILE__) : $nbNeedUpdate,
 			'comment' => '',
 			'key' => 'uptodate'
 		);
 
 		$state = (config::byKey('enableCron', 'core', 1, true) != 0) ? true : false;
 		$return[] = array(
-			'name' => __('Cron actif', __FILE__),
+			'name' => new Trad('Cron actif', __FILE__),
 			'state' => $state,
-			'result' => ($state) ? __('OK', __FILE__) : __('NOK', __FILE__),
-			'comment' => ($state) ? '' : __('Erreur cron : les crons sont désactivés. Allez dans Réglages -> Système -> Moteur de tâches pour les réactiver', __FILE__),
+			'result' => ($state) ? new Trad('OK', __FILE__) : new Trad('NOK', __FILE__),
+			'comment' => ($state) ? '' : new Trad('Erreur cron : les crons sont désactivés. Allez dans Réglages -> Système -> Moteur de tâches pour les réactiver', __FILE__),
 			'key' => 'cron::enable'
 		);
 
 		$state = (config::byKey('enableScenario') == 0 && count(scenario::all()) > 0) ? false : true;
 		$return[] = array(
-			'name' => __('Scénario actif', __FILE__),
+			'name' => new Trad('Scénario actif', __FILE__),
 			'state' => $state,
-			'result' => ($state) ? __('OK', __FILE__) : __('NOK', __FILE__),
-			'comment' => ($state) ? '' : __('Erreur scénario : tous les scénarios sont désactivés. Allez dans Outils -> Scénarios pour les réactiver', __FILE__),
+			'result' => ($state) ? new Trad('OK', __FILE__) : new Trad('NOK', __FILE__),
+			'comment' => ($state) ? '' : new Trad('Erreur scénario : tous les scénarios sont désactivés. Allez dans Outils -> Scénarios pour les réactiver', __FILE__),
 			'key' => 'scenario::enable'
 		);
 
 		$state = self::isStarted();
 		$return[] = array(
-			'name' => __('Démarré', __FILE__),
+			'name' => new Trad('Démarré', __FILE__),
 			'state' => $state,
-			'result' => ($state) ? __('OK', __FILE__) . ' ' . file_get_contents(self::getTmpFolder() . '/started') : __('NOK', __FILE__),
+			'result' => ($state) ? new Trad('OK', __FILE__) . ' ' . file_get_contents(self::getTmpFolder() . '/started') : new Trad('NOK', __FILE__),
 			'comment' => '',
 			'key' => 'isStarted'
 		);
@@ -226,26 +226,26 @@ class jeedom {
 			$lastKnowDate = 0;
 		}
 		$return[] = array(
-			'name' => __('Date système (dernière heure enregistrée)', __FILE__),
+			'name' => new Trad('Date système (dernière heure enregistrée)', __FILE__),
 			'state' => $state,
-			'result' => ($state) ? __('OK', __FILE__) . ' ' . date('Y-m-d H:i:s') . ' (' . gmdate('Y-m-d H:i:s', $lastKnowDate) . ')' : date('Y-m-d H:i:s'),
-			'comment' => ($state) ? '' : __('Si la dernière heure enregistrée est fausse, il faut la remettre à zéro', __FILE__),
+			'result' => ($state) ? new Trad('OK', __FILE__) . ' ' . date('Y-m-d H:i:s') . ' (' . gmdate('Y-m-d H:i:s', $lastKnowDate) . ')' : date('Y-m-d H:i:s'),
+			'comment' => ($state) ? '' : new Trad('Si la dernière heure enregistrée est fausse, il faut la remettre à zéro', __FILE__),
 			'key' => 'hour'
 		);
 
 		$state = self::isCapable('sudo', true);
 		$return[] = array(
-			'name' => __('Droits sudo', __FILE__),
+			'name' => new Trad('Droits sudo', __FILE__),
 			'state' => ($state) ? 1 : 2,
-			'result' => ($state) ? __('OK', __FILE__) : __('NOK', __FILE__),
-			'comment' => ($state) ? '' : __('Appliquez les droits root à Jeedom', __FILE__),
+			'result' => ($state) ? new Trad('OK', __FILE__) : new Trad('NOK', __FILE__),
+			'comment' => ($state) ? '' : new Trad('Appliquez les droits root à Jeedom', __FILE__),
 			'key' => 'sudo::right'
 		);
 
 		$mbState = config::byKey('mbState');
 		if ($mbState == 0) {
 			$return[] = array(
-				'name' => __('Version Jeedom', __FILE__),
+				'name' => new Trad('Version Jeedom', __FILE__),
 				'state' => true,
 				'result' => self::version(),
 				'comment' => '',
@@ -253,7 +253,7 @@ class jeedom {
 			);
 		} else {
 			$return[] = array(
-				'name' => __('Version', __FILE__),
+				'name' => new Trad('Version', __FILE__),
 				'state' => true,
 				'result' => self::version(),
 				'comment' => '',
@@ -262,7 +262,7 @@ class jeedom {
 		}
 
 		$return[] = array(
-			'name' => __('Version OS', __FILE__),
+			'name' => new Trad('Version OS', __FILE__),
 			'state' => (system::getDistrib() == 'debian' && version_compare(system::getOsVersion(), config::byKey('os::min'), '>=')),
 			'result' => system::getDistrib() . ' ' . system::getOsVersion(),
 			'comment' => '',
@@ -271,16 +271,16 @@ class jeedom {
 
 		$state = version_compare(phpversion(), '5.5', '>=');
 		$return[] = array(
-			'name' => __('Version PHP', __FILE__),
+			'name' => new Trad('Version PHP', __FILE__),
 			'state' => $state,
 			'result' => phpversion(),
-			'comment' => ($state) ? '' : __('Si vous êtes en version 5.4.x on vous indiquera quand la version 5.5 sera obligatoire', __FILE__),
+			'comment' => ($state) ? '' : new Trad('Si vous êtes en version 5.4.x on vous indiquera quand la version 5.5 sera obligatoire', __FILE__),
 			'key' => 'php::version'
 		);
 
 		$apaches = count(system::ps('apache2'));
 		$return[] = array(
-			'name' => __('Nombre de processus Apache', __FILE__),
+			'name' => new Trad('Nombre de processus Apache', __FILE__),
 			'state' => ($apaches > 0),
 			'result' => $apaches,
 			'comment' => '',
@@ -301,15 +301,15 @@ class jeedom {
 			}
 		}
 		$return[] = array(
-			'name' => __('Version OS', __FILE__),
+			'name' => new Trad('Version OS', __FILE__),
 			'state' => $state,
 			'result' => ($state) ? $uname . ' [' . $version . ']' : $uname,
-			'comment' => ($state) ? '' : __('Vous n\'êtes pas sur un OS officiellement supporté par l\'équipe Jeedom (toute demande de support pourra donc être refusée). Les OS officiellement supportés sont Debian Strech et Debian Buster', __FILE__),
+			'comment' => ($state) ? '' : new Trad('Vous n\'êtes pas sur un OS officiellement supporté par l\'équipe Jeedom (toute demande de support pourra donc être refusée). Les OS officiellement supportés sont Debian Strech et Debian Buster', __FILE__),
 		);
 
 		$version = DB::Prepare('select version()', array(), DB::FETCH_TYPE_ROW);
 		$return[] = array(
-			'name' => __('Version database', __FILE__),
+			'name' => new Trad('Version database', __FILE__),
 			'state' => true,
 			'result' => $version['version()'],
 			'comment' => '',
@@ -318,7 +318,7 @@ class jeedom {
 
 		$value = self::checkSpaceLeft();
 		$return[] = array(
-			'name' => __('Espace disque libre', __FILE__),
+			'name' => new Trad('Espace disque libre', __FILE__),
 			'state' => ($value > 10),
 			'result' => $value . ' %',
 			'comment' => '',
@@ -329,7 +329,7 @@ class jeedom {
 		$max_used_connection = DB::Prepare('SHOW STATUS WHERE `variable_name` = \'Max_used_connections\';', array(), DB::FETCH_TYPE_ROW);
 		$allow_connection = DB::Prepare('SHOW VARIABLES LIKE \'max_connections\'', array(), DB::FETCH_TYPE_ROW);
 		$return[] = array(
-			'name' => __('Connexion active/max/autorisée', __FILE__),
+			'name' => new Trad('Connexion active/max/autorisée', __FILE__),
 			'state' => true,
 			'result' => $nb_active_connection['Value'] . '/' . $max_used_connection['Value'] . '/' . $allow_connection['Value'],
 			'comment' => '',
@@ -338,7 +338,7 @@ class jeedom {
 
 		$size = DB::Prepare('SELECT SUM(data_length + index_length) as size FROM information_schema.tables WHERE table_schema = \'jeedom\' GROUP BY table_schema;', array(), DB::FETCH_TYPE_ROW);
 		$return[] = array(
-			'name' => __('Taille base de données', __FILE__),
+			'name' => new Trad('Taille base de données', __FILE__),
 			'state' => true,
 			'result' => sizeFormat($size['size']),
 			'comment' => '',
@@ -347,28 +347,28 @@ class jeedom {
 
 		$value = self::checkSpaceLeft(self::getTmpFolder());
 		$return[] = array(
-			'name' => __('Espace disque libre tmp', __FILE__),
+			'name' => new Trad('Espace disque libre tmp', __FILE__),
 			'state' => ($value > 10),
 			'result' => $value . ' %',
-			'comment' => ($value > 10) ? '' : __('En cas d\'erreur essayez de redémarrer. Si le problème persiste, testez en désactivant les plugins un à un jusqu\'à trouver le coupable', __FILE__),
+			'comment' => ($value > 10) ? '' : new Trad('En cas d\'erreur essayez de redémarrer. Si le problème persiste, testez en désactivant les plugins un à un jusqu\'à trouver le coupable', __FILE__),
 			'key' => 'space::tmp'
 		);
 
 		$values = getSystemMemInfo();
 		$value = round(($values['MemAvailable'] / $values['MemTotal']) * 100);
 		$return[] = array(
-			'name' => __('Mémoire disponible', __FILE__),
+			'name' => new Trad('Mémoire disponible', __FILE__),
 			'state' => ($value > 15),
-			'result' => $value . ' % (' . __('Total', __FILE__) . ' ' . round($values['MemTotal'] / 1024) . ' Mo)',
+			'result' => $value . ' % (' . new Trad('Total', __FILE__) . ' ' . round($values['MemTotal'] / 1024) . ' Mo)',
 			'comment' => '',
 		);
 
 		$value = shell_exec('sudo dmesg | grep oom-killer | grep -v deprecated | wc -l');
 		$return[] = array(
-			'name' => __('Mémoire suffisante', __FILE__),
+			'name' => new Trad('Mémoire suffisante', __FILE__),
 			'state' => ($value == 0),
 			'result' => $value,
-			'comment' => ($value == 0) ? '' : __('Nombre de processus tués par le noyau pour manque de mémoire. Votre système manque de mémoire. Essayez de réduire le nombre de plugins ou de scénarios', __FILE__),
+			'comment' => ($value == 0) ? '' : new Trad('Nombre de processus tués par le noyau pour manque de mémoire. Votre système manque de mémoire. Essayez de réduire le nombre de plugins ou de scénarios', __FILE__),
 		);
 
 		$value = shell_exec('sudo dmesg | grep "CRC error" | grep "mmcblk0" | grep "card status" | wc -l');
@@ -380,10 +380,10 @@ class jeedom {
 			$value += $value2;
 		}
 		$return[] = array(
-			'name' => __('Erreur I/O', __FILE__),
+			'name' => new Trad('Erreur I/O', __FILE__),
 			'state' => ($value == 0),
 			'result' => $value,
-			'comment' => ($value == 0) ? '' : __('Il y a des erreurs disque, cela peut indiquer un soucis avec le disque ou un problème d\'alimentation', __FILE__),
+			'comment' => ($value == 0) ? '' : new Trad('Il y a des erreurs disque, cela peut indiquer un soucis avec le disque ou un problème d\'alimentation', __FILE__),
 			'key' => 'io_error'
 		);
 
@@ -394,17 +394,17 @@ class jeedom {
 				$ok = false;
 			}
 			$return[] = array(
-				'name' => __('Swap disponible', __FILE__),
+				'name' => new Trad('Swap disponible', __FILE__),
 				'state' => $ok,
-				'result' => $value . ' % (' . __('Total', __FILE__) . ' ' . round($values['SwapTotal'] / 1024) . ' Mo)',
-				'comment' => ($ok) ? '' : __('Le swap libre n\'est pas suffisant ou il y a moins de 2Go de mémoire sur le système et un swap inférieure à 1Go', __FILE__),
+				'result' => $value . ' % (' . new Trad('Total', __FILE__) . ' ' . round($values['SwapTotal'] / 1024) . ' Mo)',
+				'comment' => ($ok) ? '' : new Trad('Le swap libre n\'est pas suffisant ou il y a moins de 2Go de mémoire sur le système et un swap inférieure à 1Go', __FILE__),
 				'key' => 'swap'
 			);
 		} else {
 			$return[] = array(
-				'name' => __('Swap disponible', __FILE__),
+				'name' => new Trad('Swap disponible', __FILE__),
 				'state' => 2,
-				'result' => __('Inconnue', __FILE__),
+				'result' => new Trad('Inconnue', __FILE__),
 				'comment' => '',
 				'key' => 'swap'
 			);
@@ -416,16 +416,16 @@ class jeedom {
 			$ok = true;
 		}
 		$return[] = array(
-			'name' => __('Swappiness', __FILE__),
+			'name' => new Trad('Swappiness', __FILE__),
 			'state' => $ok,
 			'result' => $value . '%',
-			'comment' => ($ok) ? '' : __('Pour des performances optimales le swapiness ne doit pas dépasser 20% si vous avez 1Go ou moins de mémoire', __FILE__),
+			'comment' => ($ok) ? '' : new Trad('Pour des performances optimales le swapiness ne doit pas dépasser 20% si vous avez 1Go ou moins de mémoire', __FILE__),
 			'key' => 'swapiness'
 		);
 
 		$values = sys_getloadavg();
 		$return[] = array(
-			'name' => __('Charge', __FILE__),
+			'name' => new Trad('Charge', __FILE__),
 			'state' => ($values[2] < 20),
 			'result' => round($values[0],2) . ' - ' . round($values[1],2) . ' - ' . round($values[2],2),
 			'comment' => '',
@@ -434,25 +434,25 @@ class jeedom {
 
 		$state = network::test('internal');
 		$return[] = array(
-			'name' => __('Configuration réseau interne', __FILE__),
+			'name' => new Trad('Configuration réseau interne', __FILE__),
 			'state' => $state,
-			'result' => ($state) ? __('OK', __FILE__) : __('NOK', __FILE__),
-			'comment' => ($state) ? '' : __('Allez sur Réglages -> Système -> Configuration -> onglet Réseaux, puis configurez correctement la partie réseau', __FILE__),
+			'result' => ($state) ? new Trad('OK', __FILE__) : new Trad('NOK', __FILE__),
+			'comment' => ($state) ? '' : new Trad('Allez sur Réglages -> Système -> Configuration -> onglet Réseaux, puis configurez correctement la partie réseau', __FILE__),
 			'key' => 'network::internal'
 		);
 
 		$state = network::test('external');
 		$return[] = array(
-			'name' => __('Configuration réseau externe', __FILE__),
+			'name' => new Trad('Configuration réseau externe', __FILE__),
 			'state' => $state,
-			'result' => ($state) ? __('OK', __FILE__) : __('NOK', __FILE__),
-			'comment' => ($state) ? '' : __('Allez sur Réglages -> Système -> Configuration -> onglet Réseaux, puis configurez correctement la partie réseau', __FILE__),
+			'result' => ($state) ? new Trad('OK', __FILE__) : new Trad('NOK', __FILE__),
+			'comment' => ($state) ? '' : new Trad('Allez sur Réglages -> Système -> Configuration -> onglet Réseaux, puis configurez correctement la partie réseau', __FILE__),
 			'key' => 'network::external'
 		);
 
 		$value = shell_exec('node --version');
 		$return[] = array(
-			'name' => __('Node', __FILE__),
+			'name' => new Trad('Node', __FILE__),
 			'state' => true,
 			'result' => $value,
 			'comment' => '',
@@ -462,7 +462,7 @@ class jeedom {
 		if (shell_exec('which python') != '') {
 			$value = shell_exec('python --version 2>&1'); // prior python 3.4, 'python --version' output was on stderr
 			$return[] = array(
-				'name' => __('Python', __FILE__),
+				'name' => new Trad('Python', __FILE__),
 				'state' => true,
 				'result' => $value,
 				'comment' => '',
@@ -473,7 +473,7 @@ class jeedom {
 		if (shell_exec('which python3') != '') {
 			$value = shell_exec('python3 --version');
 			$return[] = array(
-				'name' => __('Python 3', __FILE__),
+				'name' => new Trad('Python 3', __FILE__),
 				'state' => true,
 				'result' => $value,
 				'comment' => '',
@@ -482,30 +482,30 @@ class jeedom {
 		}
 
 
-		$cache_health = array('comment' => '', 'name' => __('Persistance du cache', __FILE__), 'key' => 'cache::persit');
+		$cache_health = array('comment' => '', 'name' => new Trad('Persistance du cache', __FILE__), 'key' => 'cache::persit');
 		if (cache::isPersistOk()) {
 			if (config::byKey('cache::engine') != 'FilesystemCache' && config::byKey('cache::engine') != 'PhpFileCache') {
 				$cache_health['state'] = true;
-				$cache_health['result'] = __('OK', __FILE__);
+				$cache_health['result'] = new Trad('OK', __FILE__);
 			} else {
 				$filename = __DIR__ . '/../../cache.tar.gz';
 				$cache_health['state'] = true;
-				$cache_health['result'] = __('OK', __FILE__) . ' (' . date('Y-m-d H:i:s', filemtime($filename)) . ')';
+				$cache_health['result'] = new Trad('OK', __FILE__) . ' (' . date('Y-m-d H:i:s', filemtime($filename)) . ')';
 			}
 		} else {
 			$cache_health['state'] = false;
-			$cache_health['result'] = __('NOK', __FILE__);
-			$cache_health['comment'] = __('Votre cache n\'est pas sauvegardé. En cas de redémarrage, certaines informations peuvent être perdues. Essayez de lancer (à partir du moteur de tâches) la tâche cache::persist.', __FILE__);
+			$cache_health['result'] = new Trad('NOK', __FILE__);
+			$cache_health['comment'] = new Trad('Votre cache n\'est pas sauvegardé. En cas de redémarrage, certaines informations peuvent être perdues. Essayez de lancer (à partir du moteur de tâches) la tâche cache::persist.', __FILE__);
 		}
 		$return[] = $cache_health;
 
 		if (jeedom::getHardwareName() != 'docker') {
 			$state = shell_exec('systemctl show apache2 | grep  PrivateTmp | grep yes | wc -l');
 			$return[] = array(
-				'name' => __('Apache private tmp', __FILE__),
+				'name' => new Trad('Apache private tmp', __FILE__),
 				'state' => $state,
-				'result' => ($state) ? __('OK', __FILE__) : __('NOK', __FILE__),
-				'comment' => ($state) ? '' : __('Veuillez désactiver le private tmp d\'Apache (Jeedom ne peut marcher avec).', __FILE__) . '</a>',
+				'result' => ($state) ? new Trad('OK', __FILE__) : new Trad('NOK', __FILE__),
+				'comment' => ($state) ? '' : new Trad('Veuillez désactiver le private tmp d\'Apache (Jeedom ne peut marcher avec).', __FILE__) . '</a>',
 				'key' => 'apache2::privateTmp'
 			);
 		}
@@ -619,7 +619,7 @@ class jeedom {
 			}
 			global $_USER_GLOBAL;
 			$_USER_GLOBAL = $user;
-			log::add('connection', 'info', __('Connexion par API de l\'utilisateur :', __FILE__) . ' ' . $user->getLogin());
+			log::add('connection', 'info', new Trad('Connexion par API de l\'utilisateur :', __FILE__) . ' ' . $user->getLogin());
 			return true;
 		}
 		if (!self::apiModeResult(config::byKey('api::' . $_plugin . '::mode', 'core', 'enable'))) {
@@ -851,7 +851,7 @@ class jeedom {
 		if (file_exists($_backup)) {
 			unlink($_backup);
 		} else {
-			throw new Exception(__('Impossible de trouver le fichier :', __FILE__) . ' ' . $_backup);
+			throw new Exception(new Trad('Impossible de trouver le fichier :', __FILE__) . ' ' . $_backup);
 		}
 	}
 
@@ -1044,7 +1044,7 @@ class jeedom {
 			self::forceSyncHour();
 			sleep(3);
 			if (strtotime('now') < $mindate || strtotime('now') > $maxdate) {
-				log::add('core', 'error', __('La date du système est incorrecte (avant ' . $minDateValue . ' ou après ' . $maxDateValue . ') :', __FILE__) . ' ' . (new \DateTime())->format('Y-m-d H:i:s'), 'dateCheckFailed');
+				log::add('core', 'error', new Trad('La date du système est incorrecte (avant ' . $minDateValue . ' ou après ' . $maxDateValue . ') :', __FILE__) . ' ' . (new \DateTime())->format('Y-m-d H:i:s'), 'dateCheckFailed');
 				return false;
 			}
 		}
@@ -1095,129 +1095,129 @@ class jeedom {
 	public static function cron() {
 		if (!self::isStarted()) {
 			echo date('Y-m-d H:i:s') . ' starting Jeedom';
-			log::add('starting', 'debug', __('Démarrage de jeedom', __FILE__));
+			log::add('starting', 'debug', new Trad('Démarrage de jeedom', __FILE__));
 			try {
-				log::add('starting', 'debug', __('Arrêt des crons', __FILE__));
+				log::add('starting', 'debug', new Trad('Arrêt des crons', __FILE__));
 				foreach ((cron::all()) as $cron) {
 					if ($cron->running() && $cron->getClass() != 'jeedom' && $cron->getFunction() != 'cron') {
 						try {
 							$cron->halt();
 						} catch (Exception $e) {
-							log::add('starting', 'error', __('Erreur sur l\'arrêt d\'une tâche cron :', __FILE__) . ' ' . log::exception($e));
+							log::add('starting', 'error', new Trad('Erreur sur l\'arrêt d\'une tâche cron :', __FILE__) . ' ' . log::exception($e));
 						} catch (Error $e) {
-							log::add('starting', 'error', __('Erreur sur l\'arrêt d\'une tâche cron :', __FILE__) . ' ' . log::exception($e));
+							log::add('starting', 'error', new Trad('Erreur sur l\'arrêt d\'une tâche cron :', __FILE__) . ' ' . log::exception($e));
 						}
 					}
 				}
 			} catch (Exception $e) {
-				log::add('starting', 'error', __('Erreur sur l\'arrêt des tâches crons :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur l\'arrêt des tâches crons :', __FILE__) . ' ' . log::exception($e));
 			} catch (Error $e) {
-				log::add('starting', 'error', __('Erreur sur l\'arrêt des tâches crons :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur l\'arrêt des tâches crons :', __FILE__) . ' ' . log::exception($e));
 			}
 
 			try {
-				log::add('starting', 'debug', __('Restauration du cache', __FILE__));
+				log::add('starting', 'debug', new Trad('Restauration du cache', __FILE__));
 				cache::restore();
 			} catch (Exception $e) {
-				log::add('starting', 'error', __('Erreur sur la restauration du cache :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur la restauration du cache :', __FILE__) . ' ' . log::exception($e));
 			} catch (Error $e) {
-				log::add('starting', 'error', __('Erreur sur la restauration du cache :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur la restauration du cache :', __FILE__) . ' ' . log::exception($e));
 			}
 
 			try {
-				log::add('starting', 'debug', __('Consolidation de l\'historique', __FILE__));
+				log::add('starting', 'debug', new Trad('Consolidation de l\'historique', __FILE__));
 				history::checkCurrentValueAndHistory();
 			} catch (Exception $e) {
-				log::add('starting', 'error', __('Erreur sur la consolidation de l\'historique :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur la consolidation de l\'historique :', __FILE__) . ' ' . log::exception($e));
 			} catch (Error $e) {
-				log::add('starting', 'error', __('Erreur sur la consolidation de l\'historique :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur la consolidation de l\'historique :', __FILE__) . ' ' . log::exception($e));
 			}
 
 			try {
-				log::add('starting', 'debug', __('Nettoyage du cache des péripheriques USB', __FILE__));
+				log::add('starting', 'debug', new Trad('Nettoyage du cache des péripheriques USB', __FILE__));
 				$cache = cache::byKey('jeedom::usbMapping');
 				$cache->remove();
 			} catch (Exception $e) {
-				log::add('starting', 'error', __('Erreur sur le nettoyage du cache des péripheriques USB :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur le nettoyage du cache des péripheriques USB :', __FILE__) . ' ' . log::exception($e));
 			} catch (Error $e) {
-				log::add('starting', 'error', __('Erreur sur le nettoyage du cache des péripheriques USB :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur le nettoyage du cache des péripheriques USB :', __FILE__) . ' ' . log::exception($e));
 			}
 
 			try {
-				log::add('starting', 'debug', __('Nettoyage du cache des péripheriques Bluetooth', __FILE__));
+				log::add('starting', 'debug', new Trad('Nettoyage du cache des péripheriques Bluetooth', __FILE__));
 				$cache = cache::byKey('jeedom::bluetoothMapping');
 				$cache->remove();
 			} catch (Exception $e) {
-				log::add('starting', 'error', __('Erreur sur le nettoyage du cache des péripheriques Bluetooth :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur le nettoyage du cache des péripheriques Bluetooth :', __FILE__) . ' ' . log::exception($e));
 			} catch (Error $e) {
-				log::add('starting', 'error', __('Erreur sur le nettoyage du cache des péripheriques Bluetooth :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur le nettoyage du cache des péripheriques Bluetooth :', __FILE__) . ' ' . log::exception($e));
 			}
 
 			try {
-				log::add('starting', 'debug', __('Démarrage des processus Internet de Jeedom', __FILE__));
+				log::add('starting', 'debug', new Trad('Démarrage des processus Internet de Jeedom', __FILE__));
 				self::start();
 			} catch (Exception $e) {
-				log::add('starting', 'error', __('Erreur sur le démarrage interne de Jeedom :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur le démarrage interne de Jeedom :', __FILE__) . ' ' . log::exception($e));
 			} catch (Error $e) {
-				log::add('starting', 'error', __('Erreur sur le démarrage interne de Jeedom :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur le démarrage interne de Jeedom :', __FILE__) . ' ' . log::exception($e));
 			}
 
 			try {
-				log::add('starting', 'debug', __('Ecriture du fichier', __FILE__) . ' ' . self::getTmpFolder() . '/started');
+				log::add('starting', 'debug', new Trad('Ecriture du fichier', __FILE__) . ' ' . self::getTmpFolder() . '/started');
 				if (file_put_contents(self::getTmpFolder() . '/started', date('Y-m-d H:i:s')) === false) {
-					log::add('starting', 'error', __('Impossible d\'écrire', __FILE__) . ' ' . self::getTmpFolder() . '/started');
+					log::add('starting', 'error', new Trad('Impossible d\'écrire', __FILE__) . ' ' . self::getTmpFolder() . '/started');
 				}
 			} catch (Exception $e) {
-				log::add('starting', 'error', __('Impossible d\'écrire', __FILE__) . ' ' . self::getTmpFolder() . '/started : ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Impossible d\'écrire', __FILE__) . ' ' . self::getTmpFolder() . '/started : ' . log::exception($e));
 			} catch (Error $e) {
-				log::add('starting', 'error', __('Impossible d\'écrire', __FILE__) . ' ' . self::getTmpFolder() . '/started : ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Impossible d\'écrire', __FILE__) . ' ' . self::getTmpFolder() . '/started : ' . log::exception($e));
 			}
 
 			if (!file_exists(self::getTmpFolder() . '/started')) {
-				log::add('starting', 'critical', __('Impossible d\'écrire', __FILE__) . ' ' . self::getTmpFolder() . __('/started pour une raison inconnue. Jeedom ne peut démarrer', __FILE__));
+				log::add('starting', 'critical', new Trad('Impossible d\'écrire', __FILE__) . ' ' . self::getTmpFolder() . new Trad('/started pour une raison inconnue. Jeedom ne peut démarrer', __FILE__));
 				return;
 			}
 
 			try {
-				log::add('starting', 'debug', __('Vérification de la configuration réseau interne', __FILE__));
+				log::add('starting', 'debug', new Trad('Vérification de la configuration réseau interne', __FILE__));
 				if (!network::test('internal')) {
 					network::checkConf('internal');
 				}
 			} catch (Exception $e) {
-				log::add('starting', 'error', __('Erreur sur la configuration réseau interne :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur la configuration réseau interne :', __FILE__) . ' ' . log::exception($e));
 			} catch (Error $e) {
-				log::add('starting', 'error', __('Erreur sur la configuration réseau interne :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur la configuration réseau interne :', __FILE__) . ' ' . log::exception($e));
 			}
 
 			try {
-				log::add('starting', 'debug', __('Envoi de l\'événement de démarrage', __FILE__));
+				log::add('starting', 'debug', new Trad('Envoi de l\'événement de démarrage', __FILE__));
 				self::event('start');
 			} catch (Exception $e) {
-				log::add('starting', 'error', __('Erreur sur l\'envoi de l\'événement de démarrage :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur l\'envoi de l\'événement de démarrage :', __FILE__) . ' ' . log::exception($e));
 			} catch (Error $e) {
-				log::add('starting', 'error', __('Erreur sur l\'envoi de l\'événement de démarrage :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur l\'envoi de l\'événement de démarrage :', __FILE__) . ' ' . log::exception($e));
 			}
 
 			try {
-				log::add('starting', 'debug', __('Démarrage des plugins', __FILE__));
+				log::add('starting', 'debug', new Trad('Démarrage des plugins', __FILE__));
 				plugin::start();
 			} catch (Exception $e) {
-				log::add('starting', 'error', __('Erreur sur le démarrage des plugins :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur le démarrage des plugins :', __FILE__) . ' ' . log::exception($e));
 			} catch (Error $e) {
-				log::add('starting', 'error', __('Erreur sur la démarrage des plugins :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur la démarrage des plugins :', __FILE__) . ' ' . log::exception($e));
 			}
 
 			try {
 				if (config::byKey('market::enable') == 1) {
-					log::add('starting', 'debug', __('Test de connexion au market', __FILE__));
+					log::add('starting', 'debug', new Trad('Test de connexion au market', __FILE__));
 					repo_market::test();
 				}
 			} catch (Exception $e) {
-				log::add('starting', 'error', __('Erreur sur la connexion au market :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur la connexion au market :', __FILE__) . ' ' . log::exception($e));
 			} catch (Error $e) {
-				log::add('starting', 'error', __('Erreur sur la connexion au market :', __FILE__) . ' ' . log::exception($e));
+				log::add('starting', 'error', new Trad('Erreur sur la connexion au market :', __FILE__) . ' ' . log::exception($e));
 			}
-			log::add('starting', 'debug', __('Démarrage de jeedom fini avec succès', __FILE__));
+			log::add('starting', 'debug', new Trad('Démarrage de jeedom fini avec succès', __FILE__));
 		}
 		self::isDateOk();
 	}
@@ -1253,7 +1253,7 @@ class jeedom {
 		}
 		$disk_space = self::checkSpaceLeft();
 		if($disk_space < 10){
-			log::add('jeedom', 'error',__('Espace disque disponible faible : ',__FILE__).$disk_space.'%.'.__('Veuillez faire de la place (suppression de backup, de video/capture du plugin camera, d\'historique...)',__FILE__));
+			log::add('jeedom', 'error',new Trad('Espace disque disponible faible : ', __FILE__).$disk_space.'%.'.new Trad('Veuillez faire de la place (suppression de backup, de video/capture du plugin camera, d\'historique...)',__FILE__));
 		}
 	}
 
@@ -1286,8 +1286,8 @@ class jeedom {
 					}
 					if ($toUpdate != '') {
 						//set $_logicalId so update function can remove such messages. Bypassed by message::save to notify different updates instead of new occurence.
-						$msg = __('De nouvelles mises à jour sont disponibles', __FILE__) . ' : ' . trim($toUpdate, ',');
-						$action = '<a href="/index.php?v=d&p=update">' . __('Centre de mise à jour', __FILE__) . '</a>';
+						$msg = new Trad('De nouvelles mises à jour sont disponibles', __FILE__) . ' : ' . trim($toUpdate, ',');
+						$action = '<a href="/index.php?v=d&p=update">' . new Trad('Centre de mise à jour', __FILE__) . '</a>';
 						message::add('update', $msg, $action, 'newUpdate');
 					}
 				}
@@ -1697,7 +1697,7 @@ class jeedom {
 		if (self::isCapable('sudo')) {
 			exec(system::getCmdSudo() . 'shutdown -fh now');
 		} else {
-			throw new Exception(__('Vous pouvez arrêter le système', __FILE__));
+			throw new Exception(new Trad('Vous pouvez arrêter le système', __FILE__));
 		}
 	}
 
@@ -1707,7 +1707,7 @@ class jeedom {
 		if (self::isCapable('sudo')) {
 			exec(system::getCmdSudo() . 'shutdown -fr now');
 		} else {
-			throw new Exception(__('Vous pouvez lancer le redémarrage du système', __FILE__));
+			throw new Exception(new Trad('Vous pouvez lancer le redémarrage du système', __FILE__));
 		}
 	}
 

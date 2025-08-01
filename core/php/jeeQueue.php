@@ -32,16 +32,16 @@ function jeeQueue_errorHandler($queue, $class, $function,$datetimeStart, $e) {
 	}
 	echo '[Erreur] ' . $queue->getHumanName() . ' : ' . log::exception($e);
 	if (isset($class) && $class != '') {
-		log::add($class, 'error', __('Erreur sur', __FILE__) . ' ' . $queue->getHumanName() . ' : ' . log::exception($e), $logicalId);
+		log::add($class, 'error', new Trad('Erreur sur', __FILE__) . ' ' . $queue->getHumanName() . ' : ' . log::exception($e), $logicalId);
 	} else if (isset($function) && $function != '') {
-		log::add($function, 'error', __('Erreur sur', __FILE__) . ' ' . $queue->getHumanName() . ' : ' . log::exception($e), $logicalId);
+		log::add($function, 'error', new Trad('Erreur sur', __FILE__) . ' ' . $queue->getHumanName() . ' : ' . log::exception($e), $logicalId);
 	} else {
-		log::add('queue', 'error', __('Erreur sur', __FILE__) . ' ' . $queue->getHumanName() . ' : ' . log::exception($e), $logicalId);
+		log::add('queue', 'error', new Trad('Erreur sur', __FILE__) . ' ' . $queue->getHumanName() . ' : ' . log::exception($e), $logicalId);
 	}
 }
 
 if (jeedom::isStarted() && config::byKey('enableQueue', 'core', 1, true) == 0) {
-    die(__('Tous les queues sont actuellement désactivés', __FILE__));
+    die(new Trad('Tous les queues sont actuellement désactivés', __FILE__));
 }
 $datetime = date('Y-m-d H:i:s');
 $datetimeStart = strtotime('now');
@@ -60,7 +60,7 @@ try {
             try {
                 call_user_func_array($queue->getClass() . '::' . $queue->getFunction(), $queue->getArguments());
             } catch (\Throwable $th) {
-                log::add('queue', 'error', __('[Erreur] ', __FILE__) . ' ' . $queue->getHumanName().' => '.$th->getMessage());
+                log::add('queue', 'error', new Trad('[Erreur] ', __FILE__) . ' ' . $queue->getHumanName().' => '.$th->getMessage());
                 $queue->setState('error');
                 $queue->setPID();
                 $queue->setCache('numberFailed',$queue->getCache('numberFailed',0)+1);
@@ -69,7 +69,7 @@ try {
         } else {
             $queue->setState('Not found');
             $queue->setPID();
-            log::add('queue', 'error', __('[Erreur] Non trouvée', __FILE__) . ' ' . $queue->getHumanName());
+            log::add('queue', 'error', new Trad('[Erreur] Non trouvée', __FILE__) . ' ' . $queue->getHumanName());
             die();
         }
     } else {
@@ -77,7 +77,7 @@ try {
             try {
                 call_user_func_array($queue->getFunction(), $queue->getArguments());
             } catch (\Throwable $th) {
-                log::add('queue', 'error', __('[Erreur] ', __FILE__) . ' ' . $queue->getHumanName().' => '.$th->getMessage());
+                log::add('queue', 'error', new Trad('[Erreur] ', __FILE__) . ' ' . $queue->getHumanName().' => '.$th->getMessage());
                 $queue->setState('error');
                 $queue->setPID();
                 $queue->setCache('numberFailed',$queue->getCache('numberFailed',0)+1);
@@ -86,7 +86,7 @@ try {
         } else {
             $queue->setState('Not found');
             $queue->setPID();
-            log::add('queue', 'error', __('[Erreur] Non trouvée', __FILE__) . ' ' . $queue->getHumanName());
+            log::add('queue', 'error', new Trad('[Erreur] Non trouvée', __FILE__) . ' ' . $queue->getHumanName());
             die();
         }
     }

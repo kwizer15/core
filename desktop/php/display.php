@@ -89,7 +89,7 @@ function jeedom_displayObjectGroup($object = -1) {
 		$translate_category = '';
 		foreach ($JEEDOM_INTERNAL_CONFIG['eqLogic']['category'] as $key => $value) {
 			if ($eqLogic->getCategory($key, 0) == 1) {
-				$translate_category .= __($value['name'], __FILE__) . ',';
+				$translate_category .= new Trad($value['name'], __FILE__) . ',';
 			}
 		}
 		$translate_category = trim($translate_category, ',');

@@ -21,7 +21,7 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect('admin')) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init();
@@ -36,7 +36,7 @@ try {
 		unautorizedInDemo();
 		$listener = listener::byId(init('id'));
 		if (!is_object($listener)) {
-			throw new Exception(__('Listener id inconnu', __FILE__));
+			throw new Exception(new Trad('Listener id inconnu', __FILE__));
 		}
 		$listener->remove();
 		ajax::success();
@@ -54,7 +54,7 @@ try {
 		ajax::success($listeners);
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {

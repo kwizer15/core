@@ -388,9 +388,9 @@ class eqLogic {
 				$noReponseTimeLimit = $eqLogic->getTimeout();
 				if (count(message::byPluginLogicalId('core', $logicalId)) == 0) {
 					if ($eqLogic->getStatus('lastCommunication', date('Y-m-d H:i:s')) < date('Y-m-d H:i:s', strtotime('-' . $noReponseTimeLimit . ' minutes' . date('Y-m-d H:i:s')))) {
-						$message = __('Attention', __FILE__) . ' ' . $eqLogic->getHumanName();
-						$message .= ' ' . __('n\'a pas envoyé de message depuis plus de', __FILE__) . ' ' . $noReponseTimeLimit . ' ' . __('min', __FILE__);
-						$action = '<a href="/' . $eqLogic->getLinkToConfiguration() . '">' . __('Equipement', __FILE__) . '</a>';
+						$message = new Trad('Attention', __FILE__) . ' ' . $eqLogic->getHumanName();
+						$message .= ' ' . new Trad('n\'a pas envoyé de message depuis plus de', __FILE__) . ' ' . $noReponseTimeLimit . ' ' . new Trad('min', __FILE__);
+						$action = '<a href="/' . $eqLogic->getLinkToConfiguration() . '">' . new Trad('Equipement', __FILE__) . '</a>';
 						$prevStatus = $eqLogic->getStatus('timeout', 0);
 						$eqLogic->setStatus('timeout', 1);
 						if (config::byKey('alert::addMessageOnTimeout') == 1 && $prevStatus == 0) {
@@ -435,7 +435,7 @@ class eqLogic {
 	}
 
 	public static function byObjectNameEqLogicName($_object_name, $_eqLogic_name) {
-		if ($_object_name == __('Aucun', __FILE__)) {
+		if ($_object_name == new Trad('Aucun', __FILE__)) {
 			$values = array(
 				'eqLogic_name' => $_eqLogic_name,
 			);
@@ -552,7 +552,7 @@ class eqLogic {
 	public static function byString($_string) {
 		$eqLogic = self::byId(str_replace(array('#', 'eqLogic'), '', self::fromHumanReadable($_string)));
 		if (!is_object($eqLogic)) {
-			throw new Exception(__('L\'équipement n\'a pas pu être trouvé :', __FILE__) . ' ' . $_string . ' => ' . self::fromHumanReadable($_string));
+			throw new Exception(new Trad('L\'équipement n\'a pas pu être trouvé :', __FILE__) . ' ' . $_string . ' => ' . self::fromHumanReadable($_string));
 		}
 		return $eqLogic;
 	}
@@ -651,7 +651,7 @@ class eqLogic {
 		$html .= '<i class="icon jeedom-batterie' . $niveau . '"></i>';
 		$html .= '<span>' . $this->getStatus('battery', -2) . '%</span>';
 		$html .= '</div>';
-		$html .= '<div>' . __('Le', __FILE__) . ' ' . date("Y-m-d H:i:s", strtotime($this->getStatus('batteryDatetime', __('inconnue', __FILE__)))) . '</div>';
+		$html .= '<div>' . new Trad('Le', __FILE__) . ' ' . date("Y-m-d H:i:s", strtotime($this->getStatus('batteryDatetime', new Trad('inconnue', __FILE__)))) . '</div>';
 		$html .= '<br>';
 		$html .= '<span class="pull-left pluginName">' . ucfirst($this->getEqType_name()) . '</span>';
 		if ($_version == 'mobile') {
@@ -660,18 +660,18 @@ class eqLogic {
 			$html .= '<span class="pull-left batteryTime cursor">';
 		}
 		if ($this->getConfiguration('battery_danger_threshold') != '' || $this->getConfiguration('battery_warning_threshold') != '') {
-			$html .= '<i class="icon techno-fingerprint41 pull-right" title="' . __('Seuil manuel défini', __FILE__) . '"></i>';
+			$html .= '<i class="icon techno-fingerprint41 pull-right" title="' . new Trad('Seuil manuel défini', __FILE__) . '"></i>';
 		}
 		if ($batteryTime != 'NA') {
-			$text = __('Pile(s) changée(s) il y a', __FILE__) . ' ';
-			$text .= ($batterySince > 1) ? $batterySince . __('jours', __FILE__) . ' (' . $batteryTime . ')' : $batterySince . __('jour', __FILE__) . ' (' . $batteryTime . ')';
+			$text = new Trad('Pile(s) changée(s) il y a', __FILE__) . ' ';
+			$text .= ($batterySince > 1) ? $batterySince . new Trad('jours', __FILE__) . ' (' . $batteryTime . ')' : $batterySince . new Trad('jour', __FILE__) . ' (' . $batteryTime . ')';
 			$html .= '<i class="icon divers-calendar2" title="' . $text . '"></i><span> (' . $batterySince . 'j)</span>';
 		} else {
-			$html .= '<i class="icon divers-calendar2" title="' . __('Pas de date de changement de pile(s) renseignée', __FILE__) . '"></i>';
+			$html .= '<i class="icon divers-calendar2" title="' . new Trad('Pas de date de changement de pile(s) renseignée', __FILE__) . '"></i>';
 		}
 		$html .= '</span>';
 		if ($this->getConfiguration('battery_type', '') != '') {
-			$html .= '<span class="pull-right" title="' . __('Piles', __FILE__) . '">' . $this->getConfiguration('battery_type', '') . '</span>';
+			$html .= '<span class="pull-right" title="' . new Trad('Piles', __FILE__) . '">' . $this->getConfiguration('battery_type', '') . '</span>';
 		}
 		$html .= '</div>';
 		return $html;
@@ -752,7 +752,7 @@ class eqLogic {
 	public function preToHtml($_version = 'dashboard', $_default = array(), $_noCache = false) {
 		global $JEEDOM_INTERNAL_CONFIG;
 		if ($_version == '') {
-			throw new Exception(__('La version demandée ne peut pas être vide (mobile, dashboard ou scénario)', __FILE__));
+			throw new Exception(new Trad('La version demandée ne peut pas être vide (mobile, dashboard ou scénario)', __FILE__));
 		}
 		if (!$this->hasRight('r') || !$this->getIsEnable()) {
 			return '';
@@ -775,7 +775,7 @@ class eqLogic {
 			'#translate_category#' => $translate_category,
 			'#style#' => '',
 			'#logicalId#' => $this->getLogicalId(),
-			'#object_name#' => (is_object($this->getObject())) ? $this->getObject()->getName() : __('Aucun', __FILE__),
+			'#object_name#' => (is_object($this->getObject())) ? $this->getObject()->getName() : new Trad('Aucun', __FILE__),
 			'#height#' => $this->getDisplay('height', 'auto'),
 			'#width#' => $this->getDisplay('width', 'auto'),
 			'#uid#' => $uid,
@@ -992,7 +992,7 @@ class eqLogic {
 
 	public function save($_direct = false) {
 		if ($this->getName() == '') {
-			throw new Exception(__('Le nom de l\'équipement ne peut pas être vide :', __FILE__) . ' ' . print_r($this, true));
+			throw new Exception(new Trad('Le nom de l\'équipement ne peut pas être vide :', __FILE__) . ' ' . print_r($this, true));
 		}
 		if ($this->getChanged()) {
 			if ($this->getId() != '') {
@@ -1101,9 +1101,9 @@ class eqLogic {
 			$name .= $object->getHumanName($_tag, $_prettify);
 		} else {
 			if ($_tag) {
-				$name .= '<span class="label labelObjectHuman" style="text-shadow : none;">' . __('Aucun', __FILE__) . '</span>';
+				$name .= '<span class="label labelObjectHuman" style="text-shadow : none;">' . new Trad('Aucun', __FILE__) . '</span>';
 			} else {
-				$name .= '[' . __('Aucun', __FILE__) . ']';
+				$name .= '[' . new Trad('Aucun', __FILE__) . ']';
 			}
 		}
 		if ($_prettify) {
@@ -1168,7 +1168,7 @@ class eqLogic {
 			if ($this->getConfiguration('battery_type') != '') {
 				$message .= ' (' . $this->getConfiguration('battery_type') . ')';
 			}
-			$action = '<a href="/' . $this->getLinkToConfiguration() . '">' . __('Equipement', __FILE__) . '</a>';
+			$action = '<a href="/' . $this->getLinkToConfiguration() . '">' . new Trad('Equipement', __FILE__) . '</a>';
 			$logicalId = 'lowBattery' . $this->getId();
 			$this->setStatus('batterydanger', 1);
 			if ($prevStatus == 0) {
@@ -1197,7 +1197,7 @@ class eqLogic {
 			if ($this->getConfiguration('battery_type') != '') {
 				$message .= ' (' . $this->getConfiguration('battery_type') . ')';
 			}
-			$action = '<a href="/' . $this->getLinkToConfiguration() . '">' . __('Equipement', __FILE__) . '</a>';
+			$action = '<a href="/' . $this->getLinkToConfiguration() . '">' . new Trad('Equipement', __FILE__) . '</a>';
 			$logicalId = 'warningBattery' . $this->getId();
 			$this->setStatus('batterywarning', 1);
 			$this->setStatus('batterydanger', 0);
@@ -1211,7 +1211,7 @@ class eqLogic {
 						$cmd = cmd::byId(str_replace('#', '', $id));
 						if (is_object($cmd)) {
 							$cmd->execCmd(array(
-								'title' => __('[' . config::byKey('name', 'core', 'JEEDOM') . ']', __FILE__) . ' ' . $message,
+								'title' => new Trad('[' . config::byKey('name', 'core', 'JEEDOM') . ']', __FILE__) . ' ' . $message,
 								'message' => config::byKey('name', 'core', 'JEEDOM') . ' : ' . $message,
 							));
 						}
@@ -1258,11 +1258,11 @@ class eqLogic {
 	public static function migrateEqlogic($_sourceId, $_targetId, $_mode = 'replace') {
 		$sourceEq = eqLogic::byId($_sourceId);
 		if (!is_object($sourceEq)) {
-			throw new Exception(__('L\'équipement source n\'existe pas', __FILE__));
+			throw new Exception(new Trad('L\'équipement source n\'existe pas', __FILE__));
 		}
 		$targetEq = eqLogic::byId($_targetId);
 		if (!is_object($sourceEq)) {
-			throw new Exception(__('L\'équipement cible n\'existe pas', __FILE__));
+			throw new Exception(new Trad('L\'équipement cible n\'existe pas', __FILE__));
 		}
 
 		$migrateDisplayValues = [
@@ -1354,7 +1354,7 @@ class eqLogic {
 			}
 			return $targetEq;
 		} catch (Exception $e) {
-			throw new Exception(__('Erreur lors de la migration d\'équipement', __FILE__) . ' : ' . log::exception($e));
+			throw new Exception(new Trad('Erreur lors de la migration d\'équipement', __FILE__) . ' : ' . log::exception($e));
 		}
 	}
 
@@ -1584,7 +1584,7 @@ class eqLogic {
 		$_data['node']['eqLogic' . $this->getId()] = array(
 			'id' => 'eqLogic' . $this->getId(),
 			'name' => $this->getName(),
-			'type' => __('Equipement', __FILE__),
+			'type' => new Trad('Equipement', __FILE__),
 			'width' => 60,
 			'height' => 60,
 			'fontweight' => ($_level == 1) ? 'bold' : 'normal',
@@ -1657,7 +1657,7 @@ class eqLogic {
 					if (!cmd::byId(str_replace('#', '', $cmd_id))) {
 						$return[] = array(
 							'detail' => '<a href="/index.php?v=d&m=' . $eqLogic->getEqType_name() . '&p=' . $eqLogic->getEqType_name() . '&id=' . $eqLogic->getId() . '">' . $eqLogic->getHumanName() . '</a>',
-							'help' => __('Action', __FILE__),
+							'help' => new Trad('Action', __FILE__),
 							'who' => '#' . $cmd_id . '#'
 						);
 					}

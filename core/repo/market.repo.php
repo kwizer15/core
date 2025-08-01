@@ -72,41 +72,41 @@ class repo_market {
 		return array(
 			'configuration' => array(
 				'address' => array(
-					'name' => __('Adresse', __FILE__),
+					'name' => new Trad('Adresse', __FILE__),
 					'type' => 'input',
 				),
 				'username' => array(
-					'name' => __('Nom d\'utilisateur', __FILE__),
+					'name' => new Trad('Nom d\'utilisateur', __FILE__),
 					'type' => 'input',
 				),
 				'password' => array(
-					'name' => __('Mot de passe', __FILE__),
+					'name' => new Trad('Mot de passe', __FILE__),
 					'type' => 'password_noshow',
 				),
 				'no_ssl_verify' => array(
-					'name' => __('Pas de validation SSL (non recommandé)', __FILE__),
+					'name' => new Trad('Pas de validation SSL (non recommandé)', __FILE__),
 					'type' => 'checkbox',
 				),
 				'cloud::backup::name' => array(
-					'name' => __('[Backup cloud] Nom du dossier de backup', __FILE__),
+					'name' => new Trad('[Backup cloud] Nom du dossier de backup', __FILE__),
 					'type' => 'input',
 				),
 				'cloud::backup::password' => array(
-					'name' => __('[Backup cloud] Mot de passe', __FILE__),
+					'name' => new Trad('[Backup cloud] Mot de passe', __FILE__),
 					'type' => 'password',
 				),
 				'cloud::backup::password_confirmation' => array(
-					'name' => __('[Backup cloud] Mot de passe (confirmation)', __FILE__),
+					'name' => new Trad('[Backup cloud] Mot de passe (confirmation)', __FILE__),
 					'type' => 'password',
 				),
 				'cloud::monitoring::disable' => array(
-					'name' => __('[Monitoring cloud] Désactiver', __FILE__),
+					'name' => new Trad('[Monitoring cloud] Désactiver', __FILE__),
 					'type' => 'checkbox',
 				)
 			),
 			'parameters_for_add' => array(
 				'version' => array(
-					'name' => __('Version : beta, stable', __FILE__),
+					'name' => new Trad('Version : beta, stable', __FILE__),
 					'type' => 'input',
 				),
 			),
@@ -134,7 +134,7 @@ class repo_market {
 				if (!is_object($repo)) {
 					continue;
 				}
-				log::add('market', 'debug', __('Lancement de l\'installation de', __FILE__) . ' ' . $repo->getLogicalId() . ' ' . __('en version', __FILE__) . ' ' . $plugin['version']);
+				log::add('market', 'debug', new Trad('Lancement de l\'installation de', __FILE__) . ' ' . $repo->getLogicalId() . ' ' . new Trad('en version', __FILE__) . ' ' . $plugin['version']);
 				$update = update::byTypeAndLogicalId($repo->getType(), $repo->getLogicalId());
 				if (!is_object($update)) {
 					$update = new update();
@@ -194,7 +194,7 @@ class repo_market {
 		if (is_object($market)) {
 			$file = $market->install($_update->getConfiguration('version', 'stable'));
 		} else {
-			throw new Exception(__('Objet introuvable sur le market :', __FILE__) . ' ' . $_update->getLogicalId() . '/' . $_update->getType());
+			throw new Exception(new Trad('Objet introuvable sur le market :', __FILE__) . ' ' . $_update->getLogicalId() . '/' . $_update->getType());
 		}
 		return array('path' => $file, 'localVersion' => $market->getDatetime($_update->getConfiguration('version', 'stable')));
 	}
@@ -263,13 +263,13 @@ class repo_market {
 
 	public static function backup_send($_path) {
 		if (!config::byKey('service::backup::enable')) {
-			throw new Exception(__('Erreur d\'envoi du backup au cloud. Avez-vous bien un abonnement au backup cloud ?', __FILE__));
+			throw new Exception(new Trad('Erreur d\'envoi du backup au cloud. Avez-vous bien un abonnement au backup cloud ?', __FILE__));
 		}
 		if (config::byKey('market::cloud::backup::password') == '') {
-			throw new Exception(__('Vous devez obligatoirement avoir un mot de passe pour le backup cloud (allez dans Réglages -> Système -> Configuration puis onglet Mise à jour/Market)', __FILE__));
+			throw new Exception(new Trad('Vous devez obligatoirement avoir un mot de passe pour le backup cloud (allez dans Réglages -> Système -> Configuration puis onglet Mise à jour/Market)', __FILE__));
 		}
 		if (config::byKey('market::cloud::backup::password') != config::byKey('market::cloud::backup::password_confirmation')) {
-			throw new Exception(__('Le mot de passe du backup cloud n\'est pas identique à la confirmation', __FILE__));
+			throw new Exception(new Trad('Le mot de passe du backup cloud n\'est pas identique à la confirmation', __FILE__));
 		}
 		self::backup_clean($_path);
 		self::backup_createFolderIsNotExist();
@@ -322,7 +322,7 @@ class repo_market {
 		if (($total_size / 1024 / 1024) < $limit - (filesize($_path) / 1024 / 1024)) {
 			return;
 		}
-		echo __('Besoin de faire de la place sur le stockage distant', __FILE__) . "\n";
+		echo new Trad('Besoin de faire de la place sur le stockage distant', __FILE__) . "\n";
 		if (!empty($files)) {
 			usort($files, function ($a, $b) {
 				return $a["timestamp"] - $b["timestamp"];
@@ -331,10 +331,10 @@ class repo_market {
 		$nb = 0;
 		while (($total_size / 1024 / 1024) > $limit - (filesize($_path) / 1024 / 1024)) {
 			if (count($files) == 0) {
-				throw new \Exception(__('Pas assez de place et aucun backup à supprimer', __FILE__));
+				throw new \Exception(new Trad('Pas assez de place et aucun backup à supprimer', __FILE__));
 			}
 			$file = array_shift($files);
-			echo __('Supression du backup cloud :', __FILE__) . ' ' . $file['name'] . "\n";
+			echo new Trad('Supression du backup cloud :', __FILE__) . ' ' . $file['name'] . "\n";
 			$request_http = new com_http($file['href'],config::byKey('market::username'),config::byKey('market::password'));
 			$request_http->setCURLOPT(array(
 					CURLOPT_CUSTOMREQUEST => "DELETE"
@@ -343,7 +343,7 @@ class repo_market {
 			$total_size -= $file['size'];
 			$nb++;
 			if ($nb > 100) {
-				throw new \Exception(__('Erreur lors du nettoyage des backups cloud, supression > 100', __FILE__));
+				throw new \Exception(new Trad('Erreur lors du nettoyage des backups cloud, supression > 100', __FILE__));
 			}
 		}
 	}
@@ -383,7 +383,7 @@ class repo_market {
 
 	public static function backup_restore($_backup) {
 		if (config::byKey('market::cloud::backup::password') != config::byKey('market::cloud::backup::password_confirmation')) {
-			throw new Exception(__('Le mot de passe du backup cloud n\'est pas identique à la confirmation', __FILE__));
+			throw new Exception(new Trad('Le mot de passe du backup cloud n\'est pas identique à la confirmation', __FILE__));
 		}
 		$backup_dir = calculPath(config::byKey('backup::path'));
 		if (!file_exists($backup_dir)) {
@@ -445,10 +445,10 @@ class repo_market {
 						$result = json_decode($request_http->exec(60, 1), true);
 					}
 					if ($result == null || $result['state'] != 'ok') {
-						log::add('monitoring_cloud', 'debug', __('Erreur sur le monitoring cloud :', __FILE__) . ' ' . json_encode($result));
+						log::add('monitoring_cloud', 'debug', new Trad('Erreur sur le monitoring cloud :', __FILE__) . ' ' . json_encode($result));
 					}
 				} catch (\Exception $e) {
-					log::add('monitoring_cloud', 'debug', __('Erreur sur le monitoring cloud :', __FILE__) . ' ' . $e->getMessage());
+					log::add('monitoring_cloud', 'debug', new Trad('Erreur sur le monitoring cloud :', __FILE__) . ' ' . $e->getMessage());
 				}
 			}
 		} catch (Exception $e) {
@@ -513,10 +513,10 @@ class repo_market {
 						$return['status'] = 'ok';
 					}
 				} catch (Exception $e) {
-					log::add('market', 'debug', __('Erreur repo_market::getinfo :', __FILE__) . ' ' . $e->getMessage());
+					log::add('market', 'debug', new Trad('Erreur repo_market::getinfo :', __FILE__) . ' ' . $e->getMessage());
 					$return['status'] = 'ok';
 				} catch (Error $e) {
-					log::add('market', 'debug', __('Erreur repo_market::getinfo :', __FILE__) . ' ' . $e->getMessage());
+					log::add('market', 'debug', new Trad('Erreur repo_market::getinfo :', __FILE__) . ' ' . $e->getMessage());
 					$return['status'] = 'ok';
 				}
 				$returns[$logicalId] = $return;
@@ -564,10 +564,10 @@ class repo_market {
 				}
 			}
 		} catch (Exception $e) {
-			log::add('market', 'debug', __('Erreur repo_market::getinfo :', __FILE__) . ' ' . $e->getMessage());
+			log::add('market', 'debug', new Trad('Erreur repo_market::getinfo :', __FILE__) . ' ' . $e->getMessage());
 			$return['status'] = 'ok';
 		} catch (Error $e) {
-			log::add('market', 'debug', __('Erreur repo_market::getinfo :', __FILE__) . ' ' . $e->getMessage());
+			log::add('market', 'debug', new Trad('Erreur repo_market::getinfo :', __FILE__) . ' ' . $e->getMessage());
 			$return['status'] = 'ok';
 		}
 		return $return;
@@ -953,7 +953,7 @@ class repo_market {
 			exec(system::getCmdSudo() . 'chmod 777 -R ' . $tmp);
 		}
 		if (!is_writable($tmp_dir)) {
-			throw new Exception(__('Impossible d\'écrire dans le répertoire :', __FILE__) . ' ' . $tmp . __('. Exécuter la commande suivante en SSH : sudo chmod 777 -R', __FILE__) . ' ' . $tmp_dir);
+			throw new Exception(new Trad('Impossible d\'écrire dans le répertoire :', __FILE__) . ' ' . $tmp . new Trad('. Exécuter la commande suivante en SSH : sudo chmod 777 -R', __FILE__) . ' ' . $tmp_dir);
 		}
 
 		$url = config::byKey('market::address') . "/core/php/downloadFile.php?id=" . $this->getId();
@@ -964,20 +964,20 @@ class repo_market {
 		$url .='&username=' . urlencode(config::byKey('market::username'));
 		$url .='&password=' . self::getPassword();
 		$url .='&password_type=sha1';
-		log::add('update', 'alert', __('Téléchargement de', __FILE__) . ' ' . $this->getLogicalId() . '...');
-		log::add('update', 'alert', __('URL', __FILE__) . ' ' . $url);
+		log::add('update', 'alert', new Trad('Téléchargement de', __FILE__) . ' ' . $this->getLogicalId() . '...');
+		log::add('update', 'alert', new Trad('URL', __FILE__) . ' ' . $url);
 		exec('wget "' . $url . '" -O ' . $tmp . ' >> ' . log::getPathToLog('update') . ' 2>&1');
 		switch ($this->getType()) {
 			case 'plugin':
 				return $tmp;
 				break;
 			default:
-				log::add('update', 'alert', __('Installation des plugin, widget, scénario...', __FILE__));
+				log::add('update', 'alert', new Trad('Installation des plugin, widget, scénario...', __FILE__));
 				$type = $this->getType();
 				if (class_exists($type) && method_exists($type, 'getFromMarket')) {
 					$type::getFromMarket($this, $tmp);
 				}
-				log::add('update', 'alert', __("OK\n", __FILE__));
+				log::add('update', 'alert', new Trad("OK\n", __FILE__));
 				break;
 		}
 		return false;
@@ -1031,24 +1031,24 @@ class repo_market {
 				$tmp = jeedom::getTmpFolder('market') . '/' . $plugin_id . '.zip';
 				if (file_exists($tmp)) {
 					if (!unlink($tmp)) {
-						throw new Exception(__('Impossible de supprimer :', __FILE__) . ' ' . $tmp . __('. Vérifiez les droits', __FILE__));
+						throw new Exception(new Trad('Impossible de supprimer :', __FILE__) . ' ' . $tmp . new Trad('. Vérifiez les droits', __FILE__));
 					}
 				}
 				if (!create_zip($cibDir, $tmp)) {
-					throw new Exception(__('Echec de création de l\'archive zip', __FILE__));
+					throw new Exception(new Trad('Echec de création de l\'archive zip', __FILE__));
 				}
 				rrmdir($cibDir);
 				break;
 			default:
 				$type = $this->getType();
 				if (!class_exists($type) || !method_exists($type, 'shareOnMarket')) {
-					throw new Exception(__('Aucune fonction correspondante à :', __FILE__) . ' ' . $type . '::shareOnMarket');
+					throw new Exception(new Trad('Aucune fonction correspondante à :', __FILE__) . ' ' . $type . '::shareOnMarket');
 				}
 				$tmp = $type::shareOnMarket($this);
 				break;
 		}
 		if (!file_exists($tmp)) {
-			throw new Exception(__('Impossible de trouver le fichier à envoyer :', __FILE__) . ' ' . $tmp);
+			throw new Exception(new Trad('Impossible de trouver le fichier à envoyer :', __FILE__) . ' ' . $tmp);
 		}
 		$file = array(
 			'file' => '@' . realpath($tmp),

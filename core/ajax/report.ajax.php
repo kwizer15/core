@@ -22,7 +22,7 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect('admin')) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
 	}
 
 	ajax::init();
@@ -51,7 +51,7 @@ try {
 			unlink($path);
 		}
 		if (file_exists($path)) {
-			throw new Exception(__('Impossible de supprimer :', __FILE__) . ' ' . $path);
+			throw new Exception(new Trad('Impossible de supprimer :', __FILE__) . ' ' . $path);
 		}
 		ajax::success();
 	}
@@ -64,7 +64,7 @@ try {
 		ajax::success($return);
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

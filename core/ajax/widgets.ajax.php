@@ -22,7 +22,7 @@ try {
   include_file('core', 'authentification', 'php');
   
   if (!isConnect('admin')) {
-    throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+    throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
   }
   
   ajax::init();
@@ -47,7 +47,7 @@ try {
   if (init('action') == 'remove') {
     $widgets = widgets::byId(init('id'));
     if(!is_object($widgets)){
-      throw new Exception(__('Widgets inconnus - Vérifiez l\'id', __FILE__).init('id'));
+      throw new Exception(new Trad('Widgets inconnus - Vérifiez l\'id', __FILE__).init('id'));
     }
     $widgets->remove();
     ajax::success();
@@ -76,7 +76,7 @@ try {
     $widget = widgets::byId(init('id'));
     $usedBy = $widget->getUsedBy();
     if(!is_array($usedBy) || count($usedBy) == 0){
-      ajax::success(array('html' => '<div class="alert alert-warning">'.__('Aucune commande affectée au widget, prévisualisation impossible',__FILE__).'</div>'));
+      ajax::success(array('html' => '<div class="alert alert-warning">'.new Trad('Aucune commande affectée au widget, prévisualisation impossible',__FILE__).'</div>'));
     }
     ajax::success(array('html' =>$usedBy[0]->getEqLogic()->toHtml('dashboard')));
   }
@@ -85,7 +85,7 @@ try {
     ajax::success(widgets::replacement(init('version'),init('replace'),init('by')));
   }
   
-  throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+  throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
   
   /*     * *********Catch exeption*************** */
 } catch (Exception $e) {

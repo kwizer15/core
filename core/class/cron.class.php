@@ -201,10 +201,10 @@ class cron {
 	*/
 	public function preSave() {
 		if ($this->getFunction() == '') {
-			throw new Exception(__('La fonction ne peut pas être vide', __FILE__));
+			throw new Exception(new Trad('La fonction ne peut pas être vide', __FILE__));
 		}
 		if ($this->getSchedule() == '') {
-			throw new Exception(__('La programmation ne peut pas être vide :', __FILE__) . ' ' . print_r($this, true));
+			throw new Exception(new Trad('La programmation ne peut pas être vide :', __FILE__) . ' ' . print_r($this, true));
 		}
 		if ($this->getOption() == '' || count($this->getOption()) == 0) {
 			$cron = cron::byClassAndFunction($this->getClass(), $this->getFunction());
@@ -266,7 +266,7 @@ class cron {
 				if (!$this->running()) {
 					system::php($cmd . ' >> ' . log::getPathToLog('cron_execution') . ' 2>&1 &');
 				} else {
-					throw new Exception(__('Impossible d\'exécuter la tâche car elle est déjà en cours d\'exécution (', __FILE__) . ' : ' . $cmd);
+					throw new Exception(new Trad('Impossible d\'exécuter la tâche car elle est déjà en cours d\'exécution (', __FILE__) . ' : ' . $cmd);
 				}
 			}
 		}
@@ -319,7 +319,7 @@ class cron {
 			$this->setState('stop');
 			$this->setPID();
 		} else {
-			log::add('cron', 'info', __('Arrêt de', __FILE__) . ' ' . $this->getClass() . '::' . $this->getFunction() . '(), PID : ' . $this->getPID());
+			log::add('cron', 'info', new Trad('Arrêt de', __FILE__) . ' ' . $this->getClass() . '::' . $this->getFunction() . '(), PID : ' . $this->getPID());
 			if ($this->getPID() > 0) {
 				system::kill($this->getPID());
 				$retry = 0;
@@ -345,7 +345,7 @@ class cron {
 				if ($this->running()) {
 					$this->setState('error');
 					$this->setPID();
-					throw new Exception($this->getClass() . '::' . $this->getFunction() . __('() : Impossible d\'arrêter la tâche', __FILE__));
+					throw new Exception($this->getClass() . '::' . $this->getFunction() . new Trad('() : Impossible d\'arrêter la tâche', __FILE__));
 				}
 			} else {
 				$this->setState('stop');

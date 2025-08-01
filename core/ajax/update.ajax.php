@@ -21,7 +21,7 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
 	}
 
 	ajax::init(array('preUploadFile'));
@@ -31,7 +31,7 @@ try {
 	}
 
 	if (!isConnect('admin')) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
 	}
 
 	if (init('action') == 'all') {
@@ -73,15 +73,15 @@ try {
 		log::clear('update');
 		$update = update::byId(init('id'));
 		if (!is_object($update)) {
-			throw new Exception(__('Aucune correspondance pour l\'ID :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Aucune correspondance pour l\'ID :', __FILE__) . ' ' . init('id'));
 		}
 		try {
 			if ($update->getType() != 'core') {
-				log::add('update', 'alert', __("[START UPDATE]", __FILE__));
+				log::add('update', 'alert', new Trad("[START UPDATE]", __FILE__));
 			}
 			$update->doUpdate();
 			if ($update->getType() != 'core') {
-				log::add('update', 'alert', __("Launch cron dependancy plugins", __FILE__));
+				log::add('update', 'alert', new Trad("Launch cron dependancy plugins", __FILE__));
 				try {
 					$cron = cron::byClassAndFunction('plugin', 'checkDeamon');
 					if (is_object($cron)) {
@@ -89,12 +89,12 @@ try {
 					}
 				} catch (Exception $e) {
 				}
-				log::add('update', 'alert', __("[END UPDATE SUCCESS]", __FILE__));
+				log::add('update', 'alert', new Trad("[END UPDATE SUCCESS]", __FILE__));
 			}
 		} catch (Exception $e) {
 			if ($update->getType() != 'core') {
 				log::add('update', 'alert', $e->getMessage());
-				log::add('update', 'alert', __("[END UPDATE ERROR]", __FILE__));
+				log::add('update', 'alert', new Trad("[END UPDATE ERROR]", __FILE__));
 			}
 		}
 		ajax::success();
@@ -108,7 +108,7 @@ try {
 			$update = update::byLogicalId(init('id'));
 		}
 		if (!is_object($update)) {
-			throw new Exception(__('Aucune correspondance pour l\'ID :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Aucune correspondance pour l\'ID :', __FILE__) . ' ' . init('id'));
 		}
 		$update->deleteObjet();
 		ajax::success();
@@ -121,7 +121,7 @@ try {
 			$update = update::byLogicalId(init('id'));
 		}
 		if (!is_object($update)) {
-			throw new Exception(__('Aucune correspondance pour l\'ID :', __FILE__) . ' ' . init('id'));
+			throw new Exception(new Trad('Aucune correspondance pour l\'ID :', __FILE__) . ' ' . init('id'));
 		}
 		$update->checkUpdate();
 		ajax::success();
@@ -173,25 +173,25 @@ try {
 		unautorizedInDemo();
 		$uploaddir = '/tmp';
 		if (!file_exists($uploaddir)) {
-			throw new Exception(__('Répertoire de téléversement non trouvé :', __FILE__) . ' ' . $uploaddir);
+			throw new Exception(new Trad('Répertoire de téléversement non trouvé :', __FILE__) . ' ' . $uploaddir);
 		}
 		if (!isset($_FILES['file'])) {
-			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
+			throw new Exception(new Trad('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
 		if (filesize($_FILES['file']['tmp_name']) > 100000000) {
-			throw new Exception(__('Le fichier est trop gros (maximum 100Mo)', __FILE__));
+			throw new Exception(new Trad('Le fichier est trop gros (maximum 100Mo)', __FILE__));
 		}
 		$filename = str_replace(array(' ', '(', ')'), '', $_FILES['file']['name']);
 		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $filename)) {
-			throw new Exception(__('Impossible de déplacer le fichier temporaire', __FILE__));
+			throw new Exception(new Trad('Impossible de déplacer le fichier temporaire', __FILE__));
 		}
 		if (!file_exists($uploaddir . '/' . $filename)) {
-			throw new Exception(__('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
+			throw new Exception(new Trad('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
 		}
 		ajax::success($uploaddir . '/' . $filename);
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

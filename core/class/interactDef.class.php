@@ -394,7 +394,7 @@ class interactDef {
 
 	public function save() {
 		if ($this->getQuery() == '') {
-			throw new Exception(__('La commande (demande) ne peut pas être vide', __FILE__));
+			throw new Exception(new Trad('La commande (demande) ne peut pas être vide', __FILE__));
 		}
 		DB::save($this);
 		return true;
@@ -615,7 +615,7 @@ class interactDef {
 		$icon = findCodeIcon('fa-comments-o');
 		$_data['node']['interactDef' . $this->getId()] = array(
 			'id' => 'interactDef' . $this->getId(),
-			'type' => __('Intéraction', __FILE__),
+			'type' => new Trad('Intéraction', __FILE__),
 			'name' => substr($this->getHumanName(), 0, 20),
 			'icon' => $icon['icon'],
 			'fontfamily' => $icon['fontfamily'],

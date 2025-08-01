@@ -38,14 +38,14 @@ try {
 
 		$return['language'] = config::byKey('language', 'core', 'fr_FR');
 		$return['userProfils'] = $_SESSION['user']->getOptions();
-		$return['userProfils']['defaultMobileViewName'] = __('Vue', __FILE__);
+		$return['userProfils']['defaultMobileViewName'] = new Trad('Vue', __FILE__);
 		if ($_SESSION['user']->getOptions('defaultDesktopView') != '') {
 			$view = view::byId($_SESSION['user']->getOptions('defaultDesktopView'));
 			if (is_object($view)) {
 				$return['userProfils']['defaultMobileViewName'] = $view->getName();
 			}
 		}
-		$return['userProfils']['defaultMobileObjectName'] = __('Objet', __FILE__);
+		$return['userProfils']['defaultMobileObjectName'] = new Trad('Objet', __FILE__);
 		if ($_SESSION['user']->getOptions('defaultDashboardObject') != '') {
 			$object = jeeObject::byId($_SESSION['user']->getOptions('defaultDashboardObject'));
 			if (is_object($object)) {
@@ -71,7 +71,7 @@ try {
 	}
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
 	}
 
 	if (init('action') == 'version') {
@@ -117,13 +117,13 @@ try {
 			$version = substr(jeedom::version(), 0, 3);
 			ajax::success(config::byKey('doc::base_url', 'core') . '/' . config::byKey('language', 'core', 'fr_FR') . '/core/' . $version . '/' . secureXSS($page) . '?theme=' . $theme);
 		}
-		throw new Exception(__('Aucune documentation trouvée', __FILE__), -1234);
+		throw new Exception(new Trad('Aucune documentation trouvée', __FILE__), -1234);
 	}
 
 	if (init('action') == 'addWarnme') {
 		$cmd = cmd::byId(init('cmd_id'));
 		if (!is_object($cmd)) {
-			throw new Exception(__('Commande non trouvée :', __FILE__) . ' ' . init('cmd_id'));
+			throw new Exception(new Trad('Commande non trouvée :', __FILE__) . ' ' . init('cmd_id'));
 		}
 		$options = array(
 			'type' => 'cmd',
@@ -142,13 +142,13 @@ try {
 			$listener->save(true);
 			ajax::success();
 		} else {
-			throw new Exception(__('Aucune Commande de Notification :', __FILE__) . ' ' . init('cmd_id'));
+			throw new Exception(new Trad('Aucune Commande de Notification :', __FILE__) . ' ' . init('cmd_id'));
 			ajax::error();
 		}
 	}
 
 	if (!isConnect('admin')) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__), -1234);
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__), -1234);
 	}
 
 	if (init('action') == 'ssh') {
@@ -404,23 +404,23 @@ try {
 			mkdir($uploaddir);
 		}
 		if (!file_exists($uploaddir)) {
-			throw new Exception(__('Répertoire de téléversement non trouvé :', __FILE__) . ' ' . $uploaddir);
+			throw new Exception(new Trad('Répertoire de téléversement non trouvé :', __FILE__) . ' ' . $uploaddir);
 		}
 		if (!isset($_FILES['file'])) {
-			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
+			throw new Exception(new Trad('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
 		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
 		if (!in_array($extension, array('.gz'))) {
-			throw new Exception(__('Extension du fichier non valide (autorisé .tar.gz) :', __FILE__) . ' ' . $extension);
+			throw new Exception(new Trad('Extension du fichier non valide (autorisé .tar.gz) :', __FILE__) . ' ' . $extension);
 		}
 		if (filesize($_FILES['file']['tmp_name']) > 1000000000) {
-			throw new Exception(__('Le fichier est trop gros (maximum 1Go)', __FILE__));
+			throw new Exception(new Trad('Le fichier est trop gros (maximum 1Go)', __FILE__));
 		}
 		if (!move_uploaded_file($_FILES['file']['tmp_name'], $uploaddir . '/' . $_FILES['file']['name'])) {
-			throw new Exception(__('Impossible de déplacer le fichier temporaire', __FILE__));
+			throw new Exception(new Trad('Impossible de déplacer le fichier temporaire', __FILE__));
 		}
 		if (!file_exists($uploaddir . '/' . $_FILES['file']['name'])) {
-			throw new Exception(__('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
+			throw new Exception(new Trad('Impossible de téléverser le fichier (limite du serveur web ?)', __FILE__));
 		}
 		ajax::success();
 	}
@@ -464,107 +464,107 @@ try {
 		}
 		$object = $type::byId(init('filter_id'));
 		if (!is_object($object)) {
-			throw new Exception(__('Type :', __FILE__) . init('filter_type') . ' ' . __('avec id :', __FILE__) . ' ' . init('filter_id') . ' ' . __('inconnu', __FILE__));
+			throw new Exception(new Trad('Type :', __FILE__) . init('filter_type') . ' ' . new Trad('avec id :', __FILE__) . ' ' . init('filter_id') . ' ' . new Trad('inconnu', __FILE__));
 		}
 		ajax::success($object->getLinkData());
 	}
 
 	if (init('action') == 'getFileFolder') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$pathfile = calculPath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$rootPath = realpath(__DIR__ . '/../../');
 		if (strpos($pathfile, $rootPath) === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(ls($pathfile, '*', false, array(init('type'))));
 	}
 
 	if (init('action') == 'getFileContent') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$pathinfo = pathinfo(init('path'));
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini', 'css', 'py', 'css', 'html', 'yaml', 'config', 'conf'))) {
-			throw new Exception(__('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
+			throw new Exception(new Trad('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
 		}
 		$pathfile = calculPath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$rootPath = realpath(__DIR__ . '/../../');
 		if (strpos($pathfile, $rootPath) === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(file_get_contents($pathfile));
 	}
 
 	if (init('action') == 'setFileContent') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$pathinfo = pathinfo(init('path'));
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini', 'css', 'py', 'css', 'html', 'yaml', 'config', 'conf'))) {
-			throw new Exception(__('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
+			throw new Exception(new Trad('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
 		}
 		$pathfile = calculPath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$rootPath = realpath(__DIR__ . '/../../');
 		if (strpos($pathfile, $rootPath) === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(file_put_contents($pathfile, init('content')));
 	}
 
 	if (init('action') == 'deleteFile') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$pathinfo = pathinfo(init('path'));
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini', 'css', 'py', 'css', 'html', 'yaml', 'config', 'conf'))) {
-			throw new Exception(__('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
+			throw new Exception(new Trad('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
 		}
 		$pathfile = calculPath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$rootPath = realpath(__DIR__ . '/../../');
 		if (strpos($pathfile, $rootPath) === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(unlink($pathfile));
 	}
 
 	if (init('action') == 'createFile') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$pathinfo = pathinfo(init('name'));
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini', 'css', 'py', 'css', 'html', 'yaml', 'config', 'conf'))) {
-			throw new Exception(__('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
+			throw new Exception(new Trad('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
 		}
 		$pathfile = calculPath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$rootPath = realpath(__DIR__ . '/../../');
 		if (strpos($pathfile, $rootPath) === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		touch($pathfile . init('name'));
 		if (!file_exists($pathfile . init('name'))) {
-			throw new Exception(__('Impossible de créer le fichier, vérifiez les droits', __FILE__));
+			throw new Exception(new Trad('Impossible de créer le fichier, vérifiez les droits', __FILE__));
 		}
 		ajax::success();
 	}
@@ -573,11 +573,11 @@ try {
 		unautorizedInDemo();
 		$pathfile = calculPath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$rootPath = realpath(__DIR__ . '/../../');
 		if (strpos($pathfile, $rootPath) === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		mkdir($pathfile . '/' . init('name'));
 		ajax::success();
@@ -587,11 +587,11 @@ try {
 		unautorizedInDemo();
 		$pathfile = calculPath(init('src'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$rootPath = realpath(__DIR__ . '/../../');
 		if (strpos($pathfile, $rootPath) === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(rename($pathfile, init('dst')));
 	}
@@ -600,11 +600,11 @@ try {
 		unautorizedInDemo();
 		$pathfile = calculPath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$rootPath = realpath(__DIR__ . '/../../');
 		if (strpos($pathfile, $rootPath) === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(rrmdir($pathfile));
 	}
@@ -619,18 +619,18 @@ try {
 
 	if (init('action') == 'uploadImageIcon') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		if (!isset($_FILES['file'])) {
-			throw new Exception(__('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
+			throw new Exception(new Trad('Aucun fichier trouvé. Vérifiez le paramètre PHP (post size limit)', __FILE__));
 		}
 		$extension = strtolower(strrchr($_FILES['file']['name'], '.'));
 		if (!in_array($extension, array('.jpg', '.jpeg', '.png', '.gif', '.svg', '.webp'))) {
-			throw new Exception(__('Extension du fichier non valide (autorisé .jpg .png .gif .jpeg .svg .webp) :', __FILE__) . ' ' . $extension);
+			throw new Exception(new Trad('Extension du fichier non valide (autorisé .jpg .png .gif .jpeg .svg .webp) :', __FILE__) . ' ' . $extension);
 		}
 		if (filesize($_FILES['file']['tmp_name']) > 5000000) {
-			throw new Exception(__('Le fichier est trop gros (maximum 5Mo)', __FILE__));
+			throw new Exception(new Trad('Le fichier est trop gros (maximum 5Mo)', __FILE__));
 		}
 		$path = init('filepath');
 		if (!file_exists(__DIR__ . '/../../' . $path)) {
@@ -640,23 +640,23 @@ try {
 		$filepath = __DIR__ . '/../../' . $path . $filename;
 		file_put_contents($filepath, file_get_contents($_FILES['file']['tmp_name']));
 		if (!file_exists($filepath)) {
-			throw new \Exception(__('Impossible de sauvegarder l\'image', __FILE__));
+			throw new \Exception(new Trad('Impossible de sauvegarder l\'image', __FILE__));
 		}
 		ajax::success(array('filepath' => $filepath));
 	}
 
 	if (init('action') == 'removeImageIcon') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
 		$filepath = __DIR__ . '/../../' . init('filepath');
 		if (!file_exists($filepath)) {
-			throw new Exception(__('Fichier introuvable, impossible de le supprimer', __FILE__));
+			throw new Exception(new Trad('Fichier introuvable, impossible de le supprimer', __FILE__));
 		}
 		unlink($filepath);
 		if (file_exists($filepath)) {
-			throw new Exception(__('Impossible de supprimer le fichier', __FILE__));
+			throw new Exception(new Trad('Impossible de supprimer le fichier', __FILE__));
 		}
 		ajax::success();
 	}
@@ -690,7 +690,7 @@ try {
 		ajax::success(jeedom::massReplace(init('options', array()), init('eqlogics', array()), init('cmds', array())));
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

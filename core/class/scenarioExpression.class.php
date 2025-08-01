@@ -132,26 +132,26 @@ class scenarioExpression {
 				$name = $scenario->getName();
 			}
 			$action = $_action['options']['action'];
-			$return .= '<b>' . __('Scénario', __FILE__) . '</b> : ' . $name . ' <i class="fas fa-arrow-right"></i> ' . $action;
+			$return .= '<b>' . new Trad('Scénario', __FILE__) . '</b> : ' . $name . ' <i class="fas fa-arrow-right"></i> ' . $action;
 		} elseif ($_action['cmd'] == 'variable') {
 			$name = $_action['options']['name'];
 			$value = $_action['options']['value'];
-			$return .= '<b>' . __('Variable', __FILE__) . '</b> : ' . $name . ' <i class="fas fa-arrow-right"></i> ' . $value;
+			$return .= '<b>' . new Trad('Variable', __FILE__) . '</b> : ' . $name . ' <i class="fas fa-arrow-right"></i> ' . $value;
 		} elseif ($_action['cmd'] == 'equipement') {
 			$name = eqLogic::toHumanReadable($_action['options']['eqLogic']);
 			$action = $_action['options']['action'];
 			switch ($_action['options']['action']) {
 				case 'activate':
-					$action = __('Activation de', __FILE__);
+					$action = new Trad('Activation de', __FILE__);
 					break;
 				case 'deactivate':
-					$action = __('Désactivation de', __FILE__);
+					$action = new Trad('Désactivation de', __FILE__);
 					break;
 				case 'hide':
-					$action = __('Masquage de', __FILE__);
+					$action = new Trad('Masquage de', __FILE__);
 					break;
 				case 'show':
-					$action = __('Affichage de', __FILE__);
+					$action = new Trad('Affichage de', __FILE__);
 					break;
 			}
 			$return .= $action . ' : ' . $name;
@@ -162,7 +162,7 @@ class scenarioExpression {
 			if (is_object($object)) {
 				$objectName = $object->getHumanName(true, true); //$object->getDisplay('icon').' '.$object->getName();
 			} else {
-				$objectName = '<span class="label labelObjectHuman">' . __('Aucun', __FILE__) . '</span>';
+				$objectName = '<span class="label labelObjectHuman">' . new Trad('Aucun', __FILE__) . '</span>';
 			}
 			$return .= $objectName . ' ' . $eqLogic->getName() . ' <i class="fas fa-arrow-right"></i> ' . $cmd->getName();
 		} elseif ($_action['cmd'] != '') {
@@ -1130,11 +1130,11 @@ class scenarioExpression {
 			case 'object':
 				$object = $cmd->getEqLogic()->getObject();
 				if (!is_object($object)) {
-					return __('Aucun', __FILE__);
+					return new Trad('Aucun', __FILE__);
 				}
 				return $object->getName();
 		}
-		return __('Type inconnu', __FILE__);
+		return new Trad('Type inconnu', __FILE__);
 	}
 
 	public static function getRequestTags($_expression) {
@@ -1390,7 +1390,7 @@ class scenarioExpression {
 			cache::set($key, array('scenarioExpression' => $this, 'scenario' => $scenario), 60);
 			$cmd = __DIR__ . '/../php/jeeScenarioExpression.php';
 			$cmd .= ' key=' . $key;
-			$this->setLog($scenario, __('Execution du lancement en arriere plan :', __FILE__) . ' ' . $key);
+			$this->setLog($scenario, new Trad('Execution du lancement en arriere plan :', __FILE__) . ' ' . $key);
 			system::php($cmd . ' >> /dev/null 2>&1 &');
 			return;
 		}
@@ -1399,7 +1399,7 @@ class scenarioExpression {
 			if ($this->getType() == 'element') {
 				$element = scenarioElement::byId($this->getExpression());
 				if (is_object($element)) {
-					$this->setLog($scenario, __('Exécution d\'un bloc élément :', __FILE__) . ' ' . $this->getExpression());
+					$this->setLog($scenario, new Trad('Exécution d\'un bloc élément :', __FILE__) . ' ' . $this->getExpression());
 					return $element->execute($scenario);
 				}
 				return;
@@ -1422,7 +1422,7 @@ class scenarioExpression {
 				if ($this->getExpression() == 'icon') {
 					if ($scenario !== null) {
 						$options = $this->getOptions();
-						$this->setLog($scenario, __('Changement de l\'icone du scénario :', __FILE__) . ' ' . $options['icon']);
+						$this->setLog($scenario, new Trad('Changement de l\'icone du scénario :', __FILE__) . ' ' . $options['icon']);
 						$scenario->setDisplay('icon', $options['icon']);
 						$scenario->save();
 					}
@@ -1442,13 +1442,13 @@ class scenarioExpression {
 						$expression = self::setTags($options['condition'], $scenario, true);
 						$result = evaluate($expression);
 						if ($occurence > $limit) {
-							$this->setLog($scenario, __('[Wait] Condition valide par dépassement de temps :', __FILE__) . ' ' . $expression . ' => ' . $result);
+							$this->setLog($scenario, new Trad('[Wait] Condition valide par dépassement de temps :', __FILE__) . ' ' . $expression . ' => ' . $result);
 							return;
 						}
 						$occurence++;
 						sleep(1);
 					}
-					$this->setLog($scenario, __('[Wait] Condition valide :', __FILE__) . ' ' . $expression . ' => ' . $result);
+					$this->setLog($scenario, new Trad('[Wait] Condition valide :', __FILE__) . ' ' . $expression . ' => ' . $result);
 					return;
 				} elseif ($this->getExpression() == 'sleep') {
 					if (isset($options['duration'])) {
@@ -1458,7 +1458,7 @@ class scenarioExpression {
 						} catch (Error $e) {
 						}
 						if ((is_float($options['duration']) || is_int($options['duration'])) && $options['duration'] > 0) {
-							$this->setLog($scenario, __('Pause de', __FILE__) . ' ' . $options['duration'] . ' ' . __('seconde(s)', __FILE__));
+							$this->setLog($scenario, new Trad('Pause de', __FILE__) . ' ' . $options['duration'] . ' ' . new Trad('seconde(s)', __FILE__));
 							if ($options['duration'] < 1) {
 								usleep($options['duration'] * 1000000);
 								return;
@@ -1471,7 +1471,7 @@ class scenarioExpression {
 					return;
 				} elseif ($this->getExpression() == 'stop') {
 					if ($scenario !== null) {
-						$this->setLog($scenario, __('Action stop', __FILE__));
+						$this->setLog($scenario, new Trad('Action stop', __FILE__));
 						$scenario->setDo(false);
 						return;
 					}
@@ -1487,7 +1487,7 @@ class scenarioExpression {
 						throw new Exception($GLOBALS['JEEDOM_SCLOG_TEXT']['unfoundCmd']['txt'] . $options['cmd']);
 					}
 					$cmd->event(jeedom::evaluateExpression($options['value']));
-					$this->setLog($scenario, $GLOBALS['JEEDOM_SCLOG_TEXT']['event']['txt'] . $cmd->getHumanName() . ' ' . __('à', __FILE__) . ' ' . $options['value']);
+					$this->setLog($scenario, $GLOBALS['JEEDOM_SCLOG_TEXT']['event']['txt'] . $cmd->getHumanName() . ' ' . new Trad('à', __FILE__) . ' ' . $options['value']);
 					return;
 				} elseif ($this->getExpression() == 'message') {
 					$source = 'scenario';
@@ -1497,15 +1497,15 @@ class scenarioExpression {
 						$source = 'Scenario ' . $scenario->getHumanName();
 					}
 					message::add($source, $options['message']);
-					$this->setLog($scenario, __('Ajout du message suivant dans le centre de message :', __FILE__) . ' ' . $options['message']);
+					$this->setLog($scenario, new Trad('Ajout du message suivant dans le centre de message :', __FILE__) . ' ' . $options['message']);
 					return;
 				} elseif ($this->getExpression() == 'alert') {
 					event::add('jeedom::alert', $options);
-					$this->setLog($scenario, __('Ajout de l\'alerte :', __FILE__) . ' ' . $options['message']);
+					$this->setLog($scenario, new Trad('Ajout de l\'alerte :', __FILE__) . ' ' . $options['message']);
 					return;
 				} elseif ($this->getExpression() == 'popup') {
 					event::add('jeedom::alertPopup', $options['message']);
-					$this->setLog($scenario, __('Affichage du popup :', __FILE__) . ' ' . $options['message']);
+					$this->setLog($scenario, new Trad('Affichage du popup :', __FILE__) . ' ' . $options['message']);
 					return;
 				} elseif ($this->getExpression() == 'setColoredIcon') {
 					config::save('interface::advance::coloredIcons', $options['state']);
@@ -1517,33 +1517,33 @@ class scenarioExpression {
 					}
 					switch ($this->getOptions('action')) {
 						case 'show':
-							$this->setLog($scenario, __('Equipement visible :', __FILE__) . ' ' . $eqLogic->getHumanName());
+							$this->setLog($scenario, new Trad('Equipement visible :', __FILE__) . ' ' . $eqLogic->getHumanName());
 							$eqLogic->setIsVisible(1);
 							$eqLogic->save();
 							break;
 						case 'hide':
-							$this->setLog($scenario, __('Equipement masqué :', __FILE__) . ' ' . $eqLogic->getHumanName());
+							$this->setLog($scenario, new Trad('Equipement masqué :', __FILE__) . ' ' . $eqLogic->getHumanName());
 							$eqLogic->setIsVisible(0);
 							$eqLogic->save();
 							break;
 						case 'deactivate':
-							$this->setLog($scenario, __('Equipement désactivé :', __FILE__) . ' ' . $eqLogic->getHumanName());
+							$this->setLog($scenario, new Trad('Equipement désactivé :', __FILE__) . ' ' . $eqLogic->getHumanName());
 							$eqLogic->setIsEnable(0);
 							$eqLogic->save();
 							break;
 						case 'activate':
-							$this->setLog($scenario, __('Equipement activé :', __FILE__) . ' ' . $eqLogic->getHumanName());
+							$this->setLog($scenario, new Trad('Equipement activé :', __FILE__) . ' ' . $eqLogic->getHumanName());
 							$eqLogic->setIsEnable(1);
 							$eqLogic->save();
 							break;
 					}
 					return;
 				} elseif ($this->getExpression() == 'gotodesign') {
-					$this->setLog($scenario, __('Changement design :', __FILE__) . ' ' . $options['plan_id']);
+					$this->setLog($scenario, new Trad('Changement design :', __FILE__) . ' ' . $options['plan_id']);
 					event::add('jeedom::gotoplan', $options['plan_id']);
 					return;
 				} elseif ($this->getExpression() == 'changeTheme') {
-					$this->setLog($scenario, __('Changement de thème :', __FILE__) . ' ' . $options['theme']);
+					$this->setLog($scenario, new Trad('Changement de thème :', __FILE__) . ' ' . $options['theme']);
 					event::add('changeTheme', $options['theme']);
 					return;
 				} elseif ($this->getExpression() == 'scenario') {
@@ -1569,7 +1569,7 @@ class scenarioExpression {
 							if (is_array($this->getOptions('tags'))) {
 								$actionScenario->setTags($this->getOptions('tags'));
 							}
-							$this->setLog($scenario, $GLOBALS['JEEDOM_SCLOG_TEXT']['launchScenario']['txt'] . $actionScenario->getName() . ' ' . __('options :', __FILE__) . ' ' . json_encode($actionScenario->getTags()));
+							$this->setLog($scenario, $GLOBALS['JEEDOM_SCLOG_TEXT']['launchScenario']['txt'] . $actionScenario->getName() . ' ' . new Trad('options :', __FILE__) . ' ' . json_encode($actionScenario->getTags()));
 							if ($scenario !== null) {
 								$actionScenario->addTag('trigger','scenario');
 								$actionScenario->addTag('trigger_message',$GLOBALS['JEEDOM_SCLOG_TEXT']['startByScenario']['txt'] . $scenario->getHumanName());
@@ -1595,7 +1595,7 @@ class scenarioExpression {
 							if (is_array($this->getOptions('tags'))) {
 								$actionScenario->setTags($this->getOptions('tags'));
 							}
-							$this->setLog($scenario, $GLOBALS['JEEDOM_SCLOG_TEXT']['launchScenario']['txt'] . $actionScenario->getName() . ' ' . __('options :', __FILE__) . ' ' . json_encode($actionScenario->getTags()));
+							$this->setLog($scenario, $GLOBALS['JEEDOM_SCLOG_TEXT']['launchScenario']['txt'] . $actionScenario->getName() . ' ' . new Trad('options :', __FILE__) . ' ' . json_encode($actionScenario->getTags()));
 							if ($scenario !== null) {
 								$actionScenario->addTag('trigger','scenario');
 								$actionScenario->addTag('trigger_message',$GLOBALS['JEEDOM_SCLOG_TEXT']['startByScenario']['txt'] . $scenario->getHumanName());
@@ -1609,22 +1609,22 @@ class scenarioExpression {
 							}
 							break;
 						case 'stop':
-							$this->setLog($scenario, __('Arrêt forcé du scénario :', __FILE__) . ' ' . $actionScenario->getName());
+							$this->setLog($scenario, new Trad('Arrêt forcé du scénario :', __FILE__) . ' ' . $actionScenario->getName());
 							$actionScenario->stop();
 							break;
 						case 'deactivate':
-							$this->setLog($scenario, __('Désactivation du scénario :', __FILE__) . ' ' . $actionScenario->getName());
+							$this->setLog($scenario, new Trad('Désactivation du scénario :', __FILE__) . ' ' . $actionScenario->getName());
 							$actionScenario->setIsActive(0);
 							$actionScenario->save();
 							break;
 						case 'activate':
-							$this->setLog($scenario, __('Activation du scénario :', __FILE__) . ' ' . $actionScenario->getName());
+							$this->setLog($scenario, new Trad('Activation du scénario :', __FILE__) . ' ' . $actionScenario->getName());
 							$actionScenario->setLastLaunch(date('Y-m-d H:i:s'));
 							$actionScenario->setIsActive(1);
 							$actionScenario->save();
 							break;
 						case 'resetRepeatIfStatus':
-							$this->setLog($scenario, __('Remise à zéro des statuts des SI du scénario :', __FILE__) . ' ' . $actionScenario->getName());
+							$this->setLog($scenario, new Trad('Remise à zéro des statuts des SI du scénario :', __FILE__) . ' ' . $actionScenario->getName());
 							$actionScenario->resetRepeatIfStatus();
 							break;
 					}
@@ -1640,7 +1640,7 @@ class scenarioExpression {
 					} catch (Error $ex) {
 						$result = $options['value'];
 					}
-					$this->setLog($scenario, __('Affectation de la variable', __FILE__) . ' ' . $this->getOptions('name') . ' => ' . $result . ' (' . $options['value'] . ')');
+					$this->setLog($scenario, new Trad('Affectation de la variable', __FILE__) . ' ' . $this->getOptions('name') . ' => ' . $result . ' (' . $options['value'] . ')');
 					$dataStore = new dataStore();
 					$dataStore->setKey($this->getOptions('name'));
 					$dataStore->setValue($result);
@@ -1654,7 +1654,7 @@ class scenarioExpression {
 						foreach ($cmds as $cmd) {
 							if ($cmd->getType() == 'info') {
 								$cmd->event(jeedom::evaluateExpression($options['value']));
-								$this->setLog($scenario, $GLOBALS['JEEDOM_SCLOG_TEXT']['event']['txt'] . $cmd->getHumanName() . ' ' . __('à', __FILE__) . ' ' . $options['value']);
+								$this->setLog($scenario, $GLOBALS['JEEDOM_SCLOG_TEXT']['event']['txt'] . $cmd->getHumanName() . ' ' . new Trad('à', __FILE__) . ' ' . $options['value']);
 							} else if ($cmd->getType() == 'action' && $cmd->getEqLogic()->getIsEnable() == 1) {
 								if ($cmd->getSubtype() == 'slider') {
 									$options['slider'] = evaluate($options['value']);
@@ -1662,7 +1662,7 @@ class scenarioExpression {
 								$cmd->execCmd($options);
 								$log = $GLOBALS['JEEDOM_SCLOG_TEXT']['execCmd']['txt'] . $cmd->getHumanName();
 								if ($options['value'] != '') {
-									$log .= ' ' . __('à', __FILE__) . ' ' . $options['value'];
+									$log .= ' ' . new Trad('à', __FILE__) . ' ' . $options['value'];
 								}
 								$this->setLog($scenario, $log);
 							}
@@ -1675,7 +1675,7 @@ class scenarioExpression {
 					}
 				} elseif ($this->getExpression() == 'delete_variable') {
 					$scenario->removeData($options['name']);
-					$this->setLog($scenario, __('Suppression de la variable', __FILE__) . ' ' . $options['name']);
+					$this->setLog($scenario, new Trad('Suppression de la variable', __FILE__) . ' ' . $options['name']);
 					return;
 				} elseif ($this->getExpression() == 'ask') {
 					$dataStore = new dataStore();
@@ -1705,7 +1705,7 @@ class scenarioExpression {
 					if (!is_object($cmd)) {
 						throw new Exception($GLOBALS['JEEDOM_SCLOG_TEXT']['unfoundCmdCheckId']['txt'] . $this->getOptions('cmd'));
 					}
-					$this->setLog($scenario, __('Demande', __FILE__) . ' ' . json_encode($options_cmd));
+					$this->setLog($scenario, new Trad('Demande', __FILE__) . ' ' . json_encode($options_cmd));
 					$cmd->setCache('ask::variable', $options['variable']);
 					$cmd->setCache('ask::endtime', strtotime('now') + $limit);
 					$cmd->setCache('ask::answer', explode(';', $options['answer']));
@@ -1727,35 +1727,35 @@ class scenarioExpression {
 						sleep(1);
 					}
 					if ($value == '') {
-						$value = __('Aucune réponse', __FILE__);
+						$value = new Trad('Aucune réponse', __FILE__);
 						$cmd->setCache('ask::variable', 'none');
 						$dataStore = dataStore::byTypeLinkIdKey('scenario', -1, $options['variable']);
 						$dataStore->setValue($value);
 						$dataStore->save();
 					}
 					event::add('scenario::ask', array('scenario_id' => $scenario->getId(), 'variable' => $options['variable'], 'value' => $value));
-					$this->setLog($scenario, __('Réponse', __FILE__) . ' ' . $value);
+					$this->setLog($scenario, new Trad('Réponse', __FILE__) . ' ' . $value);
 					return;
 				} elseif ($this->getExpression() == 'jeedom_poweroff') {
 					if (is_object($scenario)) {
-						$this->setLog($scenario, __('Lancement de l\'arret de jeedom', __FILE__));
+						$this->setLog($scenario, new Trad('Lancement de l\'arret de jeedom', __FILE__));
 						$scenario->persistLog();
 					} else {
-						log::add('cmd', 'info', __('Lancement de l\'arret de jeedom', __FILE__));
+						log::add('cmd', 'info', new Trad('Lancement de l\'arret de jeedom', __FILE__));
 					}
 					jeedom::haltSystem();
 					return;
 				} elseif ($this->getExpression() == 'jeedom_reboot') {
 					if (is_object($scenario)) {
-						$this->setLog($scenario, __('Lancement du reboot de jeedom', __FILE__));
+						$this->setLog($scenario, new Trad('Lancement du reboot de jeedom', __FILE__));
 						$scenario->persistLog();
 					} else {
-						log::add('cmd', 'info', __('Lancement du reboot de jeedom', __FILE__));
+						log::add('cmd', 'info', new Trad('Lancement du reboot de jeedom', __FILE__));
 					}
 					jeedom::rebootSystem();
 					return;
 				} elseif ($this->getExpression() == 'scenario_return') {
-					$this->setLog($scenario, __('Demande de retour d\'information :', __FILE__) . ' ' . $options['message']);
+					$this->setLog($scenario, new Trad('Demande de retour d\'information :', __FILE__) . ' ' . $options['message']);
 					if ($scenario->getReturn() === true) {
 						$scenario->setReturn($options['message']);
 					} else {
@@ -1772,7 +1772,7 @@ class scenarioExpression {
 					if ($scenario === null) {
 						return;
 					}
-					$this->setLog($scenario, __('Suppression des blocs DANS et A programmés du scénario', __FILE__) . ' ');
+					$this->setLog($scenario, new Trad('Suppression des blocs DANS et A programmés du scénario', __FILE__) . ' ');
 					$crons = cron::searchClassAndFunction('scenario', 'doIn', '"scenario_id":' . $scenario->getId() . ',');
 					if (is_array($crons)) {
 						foreach ($crons as $cron) {
@@ -1785,7 +1785,7 @@ class scenarioExpression {
 					return;
 				} elseif ($this->getExpression() == 'exportHistory') {
 					if (!isset($options['name']) || trim($options['name']) == '') {
-						$options['name'] = __('Export historique', __FILE__);
+						$options['name'] = new Trad('Export historique', __FILE__);
 					}
 					$options['name'] = str_replace(array('/'), array(''), $options['name']);
 					$tmp_file = jeedom::getTmpFolder('history_export') . '/' . $options['name'] . '.csv';
@@ -1793,7 +1793,7 @@ class scenarioExpression {
 
 					$start = date('Y-m-d H:i:s',(int) strtotime($options['start']));
 					$end = date('Y-m-d H:i:s',(int) strtotime($options['end']));
-					$this->setLog($scenario, __('Export de l\'historique du', __FILE__) . ' ' . $start . ' ' . __('au', __FILE__) . ' ' . $end);
+					$this->setLog($scenario, new Trad('Export de l\'historique du', __FILE__) . ' ' . $start . ' ' . new Trad('au', __FILE__) . ' ' . $end);
 
 					$histories = array();
 					$cmdExportArray = explode('&&', $this->getOptions('cmd_export'));
@@ -1813,7 +1813,7 @@ class scenarioExpression {
 						if (!is_object($cmd)) {
 							throw new Exception($GLOBALS['JEEDOM_SCLOG_TEXT']['unfoundCmdCheckId']['txt'] . $this->getOptions('cmd'));
 						}
-						$this->setLog($scenario, __('Envoi de l\'export d\'historique sur', __FILE__) . ' ' . $cmd->getHumanName());
+						$this->setLog($scenario, new Trad('Envoi de l\'export d\'historique sur', __FILE__) . ' ' . $cmd->getHumanName());
 						$cmd->execCmd($cmd_parameters);
 					}
 					if (file_exists($tmp_file)) {
@@ -1821,89 +1821,89 @@ class scenarioExpression {
 					}
 				} elseif ($this->getExpression() == 'report') {
 					$cmd_parameters = array('files' => null);
-					$this->setLog($scenario, __('Génération d\'un rapport de type', __FILE__) . ' ' . $options['type']);
+					$this->setLog($scenario, new Trad('Génération d\'un rapport de type', __FILE__) . ' ' . $options['type']);
 					switch ($options['type']) {
 						case 'view':
 							$view = view::byId($options['view_id']);
 							if (!is_object($view)) {
-								throw new Exception(__('Vue introuvable - Vérifiez l\'id :', __FILE__) . ' ' . $options['view_id']);
+								throw new Exception(new Trad('Vue introuvable - Vérifiez l\'id :', __FILE__) . ' ' . $options['view_id']);
 							}
-							$this->setLog($scenario, __('Génération du rapport', __FILE__) . ' ' . $view->getName());
+							$this->setLog($scenario, new Trad('Génération du rapport', __FILE__) . ' ' . $view->getName());
 							$cmd_parameters['files'] = array($view->report($options['export_type'], $options));
-							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . __('Rapport', __FILE__) . ' ' . $view->getName() . ' ' . __('du', __FILE__) . ' ' . date('Y-m-d H:i:s');
-							$cmd_parameters['message'] = __('Veuillez trouver ci-joint le rapport', __FILE__) . ' ' . $view->getName() . ' ' . __('généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . new Trad('Rapport', __FILE__) . ' ' . $view->getName() . ' ' . new Trad('du', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['message'] = new Trad('Veuillez trouver ci-joint le rapport', __FILE__) . ' ' . $view->getName() . ' ' . new Trad('généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
 							break;
 						case 'plan':
 							$plan = planHeader::byId($options['plan_id']);
 							if (!is_object($plan)) {
-								throw new Exception(__('Design introuvable - Vérifiez l\'id :', __FILE__) . ' ' . $options['plan_id']);
+								throw new Exception(new Trad('Design introuvable - Vérifiez l\'id :', __FILE__) . ' ' . $options['plan_id']);
 							}
-							$this->setLog($scenario, __('Génération du rapport', __FILE__) . ' ' . $plan->getName());
+							$this->setLog($scenario, new Trad('Génération du rapport', __FILE__) . ' ' . $plan->getName());
 							$cmd_parameters['files'] = array($plan->report($options['export_type'], $options));
-							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . __('Rapport', __FILE__) . ' ' . $plan->getName() . ' ' . __('du', __FILE__) . ' ' . date('Y-m-d H:i:s');
-							$cmd_parameters['message'] = __('Veuillez trouver ci-joint le rapport', __FILE__) . ' ' . $plan->getName() . ' ' . __('généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . new Trad('Rapport', __FILE__) . ' ' . $plan->getName() . ' ' . new Trad('du', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['message'] = new Trad('Veuillez trouver ci-joint le rapport', __FILE__) . ' ' . $plan->getName() . ' ' . new Trad('généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
 							break;
 						case 'plugin':
 							$plugin = plugin::byId($options['plugin_id']);
 							if (!is_object($plugin)) {
-								throw new Exception(__('Panel introuvable - Vérifiez l\'id :', __FILE__) . ' ' . $options['plugin_id']);
+								throw new Exception(new Trad('Panel introuvable - Vérifiez l\'id :', __FILE__) . ' ' . $options['plugin_id']);
 							}
-							$this->setLog($scenario, __('Génération du rapport', __FILE__) . ' ' . $plugin->getName());
+							$this->setLog($scenario, new Trad('Génération du rapport', __FILE__) . ' ' . $plugin->getName());
 							$cmd_parameters['files'] = array($plugin->report($options['export_type'], $options));
-							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . __('Rapport', __FILE__) . ' ' . $plugin->getName() . ' ' . __('du', __FILE__) . ' ' . date('Y-m-d H:i:s');
-							$cmd_parameters['message'] = __('Veuillez trouver ci-joint le rapport', __FILE__) . ' ' . $plugin->getName() . ' ' . __('généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . new Trad('Rapport', __FILE__) . ' ' . $plugin->getName() . ' ' . new Trad('du', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['message'] = new Trad('Veuillez trouver ci-joint le rapport', __FILE__) . ' ' . $plugin->getName() . ' ' . new Trad('généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
 							break;
 						case 'eqAnalyse':
 							$url = network::getNetworkAccess('internal') . '/index.php?v=d&p=eqAnalyse&report=1';
 							if (isset($options['theme']) && $options['theme'] != '') {
 								$url .= '&theme=' . $options['theme'];
 							}
-							$this->setLog($scenario, __('Génération du rapport', __FILE__) . ' ' . $url);
+							$this->setLog($scenario, new Trad('Génération du rapport', __FILE__) . ' ' . $url);
 							$cmd_parameters['files'] = array(report::generate($url, 'other', 'eqAnalyse', $options['export_type'], $options));
-							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . __('Rapport équipement du', __FILE__) . ' ' . date('Y-m-d H:i:s');
-							$cmd_parameters['message'] = __('Veuillez trouver ci-joint le rapport équipement généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . new Trad('Rapport équipement du', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['message'] = new Trad('Veuillez trouver ci-joint le rapport équipement généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
 							break;
 						case 'eqAnalyseAlert':
 							$url = network::getNetworkAccess('internal') . '/index.php?v=d&p=eqAnalyse&report=1';
 							if (isset($options['theme']) && $options['theme'] != '') {
 								$url .= '&theme=' . $options['theme'];
 							}
-							$this->setLog($scenario, __('Génération du rapport', __FILE__) . ' ' . $url);
+							$this->setLog($scenario, new Trad('Génération du rapport', __FILE__) . ' ' . $url);
 							$options['tab'] = 'alertEqlogic';
 							$cmd_parameters['files'] = array(report::generate($url, 'other', 'eqAnalyse', $options['export_type'], $options));
-							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . __('Rapport équipement du', __FILE__) . ' ' . date('Y-m-d H:i:s');
-							$cmd_parameters['message'] = __('Veuillez trouver ci-joint le rapport équipement en alert généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . new Trad('Rapport équipement du', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['message'] = new Trad('Veuillez trouver ci-joint le rapport équipement en alert généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
 							break;
 						case 'health':
 							$url = network::getNetworkAccess('internal') . '/index.php?v=d&p=health&report=1';
 							if (isset($options['theme']) && $options['theme'] != '') {
 								$url .= '&theme=' . $options['theme'];
 							}
-							$this->setLog($scenario, __('Génération du rapport', __FILE__) . ' ' . $url);
+							$this->setLog($scenario, new Trad('Génération du rapport', __FILE__) . ' ' . $url);
 							$cmd_parameters['files'] = array(report::generate($url, 'other', 'health', $options['export_type'], $options));
-							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . __('Rapport équipement du', __FILE__) . ' ' . date('Y-m-d H:i:s');
-							$cmd_parameters['message'] = __('Veuillez trouver ci-joint le rapport de santé généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . new Trad('Rapport équipement du', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['message'] = new Trad('Veuillez trouver ci-joint le rapport de santé généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
 							break;
 						case 'timeline':
 							$url = network::getNetworkAccess('internal') . '/index.php?v=d&p=timeline&report=1&timeline=' . $options['timeline'];
 							if (isset($options['theme']) && $options['theme'] != '') {
 								$url .= '&theme=' . $options['theme'];
 							}
-							$this->setLog($scenario, __('Génération du rapport timeline', __FILE__) . ' ' . $options['timeline']);
+							$this->setLog($scenario, new Trad('Génération du rapport timeline', __FILE__) . ' ' . $options['timeline']);
 							$cmd_parameters['files'] = array(report::generate($url, 'other', 'timeline', $options['export_type'], $options));
-							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . __('Rapport', __FILE__) . ' ' . $options['timeline'] . ' ' . __('du', __FILE__) . ' ' . date('Y-m-d H:i:s');
-							$cmd_parameters['message'] = __('Veuillez trouver ci-joint le rapport', __FILE__) . ' ' . $options['timeline'] . ' ' . __('généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . new Trad('Rapport', __FILE__) . ' ' . $options['timeline'] . ' ' . new Trad('du', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['message'] = new Trad('Veuillez trouver ci-joint le rapport', __FILE__) . ' ' . $options['timeline'] . ' ' . new Trad('généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
 							break;
 						case 'url':
 							$url = $options['url'];
-							$this->setLog($scenario, __('Génération du rapport', __FILE__) . ' ' . $url);
+							$this->setLog($scenario, new Trad('Génération du rapport', __FILE__) . ' ' . $url);
 							$cmd_parameters['files'] = array(report::generate($url, 'other', 'url', $options['export_type'], $options));
-							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . __('Rapport url du', __FILE__) . ' ' . date('Y-m-d H:i:s');
-							$cmd_parameters['message'] = __('Veuillez trouver ci-joint le rapport url généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['title'] = '[' . config::byKey('name') . ']' . ' ' . new Trad('Rapport url du', __FILE__) . ' ' . date('Y-m-d H:i:s');
+							$cmd_parameters['message'] = new Trad('Veuillez trouver ci-joint le rapport url généré le', __FILE__) . ' ' . date('Y-m-d H:i:s');
 							break;
 					}
 					if ($cmd_parameters['files'] === null) {
-						throw new Exception(__('Erreur : Aucun rapport généré', __FILE__));
+						throw new Exception(new Trad('Erreur : Aucun rapport généré', __FILE__));
 					}
 					if ($this->getOptions('cmd') != '') {
 						$cmdArray = explode('&&', $this->getOptions('cmd'));
@@ -1912,7 +1912,7 @@ class scenarioExpression {
 							if (!is_object($cmd)) {
 								throw new Exception($GLOBALS['JEEDOM_SCLOG_TEXT']['unfoundCmdCheckId']['txt'] . $this->getOptions('cmd'));
 							}
-							$this->setLog($scenario, __('Envoi du rapport généré sur', __FILE__) . ' ' . $cmd->getHumanName());
+							$this->setLog($scenario, new Trad('Envoi du rapport généré sur', __FILE__) . ' ' . $cmd->getHumanName());
 							$cmd->execCmd($cmd_parameters);
 						}
 					}
@@ -1930,7 +1930,7 @@ class scenarioExpression {
 						$result = $options['value'];
 					}
 					$tags['#' . $options['name'] . '#'] = $result;
-					$this->setLog($scenario, __('Mise à jour du tag', __FILE__) . ' ' . '#' . $options['name'] . '#' . ' => ' . $result);
+					$this->setLog($scenario, new Trad('Mise à jour du tag', __FILE__) . ' ' . '#' . $options['name'] . '#' . ' => ' . $result);
 					$scenario->setTags($tags);
 				} else {
 					//check user function:
@@ -1958,7 +1958,7 @@ class scenarioExpression {
 							$options['slider'] = evaluate($options['slider']);
 						}
 						if (is_array($options) && (count($options) > 1 || (isset($options['background']) && $options['background'] == 1))) {
-							$this->setLog($scenario, $GLOBALS['JEEDOM_SCLOG_TEXT']['execCmd']['txt'] . $cmd->getHumanName() . __(" avec comme option(s) : ", __FILE__) . json_encode($options));
+							$this->setLog($scenario, $GLOBALS['JEEDOM_SCLOG_TEXT']['execCmd']['txt'] . $cmd->getHumanName() . new Trad(" avec comme option(s) : ", __FILE__) . json_encode($options));
 						} else {
 							$this->setLog($scenario, $GLOBALS['JEEDOM_SCLOG_TEXT']['execCmd']['txt'] . $cmd->getHumanName());
 						}
@@ -1970,13 +1970,13 @@ class scenarioExpression {
 			} elseif ($this->getType() == 'condition') {
 				$expr = $this->getExpression();
 				$expression = self::setTags($expr, $scenario, true);
-				$message = __('Evaluation de la condition', __FILE__) . ' : [' . $expression . '] = ';
+				$message = new Trad('Evaluation de la condition', __FILE__) . ' : [' . $expression . '] = ';
 				$result = evaluate($expression);
 				if (is_bool($result)) {
 					if ($result) {
-						$message .= __('Vrai', __FILE__);
+						$message .= new Trad('Vrai', __FILE__);
 					} else {
-						$message .= __('Faux', __FILE__);
+						$message .= new Trad('Faux', __FILE__);
 					}
 				} else {
 					$message .= $result;

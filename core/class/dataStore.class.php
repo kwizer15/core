@@ -90,13 +90,13 @@ class dataStore {
 	public function preSave() {
 		$allowType = array('cmd', 'object', 'eqLogic', 'scenario');
 		if (!in_array($this->getType(), $allowType)) {
-			throw new Exception(__('Le type doit être un des suivants :', __FILE__) . ' ' . print_r($allowType, true));
+			throw new Exception(new Trad('Le type doit être un des suivants :', __FILE__) . ' ' . print_r($allowType, true));
 		}
 		if (!is_numeric($this->getLink_id())) {
-			throw new Exception(__('Link_id doit être un chiffre', __FILE__));
+			throw new Exception(new Trad('Link_id doit être un chiffre', __FILE__));
 		}
 		if ($this->getKey() == '') {
-			throw new Exception(__('La clef ne peut pas être vide', __FILE__));
+			throw new Exception(new Trad('La clef ne peut pas être vide', __FILE__));
 		}
 		if ($this->getId() == '') {
 			$dataStore = self::byTypeLinkIdKey($this->getType(), $this->getLink_id(), $this->getKey());
@@ -143,7 +143,7 @@ class dataStore {
 		$icon = findCodeIcon('fa-code');
 		$_data['node']['dataStore' . $this->getId()] = array(
 			'id' => 'dataStore' . $this->getId(),
-			'type' => __('Variable',__FILE__),
+			'type' => new Trad('Variable', __FILE__),
 			'name' => $this->getKey(),
 			'icon' => $icon['icon'],
 			'fontfamily' => $icon['fontfamily'],
@@ -151,7 +151,7 @@ class dataStore {
 			'fontweight' => ($_level == 1) ? 'bold' : 'normal',
 			'texty' => -14,
 			'textx' => 0,
-			'title' => __('Variable :', __FILE__) . ' ' . $this->getKey(),
+			'title' => new Trad('Variable :', __FILE__) . ' ' . $this->getKey(),
 		);
 		$usedBy = $this->getUsedBy();
 		addGraphLink($this, 'dataStore', $usedBy['scenario'], 'scenario', $_data, $_level, $_drill);

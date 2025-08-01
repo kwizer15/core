@@ -140,10 +140,10 @@ class jsonrpcClient {
 			}
 			if(config::byKey('proxyEnabled')) {
 				if(config::byKey('proxyAddress') == ''){ 
-				// throw new Exception(__('renseigne l\'adresse', __FILE__));
+				// throw new Exception(new Trad('renseigne l\'adresse', __FILE__));
 				$this->error = 'Erreur address ';
 			} else if (config::byKey('proxyPort') == ''){
-			// throw new Exception(__('renseigne le port', __FILE__));
+			// throw new Exception(new Trad('renseigne le port', __FILE__));
 			} else {
 				curl_setopt($ch, CURLOPT_PROXY, config::byKey('proxyAddress'));
 				curl_setopt($ch, CURLOPT_PROXYPORT, config::byKey('proxyPort'));

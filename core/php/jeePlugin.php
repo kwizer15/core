@@ -36,21 +36,21 @@ try {
 
 	$plugin_id = init('plugin_id');
 	if ($plugin_id == '') {
-		throw new Exception(__('Le plugin ID ne peut être vide', __FILE__));
+		throw new Exception(new Trad('Le plugin ID ne peut être vide', __FILE__));
 	}
 	$plugin = plugin::byId($plugin_id);
 	if (!is_object($plugin)) {
-		throw new Exception(__('Plugin non trouvé :', __FILE__) . ' ' . init('plugin_id'));
+		throw new Exception(new Trad('Plugin non trouvé :', __FILE__) . ' ' . init('plugin_id'));
 	}
 	$function = init('function');
 	if ($function == '') {
-		throw new Exception(__('La fonction ne peut être vide', __FILE__));
+		throw new Exception(new Trad('La fonction ne peut être vide', __FILE__));
 	}
 	if (init('callInstallFunction', 0) == 1) {
 		$plugin->callInstallFunction($function, true);
 	} else {
 		if (!class_exists($plugin_id) || !method_exists($plugin_id, $function)) {
-			throw new Exception(__('Il n\'existe aucune méthode :', __FILE__) . ' ' . $plugin_id . '::' . $function);
+			throw new Exception(new Trad('Il n\'existe aucune méthode :', __FILE__) . ' ' . $plugin_id . '::' . $function);
 		}
 		$plugin_id::$function();
 	}

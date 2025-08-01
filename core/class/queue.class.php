@@ -113,24 +113,24 @@ class queue {
                 continue;
             }
             try {
-                log::add('queue','debug',__('Lancement de '.$queue->getHumanName(),__FILE__));
+                log::add('queue','debug',new Trad('Lancement de '.$queue->getHumanName(), __FILE__));
                 $queue->run();
             } catch (\Throwable $th) {
-                log::add('queue','debug',__('Erreur sur le lancement de '.$queue->getHumanName().' => '.$th->getMessage(),__FILE__));
+                log::add('queue','debug',new Trad('Erreur sur le lancement de '.$queue->getHumanName().' => '.$th->getMessage(), __FILE__));
             }
         }
         $queueIds = self::allQueueId();
         foreach ($queueIds as $queueId) {
-            log::add('queue','debug',__('Recherche des actions à faire pour '.$queueId['queueId'],__FILE__));
+            log::add('queue','debug',new Trad('Recherche des actions à faire pour '.$queueId['queueId'], __FILE__));
             $queue = self::firstByQueueId($queueId['queueId']);
             if(!$queue->canRun()){
                 continue;
             }
             try {
-                log::add('queue','debug',__('Lancement de '.$queue->getHumanName(),__FILE__));
+                log::add('queue','debug',new Trad('Lancement de '.$queue->getHumanName(), __FILE__));
                 $queue->run();
             } catch (\Throwable $th) {
-                log::add('queue','debug',__('Erreur sur le lancement de '.$queue->getHumanName().' => '.$th->getMessage(),__FILE__));
+                log::add('queue','debug',new Trad('Erreur sur le lancement de '.$queue->getHumanName().' => '.$th->getMessage(), __FILE__));
             }
         }
     }
@@ -165,7 +165,7 @@ class queue {
 				if (!$this->running()) {
 					system::php($cmd . ' >> ' . log::getPathToLog('queue_execution') . ' 2>&1 &');
 				} else {
-					throw new Exception(__('Impossible d\'exécuter la tâche en queue car elle est déjà en cours d\'exécution (', __FILE__) . ' : ' . $cmd);
+					throw new Exception(new Trad('Impossible d\'exécuter la tâche en queue car elle est déjà en cours d\'exécution (', __FILE__) . ' : ' . $cmd);
 				}
 			}
 		}
@@ -198,7 +198,7 @@ class queue {
 			$this->setState('stop');
 			$this->setPID();
 		} else {
-			log::add('queue', 'info', __('Arrêt de', __FILE__) . ' ' . $this->getHumanName() . ', PID : ' . $this->getPID());
+			log::add('queue', 'info', new Trad('Arrêt de', __FILE__) . ' ' . $this->getHumanName() . ', PID : ' . $this->getPID());
 			if ($this->getPID() > 0) {
 				system::kill($this->getPID());
 			}
@@ -212,7 +212,7 @@ class queue {
 				if ($this->running()) {
 					$this->setState('error');
 					$this->setPID();
-					throw new Exception($this->getHumanName() . __(' : Impossible d\'arrêter la tâche en queue', __FILE__));
+					throw new Exception($this->getHumanName() . new Trad(' : Impossible d\'arrêter la tâche en queue', __FILE__));
 				}
 			} else {
 				$this->setState('stop');
@@ -236,16 +236,16 @@ class queue {
 
     public function preSave(){
         if($this->getClass() == '' && $this->getFunction() == ''){
-            throw new Exception(__('La classe est la fonction ne peuvent etre vides',__FILE__));
+            throw new Exception(new Trad('La classe est la fonction ne peuvent etre vides', __FILE__));
         }
         if($this->getClass() != '' && !class_exists($this->getClass())){
-            throw new Exception(__('La classe n\'existe pas',__FILE__));
+            throw new Exception(new Trad('La classe n\'existe pas', __FILE__));
         }
         if($this->getClass() == '' && $this->getFunction() != '' && !function_exists($this->getFunction())){
-            throw new Exception(__('La fonction n\'existe pas',__FILE__));
+            throw new Exception(new Trad('La fonction n\'existe pas', __FILE__));
         }
         if($this->getClass() != '' && $this->getFunction() != '' && !method_exists($this->getClass(),$this->getFunction())){
-            throw new Exception(__('La methode n\'existe pas',__FILE__));
+            throw new Exception(new Trad('La methode n\'existe pas', __FILE__));
         }
         if($this->getCreateTime() == ''){
             $this->setCreateTime(date('Y-m-d H:i:s'));

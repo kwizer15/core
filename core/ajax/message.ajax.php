@@ -21,14 +21,14 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect()) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init();
 
 	if (init('action') == 'clearMessage') {
 		if(!isConnect('admin')){
-			throw new Exception(__('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__));
+			throw new Exception(new Trad('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__));
 		}
 		message::removeAll(init('plugin'));
 		ajax::success();
@@ -50,17 +50,17 @@ try {
 
 	if (init('action') == 'removeMessage') {
 		if(!isConnect('admin')){
-			throw new Exception(__('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__));
+			throw new Exception(new Trad('Vous n\'êtes pas autorisé à effectuer cette action', __FILE__));
 		}
 		$message = message::byId(init('id'));
 		if (!is_object($message)) {
-			throw new Exception(__('Message inconnu. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Message inconnu. Vérifiez l\'ID', __FILE__));
 		}
 		$message->remove();
 		ajax::success();
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

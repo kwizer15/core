@@ -21,7 +21,7 @@ try {
 	include_file('core', 'authentification', 'php');
 
 	if (!isConnect('admin')) {
-		throw new Exception(__('401 - Accès non autorisé', __FILE__));
+		throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 	}
 
 	ajax::init();
@@ -69,7 +69,7 @@ try {
 
 	if (init('action') == 'autoCompleteGroup') {
 		if (!isConnect('admin')) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
+			throw new Exception(new Trad('401 - Accès non autorisé', __FILE__));
 		}
 		$return = array();
 		foreach (interactDef::listGroup(init('term')) as $group) {
@@ -87,7 +87,7 @@ try {
 		unautorizedInDemo();
 		$interact = interactDef::byId(init('id'));
 		if (!is_object($interact)) {
-			throw new Exception(__('Interaction inconnue. Vérifiez l\'ID', __FILE__));
+			throw new Exception(new Trad('Interaction inconnue. Vérifiez l\'ID', __FILE__));
 		}
 		$interact->remove();
 		ajax::success();
@@ -97,7 +97,7 @@ try {
 		unautorizedInDemo();
 		$interactQuery = interactQuery::byId(init('id'));
 		if (!is_object($interactQuery)) {
-			throw new Exception(__('InteractQuery ID inconnu', __FILE__));
+			throw new Exception(new Trad('InteractQuery ID inconnu', __FILE__));
 		}
 		$interactQuery->setEnable(init('enable'));
 		$interactQuery->save();
@@ -120,7 +120,7 @@ try {
 		ajax::success(interactQuery::tryToReply(init('query')));
 	}
 
-	throw new Exception(__('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
+	throw new Exception(new Trad('Aucune méthode correspondante à :', __FILE__) . ' ' . init('action'));
 	/*     * *********Catch exeption*************** */
 } catch (Exception $e) {
 	ajax::error(displayException($e), $e->getCode());

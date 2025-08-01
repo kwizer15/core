@@ -40,29 +40,29 @@ class repo_samba {
 		return array(
 			'parameters_for_add' => array(
 				'path' => array(
-					'name' => __('Chemin', __FILE__),
+					'name' => new Trad('Chemin', __FILE__),
 					'type' => 'input',
 				),
 			),
 			'configuration' => array(
 				'backup::ip' => array(
-					'name' => __('[Backup] IP', __FILE__),
+					'name' => new Trad('[Backup] IP', __FILE__),
 					'type' => 'input',
 				),
 				'backup::username' => array(
-					'name' => __('[Backup] Utilisateur', __FILE__),
+					'name' => new Trad('[Backup] Utilisateur', __FILE__),
 					'type' => 'input',
 				),
 				'backup::password' => array(
-					'name' => __('[Backup] Mot de passe', __FILE__),
+					'name' => new Trad('[Backup] Mot de passe', __FILE__),
 					'type' => 'password',
 				),
 				'backup::share' => array(
-					'name' => __('[Backup] Partage', __FILE__),
+					'name' => new Trad('[Backup] Partage', __FILE__),
 					'type' => 'input',
 				),
 				'backup::folder' => array(
-					'name' => __('[Backup] Chemin', __FILE__),
+					'name' => new Trad('[Backup] Chemin', __FILE__),
 					'type' => 'input',
 				),
 			),
@@ -109,7 +109,7 @@ class repo_samba {
 			exec(system::getCmdSudo() . 'chmod 777 -R ' . $tmp);
 		}
 		if (!is_writable($tmp_dir)) {
-			throw new Exception(__('Impossible d\'écrire dans le répertoire :', __FILE__) . ' ' . $tmp . __('. Exécuter la commande suivante en SSH : sudo chmod 777 -R', __FILE__) . ' ' . $tmp_dir);
+			throw new Exception(new Trad('Impossible d\'écrire dans le répertoire :', __FILE__) . ' ' . $tmp . new Trad('. Exécuter la commande suivante en SSH : sudo chmod 777 -R', __FILE__) . ' ' . $tmp_dir);
 		}
 		$cmd = 'cd ' . $tmp_dir . ';';
 		$cmd .= self::makeSambaCommand('cd ' . config::byKey('samba::plugin::folder') . ';get ' . $_update->getConfiguration('path'), 'plugin');
