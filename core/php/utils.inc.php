@@ -1006,11 +1006,49 @@ function br2nl($string) {
 	return preg_replace('/\<br(\s*)?\/?\>/i', "\n", $string);
 }
 
-function calculPath($_path) {
+function resolvePath($_path) {
+	$rootPath = realpath(__DIR__ . '/../../');
+	if ($rootPath === false) {
+		return false;
+	}
+	$candidate = (strpos($_path, '/') === 0) ? $_path : $rootPath . '/' . $_path;
+	$real = realpath($candidate);
+	if ($real === false) {
+		// Le fichier peut ne pas exister (cas création) : valider le dossier parent.
+		$parent = realpath(dirname($candidate));
+		if ($parent === false) {
+			return false;
+		}
+		$real = $parent . DIRECTORY_SEPARATOR . basename($candidate);
+	}
+	if ($real !== $rootPath && strpos($real, $rootPath . DIRECTORY_SEPARATOR) !== 0) {
+		return false;
+	}
+	return $real;
+}
+
+function resolvePathUnsafe($_path) {
 	if (strpos($_path, '/') !== 0) {
 		return __DIR__ . '/../../' . $_path;
 	}
 	return $_path;
+}
+
+function calculPath($_path, $_allowOutsideRoot = false) {
+	if ($_allowOutsideRoot) {
+		return resolvePathUnsafe($_path);
+	}
+	$under = resolvePath($_path);
+	if ($under !== false) {
+		return $under;
+	}
+	trigger_error(
+		'calculPath() avec un chemin hors webroot est déprécié. '
+		. 'Utilisez resolvePathUnsafe() pour conserver ce comportement, '
+		. 'ou passez true en 2e argument.',
+		E_USER_DEPRECATED
+	);
+	return resolvePathUnsafe($_path);
 }
 
 function getDirectorySize($path) {

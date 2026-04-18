@@ -391,7 +391,7 @@ class repo_market {
 		if (config::byKey('market::cloud::backup::password') != config::byKey('market::cloud::backup::password_confirmation')) {
 			throw new Exception(__('Le mot de passe du backup cloud n\'est pas identique à la confirmation', __FILE__));
 		}
-		$backup_dir = calculPath(config::byKey('backup::path'));
+		$backup_dir = resolvePathUnsafe(config::byKey('backup::path'));
 		if (!file_exists($backup_dir)) {
 			mkdir($backup_dir, 0770, true);
 		}
