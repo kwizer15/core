@@ -1013,6 +1013,14 @@ function calculPath($_path) {
 	return $_path;
 }
 
+function shellSmbclientCommand($_share, $_userPassword, $_ip, $_innerCmd) {
+	return 'smbclient -t 120 '
+		. escapeshellarg($_share)
+		. ' -U ' . escapeshellarg($_userPassword)
+		. ' -I ' . escapeshellarg($_ip)
+		. ' -c ' . escapeshellarg($_innerCmd);
+}
+
 function getDirectorySize($path) {
 	$bytestotal = 0;
 	$path = realpath($path);
