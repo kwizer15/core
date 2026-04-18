@@ -98,4 +98,52 @@ class utilsTest extends TestCase {
 	public function testCleanPath($in, $out) {
 		$this->assertSame($out, cleanPath($in));
 	}
+
+	public function testShellWgetCommandEscapesUrl() {
+		$cmd = shellWgetCommand('https://example.com/foo; rm -rf /', '/tmp/out.zip');
+		$this->assertStringContainsString("'https://example.com/foo; rm -rf /'", $cmd);
+		$this->assertStringNotContainsString('https://example.com/foo; rm -rf / -O', $cmd);
+		$this->assertStringEndsWith("-O '/tmp/out.zip'", $cmd);
+	}
+
+	public function testShellWgetCommandEscapesOutputPath() {
+		$cmd = shellWgetCommand('https://example.com', '/tmp/$(rm -rf /).zip');
+		$this->assertStringContainsString("'/tmp/\$(rm -rf /).zip'", $cmd);
+	}
+
+	public function testShellWgetCommandWithLogPath() {
+		$cmd = shellWgetCommand('https://example.com', '/tmp/out', '/tmp/log; evil');
+		$this->assertStringContainsString("'/tmp/log; evil'", $cmd);
+		$this->assertStringEndsWith("2>&1", $cmd);
+	}
+
+	public function testShellCurlCommandWithoutToken() {
+		$cmd = shellCurlCommand('https://api.github.com/foo', '/tmp/out');
+		$this->assertStringNotContainsString('Authorization', $cmd);
+		$this->assertStringContainsString("'https://api.github.com/foo'", $cmd);
+		$this->assertStringContainsString("> '/tmp/out'", $cmd);
+	}
+
+	public function testShellCurlCommandWithToken() {
+		$cmd = shellCurlCommand('https://api', '/tmp/out', 'tk; evil');
+		$this->assertStringContainsString("'Authorization: token tk; evil'", $cmd);
+	}
+
+	public function testShellCurlCommandEscapesMaliciousUrl() {
+		$cmd = shellCurlCommand('https://api"; rm -rf /; "', '/tmp/out');
+		$this->assertStringNotContainsString('https://api"; rm -rf /; " ', $cmd);
+		$this->assertStringContainsString("'https://api\"; rm -rf /; \"'", $cmd);
+	}
+
+	public function testShellCheckOngoingThreadCommandEscapesCmd() {
+		$cmd = shellCheckOngoingThreadCommand('foo"; evil; "');
+		$this->assertStringContainsString("'foo\"; evil; \"\$'", $cmd);
+		$this->assertStringEndsWith('| wc -l', $cmd);
+	}
+
+	public function testShellRetrievePidThreadCommandEscapesCmd() {
+		$cmd = shellRetrievePidThreadCommand('foo"; evil; "');
+		$this->assertStringContainsString("'foo\"; evil; \"\$'", $cmd);
+		$this->assertStringEndsWith("awk '{print \$1}'", $cmd);
+	}
 }

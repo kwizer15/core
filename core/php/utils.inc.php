@@ -1013,6 +1013,31 @@ function calculPath($_path) {
 	return $_path;
 }
 
+function shellWgetCommand($_url, $_outputPath, $_logPath = null) {
+	$cmd = 'wget --no-check-certificate --progress=dot --dot=mega ' . escapeshellarg($_url) . ' -O ' . escapeshellarg($_outputPath);
+	if ($_logPath !== null) {
+		$cmd .= ' >> ' . escapeshellarg($_logPath) . ' 2>&1';
+	}
+	return $cmd;
+}
+
+function shellCurlCommand($_url, $_outputPath, $_token = null) {
+	$cmd = 'curl -s -L';
+	if ($_token !== null && $_token !== '') {
+		$cmd .= ' -H ' . escapeshellarg('Authorization: token ' . $_token);
+	}
+	$cmd .= ' ' . escapeshellarg($_url) . ' > ' . escapeshellarg($_outputPath);
+	return $cmd;
+}
+
+function shellCheckOngoingThreadCommand($_cmd) {
+	return '(ps ax || ps w) | grep ' . escapeshellarg($_cmd . '$') . ' | grep -v "grep" | wc -l';
+}
+
+function shellRetrievePidThreadCommand($_cmd) {
+	return '(ps ax || ps w) | grep ' . escapeshellarg($_cmd . '$') . ' | grep -v "grep" | awk \'{print $1}\'';
+}
+
 function getDirectorySize($path) {
 	$bytestotal = 0;
 	$path = realpath($path);

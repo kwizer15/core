@@ -1385,11 +1385,11 @@ class jeedom {
 	/***************************************THREAD MANGEMENT**********************************************/
 
 	public static function checkOngoingThread($_cmd) {
-		return shell_exec('(ps ax || ps w) | grep "' . $_cmd . '$" | grep -v "grep" | wc -l');
+		return shell_exec(shellCheckOngoingThreadCommand($_cmd));
 	}
 
 	public static function retrievePidThread($_cmd) {
-		return shell_exec('(ps ax || ps w) | grep "' . $_cmd . '$" | grep -v "grep" | awk \'{print $1}\'');
+		return shell_exec(shellRetrievePidThreadCommand($_cmd));
 	}
 
 	/******************************************UTILS******************************************************/
@@ -1719,7 +1719,7 @@ class jeedom {
 		if (config::byKey('disable_ntp', 'core', 0) == 1) {
 			return;
 		}
-		shell_exec(system::getCmdSudo() . 'service ntp stop;' . system::getCmdSudo() . 'ntpdate -s ' . config::byKey('ntp::optionalServer', 'core', '0.debian.pool.ntp.org') . ';' . system::getCmdSudo() . 'service ntp start');
+		shell_exec(system::getCmdSudo() . 'service ntp stop;' . system::getCmdSudo() . 'ntpdate -s ' . escapeshellarg(config::byKey('ntp::optionalServer', 'core', '0.debian.pool.ntp.org')) . ';' . system::getCmdSudo() . 'service ntp start');
 	}
 
 	public static function cleanDatabase() {

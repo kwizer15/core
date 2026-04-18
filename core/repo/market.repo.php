@@ -975,7 +975,7 @@ class repo_market {
 		$url .= '&password_type=sha1';
 		log::add('update', 'alert', __('Téléchargement de', __FILE__) . ' ' . $this->getLogicalId() . '...');
 		log::add('update', 'alert', __('URL', __FILE__) . ' ' . $url);
-		exec('wget "' . $url . '" -O ' . $tmp . ' >> ' . log::getPathToLog('update') . ' 2>&1');
+		exec(shellWgetCommand($url, $tmp, log::getPathToLog('update')));
 		switch ($this->getType()) {
 			case 'plugin':
 				return $tmp;
