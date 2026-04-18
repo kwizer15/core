@@ -78,15 +78,14 @@ try {
 	}
 
 
-	if (isset($CONFIG['db']['unix_socket'])) {
-		$str_db_connexion = "--socket=" . $CONFIG['db']['unix_socket'] . " --user=" . $CONFIG['db']['username'] . " --password='" . $CONFIG['db']['password'] . "' " . $CONFIG['db']['dbname'];
-	} else {
-		if ($CONFIG['db']['host'] == 'localhost' && $CONFIG['db']['port'] == 3306) {
-			$str_db_connexion = "--user=" . $CONFIG['db']['username'] . " --password='" . $CONFIG['db']['password'] . "' " . $CONFIG['db']['dbname'];
-		} else {
-			$str_db_connexion = "--host=" . $CONFIG['db']['host'] . " --port=" . $CONFIG['db']['port'] . " --user=" . $CONFIG['db']['username'] . " --password='" . $CONFIG['db']['password'] . "' " . $CONFIG['db']['dbname'];
-		}
-	}
+	$str_db_connexion = shellMysqlConnectionArgs(
+		$CONFIG['db']['host'] ?? 'localhost',
+		$CONFIG['db']['port'] ?? 3306,
+		$CONFIG['db']['username'],
+		$CONFIG['db']['password'],
+		$CONFIG['db']['dbname'],
+		$CONFIG['db']['unix_socket'] ?? null
+	);
 	$tables = DB::Prepare("SHOW TABLES", array(), DB::FETCH_TYPE_ALL);
 	foreach ($tables as $table) {
 		$table = array_values($table)[0];
@@ -94,7 +93,7 @@ try {
 			continue;
 		}
 		echo "Checking  table " . $table . "...";
-		system("mysqlcheck " . $str_db_connexion . ' --auto-repair --silent --tables ' . $table);
+		system("mysqlcheck " . $str_db_connexion . ' --auto-repair --silent --tables ' . escapeshellarg($table));
 		echo "OK" . "\n";
 	}
 
@@ -102,13 +101,13 @@ try {
 	if (file_exists($jeedom_dir . "/DB_backup.sql")) {
 		unlink($jeedom_dir . "/DB_backup.sql");
 		if (file_exists($jeedom_dir . "/DB_backup.sql")) {
-			system("sudo rm " . $jeedom_dir . "/DB_backup.sql");
+			system("sudo rm " . escapeshellarg($jeedom_dir . "/DB_backup.sql"));
 		}
 	}
 	if (file_exists($jeedom_dir . "/DB_backup.sql")) {
 		throw new Exception('can\'t delete database backup. Check rights');
 	}
-	system("mysqldump " . $str_db_connexion . "  > " . $jeedom_dir . "/DB_backup.sql", $rc);
+	system("mysqldump " . $str_db_connexion . " > " . escapeshellarg($jeedom_dir . "/DB_backup.sql"), $rc);
 
 	if ($rc != 0) {
 		throw new Exception('Backing up database failed. Check mysqldump installation. Code: ' . $rc);
@@ -175,11 +174,7 @@ try {
 	}
 
 
-	$exclude = '';
-	foreach ($excludes as $folder) {
-		$exclude .= ' --exclude="' . $folder . '"';
-	}
-	system('cd ' . $jeedom_dir . ';tar cfz "' . $backup_dir . '/' . $backup_name . '" ' . $exclude . ' . > /dev/null');
+	system(shellTarCreateCommand($jeedom_dir, $backup_dir . '/' . $backup_name, $excludes) . ' > /dev/null');
 	echo "OK" . "\n";
 
 	if (!file_exists($backup_dir . '/' . $backup_name)) {
@@ -187,7 +182,7 @@ try {
 	}
 
 	echo 'Cleaning old backup...';
-	shell_exec('find "' . $backup_dir . '" -name "*.gz" -mtime +' . config::byKey('backup::keepDays') . ' -delete');
+	shell_exec('find ' . escapeshellarg($backup_dir) . ' -name "*.gz" -mtime +' . escapeshellarg((string) config::byKey('backup::keepDays')) . ' -delete');
 	echo "OK" . "\n";
 
 	global $NO_CLOUD_BACKUP;

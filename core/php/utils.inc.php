@@ -1013,6 +1013,32 @@ function calculPath($_path) {
 	return $_path;
 }
 
+function shellMysqlConnectionArgs($_host, $_port, $_user, $_password, $_dbname, $_socket = null) {
+	if ($_socket !== null) {
+		$args = '--socket=' . escapeshellarg($_socket);
+	} elseif ($_host == 'localhost' && $_port == 3306) {
+		$args = '';
+	} else {
+		$args = '--host=' . escapeshellarg($_host) . ' --port=' . escapeshellarg((string) $_port);
+	}
+	if ($args !== '') {
+		$args .= ' ';
+	}
+	$args .= '--user=' . escapeshellarg($_user)
+		. ' --password=' . escapeshellarg($_password)
+		. ' ' . escapeshellarg($_dbname);
+	return $args;
+}
+
+function shellTarCreateCommand($_workdir, $_outputArchive, array $_excludes = []) {
+	$cmd = 'cd ' . escapeshellarg($_workdir) . ';tar cfz ' . escapeshellarg($_outputArchive);
+	foreach ($_excludes as $exclude) {
+		$cmd .= ' --exclude=' . escapeshellarg($exclude);
+	}
+	$cmd .= ' .';
+	return $cmd;
+}
+
 function getDirectorySize($path) {
 	$bytestotal = 0;
 	$path = realpath($path);
