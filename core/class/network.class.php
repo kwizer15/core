@@ -483,11 +483,19 @@ class network {
 		exec(system::getCmdSudo() . 'service networking restart');
 	}
 
-	public static function isFromTrustedProxy($_ip, $_trustedList) {
-		if ($_ip === '' || $_ip === null || !filter_var($_ip, FILTER_VALIDATE_IP)) {
+	/**
+	 * Check whether an IP address belongs to a list of trusted proxies.
+	 *
+	 * @param string $_ip          Source IP to verify (IPv4 or IPv6).
+	 * @param string $_trustedList Comma/space/semicolon-separated list of IPs or CIDR ranges.
+	 *                             Example: "10.0.0.5, 192.168.1.0/24, ::1".
+	 * @return bool True if $_ip matches an entry in the list, false otherwise (including empty list or invalid IP).
+	 */
+	public static function isFromTrustedProxy(string $_ip, string $_trustedList): bool {
+		if ($_ip === '' || !filter_var($_ip, FILTER_VALIDATE_IP)) {
 			return false;
 		}
-		if (!is_string($_trustedList) || trim($_trustedList) === '') {
+		if (trim($_trustedList) === '') {
 			return false;
 		}
 		$entries = preg_split('/[\s,;]+/', $_trustedList, -1, PREG_SPLIT_NO_EMPTY);
@@ -499,7 +507,14 @@ class network {
 		return false;
 	}
 
-	private static function ipMatchesEntry($_ip, $_entry) {
+	/**
+	 * Check whether an IP matches a single list entry (exact IP or CIDR range).
+	 *
+	 * @param string $_ip    Source IP, already validated by filter_var().
+	 * @param string $_entry Raw list entry: exact IP or CIDR (IPv4/IPv6).
+	 * @return bool True if the IP matches the entry, false if the entry is invalid or out of range.
+	 */
+	private static function ipMatchesEntry(string $_ip, string $_entry): bool {
 		$entry = trim($_entry);
 		if ($entry === '') {
 			return false;

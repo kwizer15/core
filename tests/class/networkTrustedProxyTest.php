@@ -18,8 +18,8 @@
 
 use PHPUnit\Framework\TestCase;
 
-// TODO: test e2e manquant — simuler REMOTE_USER + REMOTE_ADDR contre authentification.php complet
-// (session, DB, $_SERVER). Couverture actuelle : helper en isolation uniquement.
+// TODO: missing e2e test — simulate REMOTE_USER + REMOTE_ADDR against the full authentification.php
+// flow (session, DB, $_SERVER). Current coverage: helper in isolation only.
 class networkTrustedProxyTest extends TestCase
 {
 	public function testEmptyListRejectsEverything()
