@@ -214,7 +214,7 @@ class MariadbCache {
 		FROM cache';
 		$results =  DB::Prepare($sql, array(), DB::FETCH_TYPE_ALL, PDO::FETCH_CLASS, 'cache');
 		foreach ($results as $cache) {
-			$cache->setValue(unserialize($cache->getValue()));
+			$cache->setValue(unserialize($cache->getValue(), ['allowed_classes' => false]));
 		}
 		return $results;
 	}
@@ -238,7 +238,7 @@ class MariadbCache {
 		if ($cache->getLifetime() > 0 && ($cache->getTimestamp() + $cache->getLifetime()) < strtotime('now')) {
 			return null;
 		}
-		$cache->setValue(unserialize($cache->getValue()));
+		$cache->setValue(unserialize($cache->getValue(), ['allowed_classes' => false]));
 		return $cache;
 	}
 
@@ -297,7 +297,7 @@ class RedisCache {
 		if ($data === false) {
 			return null;
 		}
-		return @unserialize($data);
+		return @unserialize($data, ['allowed_classes' => [cache::class]]);
 	}
 
 	public static function delete($_key) {
@@ -329,7 +329,7 @@ class FileCache {
 
 	public static function clean() {
 		foreach (ls(jeedom::getTmpFolder('cache'), '*', false, array('files')) as $file) {
-			$cache = unserialize(file_get_contents(jeedom::getTmpFolder('cache') . '/' . $file));
+			$cache = unserialize(file_get_contents(jeedom::getTmpFolder('cache') . '/' . $file), ['allowed_classes' => [cache::class]]);
 			if (!is_object($cache)) {
 				unlink(jeedom::getTmpFolder('cache') . '/' . $file);
 				continue;
@@ -345,7 +345,7 @@ class FileCache {
 		if ($data === false) {
 			return null;
 		}
-		$cache = unserialize($data);
+		$cache = unserialize($data, ['allowed_classes' => [cache::class]]);
 		if (!is_object($cache)) {
 			return null;
 		}
