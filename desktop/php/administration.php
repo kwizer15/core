@@ -1725,6 +1725,14 @@ $productName = config::byKey('product_name');
 								<input type="text" class="configKey form-control" data-l1key="sso:remoteUserHeader">
 							</div>
 						</div>
+						<div class="form-group">
+							<label class="col-md-3 col-sm-4 col-xs-12 control-label" style="color:#c9302c;">{{Proxies de confiance (FORTEMENT RECOMMANDÉ)}}
+								<sup><i class="fas fa-question-circle" tooltip="{{Liste des IPs ou plages CIDR autorisées à transmettre l'entête SSO (séparées par virgules). Si vide, n'importe qui peut usurper une session admin en envoyant le header HTTP. Exemples : 10.0.0.5, 192.168.1.0/24, ::1}}"></i></sup>
+							</label>
+							<div class="col-md-3 col-sm-4 col-xs-12">
+								<input type="text" class="configKey form-control" data-l1key="sso:trustedProxies" placeholder="10.0.0.5, 192.168.1.0/24">
+							</div>
+						</div>
 
 						<legend>{{Dépendance et démon}}</legend>
 						<div class="form-group">

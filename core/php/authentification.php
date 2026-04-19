@@ -17,7 +17,7 @@
 */
 require_once __DIR__ . '/core.inc.php';
 
-$configs = config::byKeys(array('session_lifetime', 'sso:allowRemoteUser', 'sso:remoteUserHeader'));
+$configs = config::byKeys(array('session_lifetime', 'sso:allowRemoteUser', 'sso:remoteUserHeader', 'sso:trustedProxies'));
 
 if (session_status() == PHP_SESSION_DISABLED || !isset($_SESSION)) {
 	$session_lifetime = $configs['session_lifetime'];
@@ -61,13 +61,24 @@ if (!isConnect() && isset($_COOKIE['registerDevice']) && !loginByHash($_COOKIE['
 }
 
 if (!isConnect() && $configs['sso:allowRemoteUser'] == 1) {
-	$header_value = ($configs['sso:remoteUserHeader'] != '') ? $_SERVER[$configs['sso:remoteUserHeader']] : $_SERVER['REMOTE_USER'];
-	$user = user::byLogin($header_value);
-	if (is_object($user) && $user->getEnable() == 1) {
-		@session_start();
-		$_SESSION['user'] = $user;
-		@session_write_close();
-		log::add('connection', 'info', __('Connexion de l\'utilisateur par REMOTE_USER :', __FILE__) . ' ' . $user->getLogin());
+	$remoteAddr = isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+	$trustedProxies = isset($configs['sso:trustedProxies']) ? $configs['sso:trustedProxies'] : '';
+	$ssoAllowed = true;
+	if (trim($trustedProxies) === '') {
+		log::add('connection', 'warning', __('SSO actif sans sso:trustedProxies configuré : configurer la liste des proxies de confiance pour éviter l\'usurpation par header HTTP. IP source :', __FILE__) . ' ' . $remoteAddr);
+	} elseif (!network::isFromTrustedProxy($remoteAddr, $trustedProxies)) {
+		$ssoAllowed = false;
+		log::add('connection', 'warning', __('SSO refusé : requête depuis une IP non listée dans sso:trustedProxies :', __FILE__) . ' ' . $remoteAddr);
+	}
+	if ($ssoAllowed) {
+		$header_value = ($configs['sso:remoteUserHeader'] != '') ? $_SERVER[$configs['sso:remoteUserHeader']] : $_SERVER['REMOTE_USER'];
+		$user = user::byLogin($header_value);
+		if (is_object($user) && $user->getEnable() == 1) {
+			@session_start();
+			$_SESSION['user'] = $user;
+			@session_write_close();
+			log::add('connection', 'info', __('Connexion de l\'utilisateur par REMOTE_USER :', __FILE__) . ' ' . $user->getLogin());
+		}
 	}
 }
 

@@ -482,4 +482,55 @@ class network {
 		log::add('network', 'error', __('Souci réseau détecté, redémarrage du réseau. La gateway ne répond pas au ping :', __FILE__) . ' ' . $gw);
 		exec(system::getCmdSudo() . 'service networking restart');
 	}
+
+	public static function isFromTrustedProxy($_ip, $_trustedList) {
+		if ($_ip === '' || $_ip === null || !filter_var($_ip, FILTER_VALIDATE_IP)) {
+			return false;
+		}
+		if (!is_string($_trustedList) || trim($_trustedList) === '') {
+			return false;
+		}
+		$entries = preg_split('/[\s,;]+/', $_trustedList, -1, PREG_SPLIT_NO_EMPTY);
+		foreach ($entries as $entry) {
+			if (self::ipMatchesEntry($_ip, $entry)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private static function ipMatchesEntry($_ip, $_entry) {
+		$entry = trim($_entry);
+		if ($entry === '') {
+			return false;
+		}
+		if (strpos($entry, '/') === false) {
+			return filter_var($entry, FILTER_VALIDATE_IP) !== false
+				&& inet_pton($entry) === inet_pton($_ip);
+		}
+		list($subnet, $maskLen) = explode('/', $entry, 2);
+		if (!filter_var($subnet, FILTER_VALIDATE_IP) || !ctype_digit((string) $maskLen)) {
+			return false;
+		}
+		$maskLen = (int) $maskLen;
+		$ipBin = inet_pton($_ip);
+		$subnetBin = inet_pton($subnet);
+		if ($ipBin === false || $subnetBin === false || strlen($ipBin) !== strlen($subnetBin)) {
+			return false;
+		}
+		$totalBits = strlen($ipBin) * 8;
+		if ($maskLen < 0 || $maskLen > $totalBits) {
+			return false;
+		}
+		$fullBytes = intdiv($maskLen, 8);
+		$remainingBits = $maskLen % 8;
+		if ($fullBytes > 0 && substr($ipBin, 0, $fullBytes) !== substr($subnetBin, 0, $fullBytes)) {
+			return false;
+		}
+		if ($remainingBits === 0) {
+			return true;
+		}
+		$mask = chr(0xff << (8 - $remainingBits) & 0xff);
+		return (ord($ipBin[$fullBytes]) & ord($mask)) === (ord($subnetBin[$fullBytes]) & ord($mask));
+	}
 }
