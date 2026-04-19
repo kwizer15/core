@@ -80,7 +80,7 @@ try {
 		if (!$isAdmin) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
-		// `*` reste non quoté pour laisser le shell faire l'expansion glob après le `cd`.
+		// `*` is intentionally left unquoted so the shell performs glob expansion after `cd`.
 		system('cd ' . escapeshellarg(dirname($pathfile)) . ';tar cfz ' . escapeshellarg(jeedom::getTmpFolder('downloads') . '/archive.tar.gz') . ' * > /dev/null 2>&1');
 		$pathfile = jeedom::getTmpFolder('downloads') . '/archive.tar.gz';
 	} else {
