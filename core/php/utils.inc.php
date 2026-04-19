@@ -158,9 +158,9 @@ function sendVarToJS($_varName, $_value = '') {
 	$jsVar = '<script>';
 	foreach ($_varName as $name => $value) {
 		if (is_array($value) || is_object($value)) {
-			// Double json_encode : l'inner sérialise la donnée, l'outer encode le JSON en string literal JS
-			// pour le passer à JSON.parse(). JSON.parse préserve __proto__ comme own property
-			// (un object literal l'assignerait au prototype — prototype pollution).
+			// Double json_encode: the inner call serializes the data, the outer wraps the JSON
+			// into a JS string literal passed to JSON.parse(). JSON.parse preserves __proto__
+			// as an own property (an object literal would assign it to the prototype — prototype pollution).
 			$encoded = 'JSON.parse(' . json_encode(json_encode($value, $flags), $flags) . ')';
 		} else {
 			$encoded = json_encode((string) $value, $flags);
