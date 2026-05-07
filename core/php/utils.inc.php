@@ -1013,6 +1013,23 @@ function calculPath($_path) {
 	return $_path;
 }
 
+/**
+ * Build a shell-safe smbclient command with all arguments escaped.
+ *
+ * @param string $_share        Remote share path (e.g. //server/share).
+ * @param string $_userPassword Credential in the user%password form accepted by smbclient -U.
+ * @param string $_ip           Server IP address.
+ * @param string $_innerCmd     smbclient -c script (semicolon-separated commands).
+ * @return string Full smbclient command line, ready for exec/shell_exec.
+ */
+function shellSmbclientCommand($_share, $_userPassword, $_ip, $_innerCmd) {
+	return 'smbclient -t 120 '
+		. escapeshellarg($_share)
+		. ' -U ' . escapeshellarg($_userPassword)
+		. ' -I ' . escapeshellarg($_ip)
+		. ' -c ' . escapeshellarg($_innerCmd);
+}
+
 function getDirectorySize($path) {
 	$bytestotal = 0;
 	$path = realpath($path);

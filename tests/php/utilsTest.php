@@ -98,4 +98,25 @@ class utilsTest extends TestCase {
 	public function testCleanPath($in, $out) {
 		$this->assertSame($out, cleanPath($in));
 	}
+
+	public function testShellSmbclientCommandEscapesShare() {
+		$cmd = shellSmbclientCommand('//host/share; rm -rf /', 'user%pass', '1.2.3.4', 'ls');
+		$this->assertStringContainsString("'//host/share; rm -rf /'", $cmd);
+		$this->assertStringNotContainsString('//host/share; rm -rf / -U', $cmd);
+	}
+
+	public function testShellSmbclientCommandEscapesUserPassword() {
+		$cmd = shellSmbclientCommand('//host/share', "user%pass'; evil; '", '1.2.3.4', 'ls');
+		$this->assertStringContainsString("-U '" . str_replace("'", "'\\''", "user%pass'; evil; '") . "'", $cmd);
+	}
+
+	public function testShellSmbclientCommandEscapesIp() {
+		$cmd = shellSmbclientCommand('//host/share', 'user%pass', '1.2.3.4 -F /etc/passwd', 'ls');
+		$this->assertStringContainsString("-I '1.2.3.4 -F /etc/passwd'", $cmd);
+	}
+
+	public function testShellSmbclientCommandEscapesInnerCmd() {
+		$cmd = shellSmbclientCommand('//host/share', 'user%pass', '1.2.3.4', 'cd foo;ls" -c "evil');
+		$this->assertStringEndsWith("-c 'cd foo;ls\" -c \"evil'", $cmd);
+	}
 }
