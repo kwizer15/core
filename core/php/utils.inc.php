@@ -154,13 +154,21 @@ function sendVarToJS($_varName, $_value = '') {
 	if (!is_array($_varName)) {
 		$_varName = [$_varName => $_value];
 	}
+	$flags = JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_UNICODE;
 	$jsVar = '<script>';
 	foreach ($_varName as $name => $value) {
-		$value = (is_array($value)) ? 'JSON.parse("' . addslashes(json_encode($value, JSON_UNESCAPED_UNICODE)) . '")'	: '"' . $value . '"';
-		if (strpos($name, '.') === false) {
-			$jsVar .= 'var ' . $name . ' = ' . $value . "\n";
+		if (is_array($value) || is_object($value)) {
+			// Double json_encode: the inner call serializes the data, the outer wraps the JSON
+			// into a JS string literal passed to JSON.parse(). JSON.parse preserves __proto__
+			// as an own property (an object literal would assign it to the prototype — prototype pollution).
+			$encoded = 'JSON.parse(' . json_encode(json_encode($value, $flags), $flags) . ')';
 		} else {
-			$jsVar .= $name . ' = ' . $value . "\n";
+			$encoded = json_encode((string) $value, $flags);
+		}
+		if (strpos($name, '.') === false) {
+			$jsVar .= 'var ' . $name . ' = ' . $encoded . "\n";
+		} else {
+			$jsVar .= $name . ' = ' . $encoded . "\n";
 		}
 	}
 	$jsVar .= '</script>';
