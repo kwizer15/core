@@ -482,4 +482,70 @@ class network {
 		log::add('network', 'error', __('Souci réseau détecté, redémarrage du réseau. La gateway ne répond pas au ping :', __FILE__) . ' ' . $gw);
 		exec(system::getCmdSudo() . 'service networking restart');
 	}
+
+	/**
+	 * Check whether an IP address belongs to a list of trusted proxies.
+	 *
+	 * @param string $_ip          Source IP to verify (IPv4 or IPv6).
+	 * @param string $_trustedList Comma/space/semicolon-separated list of IPs or CIDR ranges.
+	 *                             Example: "10.0.0.5, 192.168.1.0/24, ::1".
+	 * @return bool True if $_ip matches an entry in the list, false otherwise (including empty list or invalid IP).
+	 */
+	public static function isFromTrustedProxy(string $_ip, string $_trustedList): bool {
+		if ($_ip === '' || !filter_var($_ip, FILTER_VALIDATE_IP)) {
+			return false;
+		}
+		if (trim($_trustedList) === '') {
+			return false;
+		}
+		$entries = preg_split('/[\s,;]+/', $_trustedList, -1, PREG_SPLIT_NO_EMPTY);
+		foreach ($entries as $entry) {
+			if (self::ipMatchesEntry($_ip, $entry)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Check whether an IP matches a single list entry (exact IP or CIDR range).
+	 *
+	 * @param string $_ip    Source IP, already validated by filter_var().
+	 * @param string $_entry Raw list entry: exact IP or CIDR (IPv4/IPv6).
+	 * @return bool True if the IP matches the entry, false if the entry is invalid or out of range.
+	 */
+	private static function ipMatchesEntry(string $_ip, string $_entry): bool {
+		$entry = trim($_entry);
+		if ($entry === '') {
+			return false;
+		}
+		if (strpos($entry, '/') === false) {
+			return filter_var($entry, FILTER_VALIDATE_IP) !== false
+				&& inet_pton($entry) === inet_pton($_ip);
+		}
+		list($subnet, $maskLen) = explode('/', $entry, 2);
+		if (!filter_var($subnet, FILTER_VALIDATE_IP) || !ctype_digit((string) $maskLen)) {
+			return false;
+		}
+		$maskLen = (int) $maskLen;
+		$ipBin = inet_pton($_ip);
+		$subnetBin = inet_pton($subnet);
+		if ($ipBin === false || $subnetBin === false || strlen($ipBin) !== strlen($subnetBin)) {
+			return false;
+		}
+		$totalBits = strlen($ipBin) * 8;
+		if ($maskLen < 0 || $maskLen > $totalBits) {
+			return false;
+		}
+		$fullBytes = intdiv($maskLen, 8);
+		$remainingBits = $maskLen % 8;
+		if ($fullBytes > 0 && substr($ipBin, 0, $fullBytes) !== substr($subnetBin, 0, $fullBytes)) {
+			return false;
+		}
+		if ($remainingBits === 0) {
+			return true;
+		}
+		$mask = chr(0xff << (8 - $remainingBits) & 0xff);
+		return (ord($ipBin[$fullBytes]) & ord($mask)) === (ord($subnetBin[$fullBytes]) & ord($mask));
+	}
 }
