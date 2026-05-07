@@ -1006,11 +1006,72 @@ function br2nl($string) {
 	return preg_replace('/\<br(\s*)?\/?\>/i', "\n", $string);
 }
 
-function calculPath($_path) {
+/**
+ * Resolve a path under the Jeedom webroot, rejecting anything that escapes it.
+ *
+ * @param string $_path Absolute path or path relative to the webroot.
+ * @return string|false Canonical absolute path under the webroot, or false if outside or unresolvable.
+ */
+function resolvePath($_path) {
+	$rootPath = realpath(__DIR__ . '/../../');
+	if ($rootPath === false) {
+		return false;
+	}
+	$candidate = (strpos($_path, '/') === 0) ? $_path : $rootPath . '/' . $_path;
+	$real = realpath($candidate);
+	if ($real === false) {
+		// Target file may not exist yet (creation case): validate the parent directory instead.
+		$parent = realpath(dirname($candidate));
+		if ($parent === false) {
+			return false;
+		}
+		$real = $parent . DIRECTORY_SEPARATOR . basename($candidate);
+	}
+	if ($real !== $rootPath && strpos($real, $rootPath . DIRECTORY_SEPARATOR) !== 0) {
+		return false;
+	}
+	return $real;
+}
+
+/**
+ * Legacy path resolver that accepts paths outside the webroot (no realpath, no sandbox check).
+ *
+ * @param string $_path Absolute path or path relative to the webroot.
+ * @return string Resolved path (absolute if prefixed with /, otherwise prefixed with the webroot).
+ * @see resolvePath() For the sandboxed variant.
+ */
+function resolvePathUnsafe($_path) {
 	if (strpos($_path, '/') !== 0) {
 		return __DIR__ . '/../../' . $_path;
 	}
 	return $_path;
+}
+
+/**
+ * Resolve a path inside the webroot, falling back to the unsafe resolver when $_allowOutsideRoot is true.
+ * Triggers E_USER_DEPRECATED when the fallback is hit implicitly (legacy callers).
+ *
+ * @param string $_path             Absolute path or path relative to the webroot.
+ * @param bool   $_allowOutsideRoot When true, bypass sandboxing and return the unsafe resolution.
+ * @return string|false Resolved path under the webroot, the unsafe resolution, or false when sandboxed and unresolvable.
+ * @see resolvePath()
+ * @see resolvePathUnsafe()
+ */
+function calculPath($_path, $_allowOutsideRoot = false) {
+	if ($_allowOutsideRoot) {
+		return resolvePathUnsafe($_path);
+	}
+	$under = resolvePath($_path);
+	if ($under !== false) {
+		return $under;
+	}
+	trigger_error(
+		'calculPath() with a path outside the webroot is deprecated. '
+		. 'Use resolvePathUnsafe() to keep this behaviour, '
+		. 'or pass true as the second argument.',
+		E_USER_DEPRECATED
+	);
+	return resolvePathUnsafe($_path);
 }
 
 function getDirectorySize($path) {

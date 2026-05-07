@@ -474,12 +474,8 @@ try {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
 		unautorizedInDemo();
-		$pathfile = calculPath(init('path'));
+		$pathfile = resolvePath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
-		$rootPath = realpath(__DIR__ . '/../../');
-		if (strpos($pathfile, $rootPath) === false) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(ls($pathfile, '*', false, array(init('type'))));
@@ -494,12 +490,8 @@ try {
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini', 'css', 'py', 'css', 'html', 'yaml', 'config', 'conf'))) {
 			throw new Exception(__('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
 		}
-		$pathfile = calculPath(init('path'));
+		$pathfile = resolvePath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
-		$rootPath = realpath(__DIR__ . '/../../');
-		if (strpos($pathfile, $rootPath) === false) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(file_get_contents($pathfile));
@@ -514,12 +506,8 @@ try {
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini', 'css', 'py', 'css', 'html', 'yaml', 'config', 'conf'))) {
 			throw new Exception(__('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
 		}
-		$pathfile = calculPath(init('path'));
+		$pathfile = resolvePath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
-		$rootPath = realpath(__DIR__ . '/../../');
-		if (strpos($pathfile, $rootPath) === false) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(file_put_contents($pathfile, init('content')));
@@ -534,12 +522,8 @@ try {
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini', 'css', 'py', 'css', 'html', 'yaml', 'config', 'conf'))) {
 			throw new Exception(__('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
 		}
-		$pathfile = calculPath(init('path'));
+		$pathfile = resolvePath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
-		$rootPath = realpath(__DIR__ . '/../../');
-		if (strpos($pathfile, $rootPath) === false) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(unlink($pathfile));
@@ -554,16 +538,12 @@ try {
 		if (!in_array($pathinfo['extension'], array('php', 'js', 'json', 'sql', 'ini', 'css', 'py', 'css', 'html', 'yaml', 'config', 'conf'))) {
 			throw new Exception(__('Vous ne pouvez éditer ce type d\'extension :', __FILE__) . ' ' . $pathinfo['extension']);
 		}
-		$pathfile = calculPath(init('path'));
-		if ($pathfile === false) {
+		$target = resolvePath(rtrim(init('path'), '/') . '/' . init('name'));
+		if ($target === false) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
-		$rootPath = realpath(__DIR__ . '/../../');
-		if (strpos($pathfile, $rootPath) === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
-		touch($pathfile . init('name'));
-		if (!file_exists($pathfile . init('name'))) {
+		touch($target);
+		if (!file_exists($target)) {
 			throw new Exception(__('Impossible de créer le fichier, vérifiez les droits', __FILE__));
 		}
 		ajax::success();
@@ -571,39 +551,28 @@ try {
 
 	if (init('action') == 'createFolder') {
 		unautorizedInDemo();
-		$pathfile = calculPath(init('path'));
-		if ($pathfile === false) {
+		$target = resolvePath(rtrim(init('path'), '/') . '/' . init('name'));
+		if ($target === false) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
-		$rootPath = realpath(__DIR__ . '/../../');
-		if (strpos($pathfile, $rootPath) === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
-		mkdir($pathfile . '/' . init('name'));
+		mkdir($target);
 		ajax::success();
 	}
 
 	if (init('action') == 'renameFolder') {
 		unautorizedInDemo();
-		$pathfile = calculPath(init('src'));
-		if ($pathfile === false) {
+		$src = resolvePath(init('src'));
+		$dst = resolvePath(init('dst'));
+		if ($src === false || $dst === false) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
-		$rootPath = realpath(__DIR__ . '/../../');
-		if (strpos($pathfile, $rootPath) === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
-		ajax::success(rename($pathfile, init('dst')));
+		ajax::success(rename($src, $dst));
 	}
 
 	if (init('action') == 'deleteFolder') {
 		unautorizedInDemo();
-		$pathfile = calculPath(init('path'));
+		$pathfile = resolvePath(init('path'));
 		if ($pathfile === false) {
-			throw new Exception(__('401 - Accès non autorisé', __FILE__));
-		}
-		$rootPath = realpath(__DIR__ . '/../../');
-		if (strpos($pathfile, $rootPath) === false) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
 		ajax::success(rrmdir($pathfile));

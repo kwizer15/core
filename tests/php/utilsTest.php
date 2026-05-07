@@ -98,4 +98,87 @@ class utilsTest extends TestCase {
 	public function testCleanPath($in, $out) {
 		$this->assertSame($out, cleanPath($in));
 	}
+
+	private function rootPath() {
+		return realpath(__DIR__ . '/../../');
+	}
+
+	public function testResolvePathReturnsAbsoluteForRelativeUnderRoot() {
+		$result = resolvePath('core/php/utils.inc.php');
+		$this->assertSame($this->rootPath() . '/core/php/utils.inc.php', $result);
+	}
+
+	public function testResolvePathResolvesDotDotThatStaysUnderRoot() {
+		$result = resolvePath('core/php/../class');
+		$this->assertSame($this->rootPath() . '/core/class', $result);
+	}
+
+	public function testResolvePathRejectsAbsoluteOutsideRoot() {
+		$this->assertFalse(resolvePath('/etc/passwd'));
+	}
+
+	public function testResolvePathRejectsTraversalOutsideRoot() {
+		$this->assertFalse(resolvePath('../../../../../../etc/passwd'));
+	}
+
+	public function testResolvePathAcceptsCreationCandidateUnderRoot() {
+		$result = resolvePath('core/php/__nonexistent_test_file__.php');
+		$this->assertSame($this->rootPath() . '/core/php/__nonexistent_test_file__.php', $result);
+	}
+
+	public function testResolvePathRejectsCreationCandidateOutsideRoot() {
+		$this->assertFalse(resolvePath('/tmp/__nonexistent_test_file__.php'));
+	}
+
+	public function testResolvePathUnsafeReturnsAbsoluteAsIs() {
+		$this->assertSame('/etc/passwd', resolvePathUnsafe('/etc/passwd'));
+	}
+
+	public function testResolvePathUnsafePrefixesRelative() {
+		$result = resolvePathUnsafe('foo.txt');
+		$this->assertStringEndsWith('/foo.txt', $result);
+	}
+
+	public function testCalculPathLegitimateUnderRootDoesNotTriggerDeprecation() {
+		$errors = [];
+		set_error_handler(function ($errno, $errstr) use (&$errors) {
+			$errors[] = [$errno, $errstr];
+		}, E_USER_DEPRECATED);
+		try {
+			$result = calculPath('core/php/utils.inc.php');
+		} finally {
+			restore_error_handler();
+		}
+		$this->assertSame($this->rootPath() . '/core/php/utils.inc.php', $result);
+		$this->assertSame([], $errors, 'No deprecation should be raised when path resolves under the webroot');
+	}
+
+	public function testCalculPathOutsideRootTriggersDeprecation() {
+		$errors = [];
+		set_error_handler(function ($errno, $errstr) use (&$errors) {
+			$errors[] = [$errno, $errstr];
+		}, E_USER_DEPRECATED);
+		try {
+			$result = calculPath('/etc/passwd');
+		} finally {
+			restore_error_handler();
+		}
+		$this->assertSame('/etc/passwd', $result, 'Backward-compatible fallback returns the unsafe resolution');
+		$this->assertCount(1, $errors, 'A deprecation notice must be emitted');
+		$this->assertSame(E_USER_DEPRECATED, $errors[0][0]);
+	}
+
+	public function testCalculPathOutsideRootWithFlagDoesNotTriggerDeprecation() {
+		$errors = [];
+		set_error_handler(function ($errno, $errstr) use (&$errors) {
+			$errors[] = [$errno, $errstr];
+		}, E_USER_DEPRECATED);
+		try {
+			$result = calculPath('/etc/passwd', true);
+		} finally {
+			restore_error_handler();
+		}
+		$this->assertSame('/etc/passwd', $result);
+		$this->assertSame([], $errors, 'Explicit opt-in must silence the deprecation');
+	}
 }

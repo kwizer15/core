@@ -206,7 +206,7 @@ class repo_samba {
 	}
 
 	public static function backup_restore($_backup) {
-		$backup_dir = calculPath(config::byKey('backup::path'));
+		$backup_dir = resolvePathUnsafe(config::byKey('backup::path'));
 		$cmd = 'cd ' . $backup_dir . ';';
 		$cmd .= self::makeSambaCommand('cd ' . config::byKey('samba::backup::folder') . ';get ' . $_backup);
 		com_shell::execute($cmd);

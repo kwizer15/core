@@ -35,13 +35,16 @@ try {
 	}
 
 	unautorizedInDemo();
-	$pathfile = calculPath(init('pathfile'));
-	$pathfile = (strpos($pathfile, '*') !== false) ? realpath(str_replace('*', '', $pathfile)) . '/*' : realpath($pathfile);
+	$rawPath = init('pathfile');
+	$hasWildcard = (strpos($rawPath, '*') !== false);
+	$cleanPath = $hasWildcard ? str_replace('*', '', $rawPath) : $rawPath;
+	$resolved = resolvePath($cleanPath);
 
-	if ($pathfile === false) {
+	if ($resolved === false) {
 		log::add('api', 'debug', 'downloadFile - fichier introuvable');
 		throw new Exception(__('401 - Accès non autorisé', __FILE__));
 	}
+	$pathfile = $hasWildcard ? rtrim($resolved, '/') . '/*' : $resolved;
 
 	if (!$isAdmin) {
 		$authorized = false;
