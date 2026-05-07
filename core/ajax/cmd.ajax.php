@@ -92,7 +92,7 @@ try {
 		if ($cmd->getType() == 'action' && $cmd->getConfiguration('actionConfirm') == 1 && init('confirmAction') != 1) {
 			throw new Exception(__('Cette action nécessite une confirmation', __FILE__), -32006);
 		}
-		$options = is_json(init('value'), array());
+        $options = parseJsonAsArray(getRequestParameterAsString('value'), false);
 		if (init('user_login') != '') {
 			$options['user_login'] = init('user_login');
 		}
@@ -350,9 +350,10 @@ try {
 		$data = array();
 		$dateStart = null;
 		$dateEnd = null;
-		if (init('dateRange') != '' && init('dateRange') != 'all') {
-			if (is_json(init('dateRange'))) {
-				$dateRange = json_decode(init('dateRange'), true);
+        $initDateRange = init('dateRange');
+		if ($initDateRange != '' && $initDateRange != 'all') {
+			if (is_string($initDateRange) && canBeDecodedAsJsonArray($initDateRange)) {
+				$dateRange = parseJsonAsArray($initDateRange);
 				if (isset($dateRange['start'])) {
 					$dateStart = $dateRange['start'];
 				}
@@ -361,7 +362,7 @@ try {
 				}
 			} else {
 				$dateEnd = date('Y-m-d H:i:s');
-				$dateStart = date('Y-m-d H:i:s', strtotime('- ' . init('dateRange') . ' ' . $dateEnd));
+				$dateStart = date('Y-m-d H:i:s', strtotime('- ' . $initDateRange . ' ' . $dateEnd));
 			}
 		}
 

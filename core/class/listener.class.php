@@ -337,8 +337,12 @@ class listener {
 		return $this->id;
 	}
 
-	public function getEvent() {
-		return is_json($this->event, array());
+	public function getEvent(): array {
+        if (!is_string($this->event)) {
+            return [];
+        }
+
+		return parseJsonAsArray($this->event);
 	}
 
 	public function getClass() {
