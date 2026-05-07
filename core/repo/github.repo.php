@@ -133,7 +133,7 @@ class repo_github {
 			unlink($tmp);
 		}
 		if (!is_writable($tmp_dir)) {
-			exec(system::getCmdSudo() . 'chmod 777 -R ' . $tmp);
+			exec(system::getCmdSudo() . 'chmod 777 -R ' . escapeshellarg($tmp));
 		}
 		if (!is_writable($tmp_dir)) {
 			throw new Exception(__('Impossible d\'écrire dans le répertoire :', __FILE__) . ' ' . $tmp . __('. Exécuter la commande suivante en SSH : sudo chmod 777 -R', __FILE__) . ' ' . $tmp_dir);
@@ -179,11 +179,7 @@ class repo_github {
 	public static function downloadCore($_path) {
 		$url = 'https://api.github.com/repos/' . config::byKey('github::core::user', 'core', 'jeedom') . '/' . config::byKey('github::core::repository', 'core', 'core') . '/zipball/' . config::byKey('github::core::branch', 'core', 'stable');
 		echo __('Téléchargement de', __FILE__) . ' ' . $url . '...';
-		if (config::byKey('github::token') == '') {
-			echo shell_exec('curl -s -L ' . $url . ' > ' . $_path);
-		} else {
-			echo shell_exec('curl -s -H "Authorization: token ' . config::byKey('github::token') . '" -L ' . $url . ' > ' . $_path);
-		}
+		echo shell_exec(shellCurlCommand($url, $_path, config::byKey('github::token')));
 		return;
 	}
 

@@ -66,12 +66,12 @@ class repo_url {
 			unlink($tmp);
 		}
 		if (!is_writable($tmp_dir)) {
-			exec(system::getCmdSudo() . 'chmod 777 -R ' . $tmp);
+			exec(system::getCmdSudo() . 'chmod 777 -R ' . escapeshellarg($tmp));
 		}
 		if (!is_writable($tmp_dir)) {
 			throw new Exception(__('Impossible d\'écrire dans le répertoire :', __FILE__) . ' ' . $tmp . __('. Exécuter la commande suivante en SSH : sudo chmod 777 -R', __FILE__) . ' ' . $tmp_dir);
 		}
-		$result = exec('wget --no-check-certificate --progress=dot --dot=mega ' . $_update->getConfiguration('url') . ' -O ' . $tmp);
+		$result = exec(shellWgetCommand($_update->getConfiguration('url'), $tmp));
 		log::add('update', 'alert', $result);
 		return array('path' => $tmp, 'localVersion' => date('Y-m-d H:i:s'));
 	}

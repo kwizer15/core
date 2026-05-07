@@ -1013,6 +1013,59 @@ function calculPath($_path) {
 	return $_path;
 }
 
+/**
+ * Build a shell-safe wget command to download a URL to a local path, optionally appending to a log file.
+ *
+ * @param string      $_url        URL to fetch.
+ * @param string      $_outputPath Destination file path.
+ * @param string|null $_logPath    Optional file to append stdout/stderr to.
+ * @return string Full shell command, ready for exec/shell_exec.
+ */
+function shellWgetCommand($_url, $_outputPath, $_logPath = null) {
+	$cmd = 'wget --no-check-certificate --progress=dot --dot=mega ' . escapeshellarg($_url) . ' -O ' . escapeshellarg($_outputPath);
+	if ($_logPath !== null) {
+		$cmd .= ' >> ' . escapeshellarg($_logPath) . ' 2>&1';
+	}
+	return $cmd;
+}
+
+/**
+ * Build a shell-safe curl command to download a URL to a local path, optionally with a bearer token.
+ *
+ * @param string      $_url        URL to fetch.
+ * @param string      $_outputPath Destination file path.
+ * @param string|null $_token      Optional bearer token for the `Authorization: token <token>` header.
+ * @return string Full shell command, ready for exec/shell_exec.
+ */
+function shellCurlCommand($_url, $_outputPath, $_token = null) {
+	$cmd = 'curl -s -L';
+	if ($_token !== null && $_token !== '') {
+		$cmd .= ' -H ' . escapeshellarg('Authorization: token ' . $_token);
+	}
+	$cmd .= ' ' . escapeshellarg($_url) . ' > ' . escapeshellarg($_outputPath);
+	return $cmd;
+}
+
+/**
+ * Build a shell command that counts how many processes match a given command line.
+ *
+ * @param string $_cmd Process command line to match with a trailing-anchor regex.
+ * @return string Full shell pipeline that outputs the match count.
+ */
+function shellCheckOngoingThreadCommand($_cmd) {
+	return '(ps ax || ps w) | grep ' . escapeshellarg($_cmd . '$') . ' | grep -v "grep" | wc -l';
+}
+
+/**
+ * Build a shell command that returns the PIDs of processes matching a given command line.
+ *
+ * @param string $_cmd Process command line to match with a trailing-anchor regex.
+ * @return string Full shell pipeline that outputs one PID per line.
+ */
+function shellRetrievePidThreadCommand($_cmd) {
+	return '(ps ax || ps w) | grep ' . escapeshellarg($_cmd . '$') . ' | grep -v "grep" | awk \'{print $1}\'';
+}
+
 function getDirectorySize($path) {
 	$bytestotal = 0;
 	$path = realpath($path);
