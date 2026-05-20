@@ -422,7 +422,7 @@ class queue {
     }
 
     private function setSerializedArguments(string $arguments): void {
-        $unserializedArguments = unserialize($arguments);
+        $unserializedArguments = unserialize($arguments, ['allowed_classes' => false]);
         if (!is_array($unserializedArguments)) {
             $unserializedArguments = [];
         }
