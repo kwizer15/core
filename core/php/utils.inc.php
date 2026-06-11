@@ -1013,6 +1013,51 @@ function calculPath($_path) {
 	return $_path;
 }
 
+/**
+ * Build shell-safe MySQL CLI connection arguments (user, password, host/port or socket, database).
+ *
+ * @param string      $_host     MySQL host.
+ * @param int|string  $_port     MySQL TCP port.
+ * @param string      $_user     MySQL user.
+ * @param string      $_password MySQL password.
+ * @param string      $_dbname   Database name.
+ * @param string|null $_socket   Optional Unix socket path; takes precedence over host/port when set.
+ * @return string Space-separated argument string for mysql/mysqldump.
+ */
+function shellMysqlConnectionArgs($_host, $_port, $_user, $_password, $_dbname, $_socket = null) {
+	if ($_socket !== null) {
+		$args = '--socket=' . escapeshellarg($_socket);
+	} elseif ($_host == 'localhost' && $_port == 3306) {
+		$args = '';
+	} else {
+		$args = '--host=' . escapeshellarg($_host) . ' --port=' . escapeshellarg((string) $_port);
+	}
+	if ($args !== '') {
+		$args .= ' ';
+	}
+	$args .= '--user=' . escapeshellarg($_user)
+		. ' --password=' . escapeshellarg($_password)
+		. ' ' . escapeshellarg($_dbname);
+	return $args;
+}
+
+/**
+ * Build a shell-safe `tar cfz` command that archives the current directory with optional excludes.
+ *
+ * @param string   $_workdir       Directory to cd into before taring (archived as `.`).
+ * @param string   $_outputArchive Output archive path (.tar.gz).
+ * @param string[] $_excludes      Patterns passed one per `--exclude=` flag.
+ * @return string Full shell command, ready for exec/shell_exec.
+ */
+function shellTarCreateCommand($_workdir, $_outputArchive, array $_excludes = []) {
+	$cmd = 'cd ' . escapeshellarg($_workdir) . ';tar cfz ' . escapeshellarg($_outputArchive);
+	foreach ($_excludes as $exclude) {
+		$cmd .= ' --exclude=' . escapeshellarg($exclude);
+	}
+	$cmd .= ' .';
+	return $cmd;
+}
+
 function getDirectorySize($path) {
 	$bytestotal = 0;
 	$path = realpath($path);

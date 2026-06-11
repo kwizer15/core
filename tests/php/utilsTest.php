@@ -98,4 +98,55 @@ class utilsTest extends TestCase {
 	public function testCleanPath($in, $out) {
 		$this->assertSame($out, cleanPath($in));
 	}
+
+	public function testShellMysqlConnectionArgsWithSocket() {
+		$args = shellMysqlConnectionArgs('localhost', 3306, 'root', 'pwd', 'mydb', '/var/run/mysqld/mysqld.sock');
+		$this->assertStringContainsString("--socket='/var/run/mysqld/mysqld.sock'", $args);
+		$this->assertStringNotContainsString('--host', $args);
+		$this->assertStringNotContainsString('--port', $args);
+	}
+
+	public function testShellMysqlConnectionArgsLocalhostDefaultPort() {
+		$args = shellMysqlConnectionArgs('localhost', 3306, 'root', 'pwd', 'mydb');
+		$this->assertStringNotContainsString('--host', $args);
+		$this->assertStringNotContainsString('--port', $args);
+		$this->assertStringContainsString("--user='root'", $args);
+		$this->assertStringContainsString("--password='pwd'", $args);
+		$this->assertStringEndsWith("'mydb'", $args);
+	}
+
+	public function testShellMysqlConnectionArgsRemoteHost() {
+		$args = shellMysqlConnectionArgs('db.internal', 33306, 'root', 'pwd', 'mydb');
+		$this->assertStringContainsString("--host='db.internal'", $args);
+		$this->assertStringContainsString("--port='33306'", $args);
+	}
+
+	public function testShellMysqlConnectionArgsEscapesPassword() {
+		$args = shellMysqlConnectionArgs('localhost', 3306, 'root', "p; rm -rf /; '", 'mydb');
+		$this->assertStringContainsString("--password='" . str_replace("'", "'\\''", "p; rm -rf /; '") . "'", $args);
+	}
+
+	public function testShellMysqlConnectionArgsEscapesDbname() {
+		$args = shellMysqlConnectionArgs('localhost', 3306, 'root', 'pwd', 'mydb; cat /etc/passwd');
+		$this->assertStringEndsWith("'mydb; cat /etc/passwd'", $args);
+	}
+
+	public function testShellTarCreateCommandBasic() {
+		$cmd = shellTarCreateCommand('/var/www', '/backup/out.tar.gz', []);
+		$this->assertStringContainsString("cd '/var/www'", $cmd);
+		$this->assertStringContainsString("tar cfz '/backup/out.tar.gz'", $cmd);
+		$this->assertStringEndsWith(' .', $cmd);
+	}
+
+	public function testShellTarCreateCommandWithExcludes() {
+		$cmd = shellTarCreateCommand('/var/www', '/backup/out.tar.gz', ['tmp', './log; evil', 'docs']);
+		$this->assertStringContainsString("--exclude='tmp'", $cmd);
+		$this->assertStringContainsString("--exclude='./log; evil'", $cmd);
+		$this->assertStringContainsString("--exclude='docs'", $cmd);
+	}
+
+	public function testShellTarCreateCommandEscapesOutputArchive() {
+		$cmd = shellTarCreateCommand('/var/www', '/backup/out"; evil; ".tar.gz', []);
+		$this->assertStringContainsString("'/backup/out\"; evil; \".tar.gz'", $cmd);
+	}
 }
