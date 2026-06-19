@@ -80,14 +80,15 @@ try {
 		if (!$isAdmin) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
-		system('cd ' . dirname($pathfile) . ';tar cfz ' . jeedom::getTmpFolder('downloads') . '/archive.tar.gz * > /dev/null 2>&1');
+		// `*` is intentionally left unquoted so the shell performs glob expansion after `cd`.
+		system('cd ' . escapeshellarg(dirname($pathfile)) . ';tar cfz ' . escapeshellarg(jeedom::getTmpFolder('downloads') . '/archive.tar.gz') . ' * > /dev/null 2>&1');
 		$pathfile = jeedom::getTmpFolder('downloads') . '/archive.tar.gz';
 	} else {
 		if (!$isAdmin) {
 			throw new Exception(__('401 - Accès non autorisé', __FILE__));
 		}
 		$pattern = array_pop(explode('/', $pathfile));
-		system('cd ' . dirname($pathfile) . ';tar cfz ' . jeedom::getTmpFolder('downloads') . '/archive.tar.gz ' . $pattern . '> /dev/null 2>&1');
+		system('cd ' . escapeshellarg(dirname($pathfile)) . ';tar cfz ' . escapeshellarg(jeedom::getTmpFolder('downloads') . '/archive.tar.gz') . ' ' . escapeshellarg($pattern) . ' > /dev/null 2>&1');
 		$pathfile = jeedom::getTmpFolder('downloads') . '/archive.tar.gz';
 	}
 	ob_clean();
