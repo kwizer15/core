@@ -1839,3 +1839,13 @@ function implode_recursive($_array, $_separator, $_key = '') {
 	}
 	return $result;
 }
+
+ function __($_content, $_name, $_backslash = false)
+ {
+     try {
+         return translate::sentence(str_replace("\'", "'", $_content), $_name, $_backslash);
+     } catch (\Throwable $t) {
+         error_log($t->getMessage());
+         throw $t;
+     }
+ }
